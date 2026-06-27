@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../controllers/home_controller.dart';
 
@@ -95,10 +95,10 @@ class HomeView extends GetView<HomeController> {
                       itemBuilder: (context, index) {
                         var item = controller.pertemuanAktif[index];
                         return _buildActivePertemuanCard(
-                          item['nomor'] as int,
+                          (item['nomor'] as num).toInt(),
                           item['judul'] as String,
                           item['topik'] as String,
-                          item['progress'] as double,
+                          (item['progress'] as num).toDouble(),
                         );
                       },
                     )),
@@ -217,7 +217,7 @@ class HomeView extends GetView<HomeController> {
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text("Pertemuan $nomor — $topik", style: const TextStyle(fontSize: 11, color: Color(0xFF3B82F6), fontWeight: FontWeight.bold)),
+              Text("Pertemuan $nomor â€” $topik", style: const TextStyle(fontSize: 11, color: Color(0xFF3B82F6), fontWeight: FontWeight.bold)),
               const SizedBox(height: 4),
               Text(
                 judul,

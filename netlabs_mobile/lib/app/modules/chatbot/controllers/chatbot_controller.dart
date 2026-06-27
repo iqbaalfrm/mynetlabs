@@ -1,34 +1,36 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import '../../../data/providers/api_provider.dart';
 
 class ChatbotController extends GetxController {
+  final ApiProvider _api = Get.find<ApiProvider>();
+
   late TextEditingController messageController;
   late ScrollController scrollController;
 
-  // RxList untuk menampung riwayat chat di UI
   var chatMessages = <Map<String, dynamic>>[
     {
-      "sender": "ai",
-      "pesan": "Halo! Aku Netlabs AI Tutor. Ada yang bisa aku bantu seputar praktikum Jaringan Komputer Dasar hari ini?",
-      "sumber": null,
-      "waktu": "Sekarang"
+      'sender': 'ai',
+      'pesan': 'Halo! Aku Netlabs AI Tutor. Ada yang bisa aku bantu seputar praktikum Jaringan Komputer Dasar hari ini?',
+      'sumber': null,
+      'waktu': 'Sekarang'
     }
   ].obs;
 
-  // Pilihan pertanyaan otomatis (Suggestion Chips)[cite: 1]
   var suggestionChips = [
-    "Cara hitung subnetting VLSM?",
-    "Apa beda CIDR dan Classful?",
-    "Kenapa ping gateway bisa RTO?",
+    'Cara hitung subnetting VLSM?',
+    'Apa beda CIDR dan Classful?',
+    'Kenapa ping gateway bisa RTO?',
   ];
 
-  var isAiTyping = false.obs; // Indikator loading "AI sedang mengetik"[cite: 1]
+  var isAiTyping = false.obs;
 
   @override
   void onInit() {
     super.onInit();
     messageController = TextEditingController();
     scrollController = ScrollController();
+    loadRiwayatChat();
   }
 
   @override
@@ -38,36 +40,58 @@ class ChatbotController extends GetxController {
     super.onClose();
   }
 
-  // Fungsi mengirim pesan[cite: 1]
+  void loadRiwayatChat() async {
+    try {
+      final response = await _api.getRiwayatChat();
+      final list = response.data['data'] as List;
+      if (list.isNotEmpty) {
+        chatMessages.value = list
+            .map((e) => Map<String, dynamic>.from(e))
+            .map((e) => {
+                  'sender': e['sender'],
+                  'pesan': e['pesan'],
+                  'sumber': e['sumber'],
+                  'waktu': e['waktu'],
+                })
+            .toList();
+        scrollToBottom();
+      }
+    } catch (e) {
+      print('Gagal memuat riwayat chat: $e');
+    }
+  }
+
   void sendMessage(String text) async {
     if (text.trim().isEmpty) return;
 
-    // 1. Tambahkan pesan siswa ke layar[cite: 1]
     chatMessages.add({
-      "sender": "siswa",
-      "pesan": text,
-      "sumber": null,
-      "waktu": "Sekarang"
+      'sender': 'siswa',
+      'pesan': text,
+      'sumber': null,
+      'waktu': 'Sekarang'
     });
     messageController.clear();
     scrollToBottom();
 
-    // 2. Aktifkan mode loading AI sedang mengetik[cite: 1]
     isAiTyping.value = true;
 
     try {
-      // Simulasi delay respons RAG + Claude API (Target asli < 3 detik)[cite: 1]
-      await Future.delayed(const Duration(seconds: 2));
+      final response = await _api.kirimChat(text);
+      final data = response.data['data'];
 
-      // 3. Tambahkan jawaban AI beserta label referensi sumber modul[cite: 1]
       chatMessages.add({
-        "sender": "ai",
-        "pesan": "Untuk menghitung subnetting menggunakan metode VLSM, langkah pertamanya adalah mengurutkan kebutuhan jumlah host dari yang paling besar ke yang paling kecil. Hal ini dilakukan agar alokasi IP Address efisien dan tidak terjadi bentrokan segmentasi.",
-        "sumber": "Pertemuan 3 — Modul Subnetting Jaringan[cite: 1]",
-        "waktu": "Sekarang"
+        'sender': data['sender'],
+        'pesan': data['pesan'],
+        'sumber': data['sumber'],
+        'waktu': data['waktu'] ?? 'Sekarang',
       });
     } catch (e) {
-      // Handle error jika koneksi gagal
+      chatMessages.add({
+        'sender': 'ai',
+        'pesan': 'Maaf, terjadi kesalahan saat memproses pesan Anda. Coba lagi ya.',
+        'sumber': null,
+        'waktu': 'Sekarang'
+      });
     } finally {
       isAiTyping.value = false;
       scrollToBottom();

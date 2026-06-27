@@ -1,24 +1,60 @@
-import 'package:get/get.dart';
+﻿import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
+import '../../../data/providers/api_provider.dart';
 
 class ProfileController extends GetxController {
   final storage = GetStorage();
+  final ApiProvider _api = Get.find<ApiProvider>();
 
-  // Data Simulasi Biodata Siswa (Nanti ditarik dari DB MySQL via Laravel)
-  var nis = "22041001".obs;
-  var nama = "Moch Iqbal Firmansyah".obs;
-  var kelas = "XI TKJ 1".obs;
-  var sekolah = "SMK Bhakti Praja Dukuhwaru".obs;
+  var nis = ''.obs;
+  var nama = ''.obs;
+  var kelas = ''.obs;
+  var sekolah = 'SMK Bhakti Praja Dukuhwaru'.obs;
 
-  // Data Statistik Belajar Siswa[cite: 1]
-  var totalChatKeAI = 42.obs;
-  var rataRataNilai = 85.5.obs;
-  var totalPertemuanSelesai = 4.obs;
-  var totalPertemuan = 12.obs;
+  var totalChatKeAI = 0.obs;
+  var rataRataNilai = 0.0.obs;
+  var totalPertemuanSelesai = 0.obs;
+  var totalPertemuan = 0.obs;
+  var isLoading = false.obs;
 
-  // Fungsi Logout[cite: 1]
+  @override
+  void onInit() {
+    super.onInit();
+    nis.value = storage.read('nis') ?? '-';
+    nama.value = storage.read('nama') ?? 'Siswa';
+    kelas.value = storage.read('kelas') ?? '-';
+    loadStatistik();
+  }
+
+  void loadStatistik() async {
+    isLoading.value = true;
+    try {
+      final response = await _api.getStatistikSiswa();
+      final data = response.data['data'];
+      final profil = data['profil'];
+      final stat = data['statistik'];
+
+      nis.value = profil['nis'];
+      nama.value = profil['nama'];
+      kelas.value = profil['kelas'] ?? '-';
+
+      totalChatKeAI.value = stat['total_chat_ai'];
+      rataRataNilai.value = (stat['rata_rata_nilai'] as num).toDouble();
+      totalPertemuanSelesai.value = stat['total_pertemuan_selesai'];
+      totalPertemuan.value = stat['total_pertemuan'];
+    } catch (e) {
+      print('Gagal memuat statistik: $e');
+    } finally {
+      isLoading.value = false;
+    }
+  }
+
   void logout() {
-    storage.remove('token'); // Menghapus token JWT yang tersimpan[cite: 1]
-    Get.offAllNamed('/login'); // Tendang kembali ke halaman Login
+    _api.logout().catchError((_) {});
+    storage.remove('token');
+    storage.remove('nama');
+    storage.remove('kelas');
+    storage.remove('role');
+    Get.offAllNamed('/login');
   }
 }
