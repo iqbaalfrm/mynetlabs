@@ -1,4 +1,4 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../controllers/detail_materi_controller.dart';
 import '../../../routes/app_pages.dart';
@@ -13,11 +13,11 @@ class DetailMateriView extends GetView<DetailMateriController> {
       appBar: AppBar(
         title: Text(
           "Pertemuan ${controller.nomorPertemuan}",
-          style: const TextStyle(fontWeight: FontWeight.bold, color: Color(0xFF1E3A8A)),
+          style: const TextStyle(fontWeight: FontWeight.bold, color: Color(0xFF0F766E)),
         ),
         backgroundColor: Colors.white,
         elevation: 0,
-        iconTheme: const IconThemeData(color: Color(0xFF1E3A8A)),
+        iconTheme: const IconThemeData(color: Color(0xFF0F766E)),
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(20.0),
@@ -26,7 +26,7 @@ class DetailMateriView extends GetView<DetailMateriController> {
           children: [
             Text(
               controller.judulPertemuan,
-              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Color(0xFF1E3A8A)),
+              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Color(0xFF0F766E)),
             ),
             const SizedBox(height: 10),
             Obx(() => Text(
@@ -36,11 +36,11 @@ class DetailMateriView extends GetView<DetailMateriController> {
             const SizedBox(height: 24),
             const Text(
               "Daftar Topik Pembelajaran",
-              style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: Color(0xFF1E3A8A)),
+              style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: Color(0xFF0F766E)),
             ),
             const SizedBox(height: 12),
             Obx(() => controller.isLoading.value
-                ? const Center(child: Padding(padding: EdgeInsets.all(20), child: CircularProgressIndicator(color: Color(0xFF3B82F6))))
+                ? const Center(child: Padding(padding: EdgeInsets.all(20), child: CircularProgressIndicator(color: Color(0xFF0D9488))))
                 : ListView.separated(
                     shrinkWrap: true,
                     physics: const NeverScrollableScrollPhysics(),
@@ -68,7 +68,7 @@ class DetailMateriView extends GetView<DetailMateriController> {
                             style: TextStyle(
                               fontSize: 14,
                               fontWeight: FontWeight.bold,
-                              color: isCompleted ? Colors.green.shade700 : const Color(0xFF1E3A8A),
+                              color: isCompleted ? Colors.green.shade700 : const Color(0xFF0F766E),
                               decoration: isCompleted ? TextDecoration.lineThrough : null,
                             ),
                           ),
@@ -96,7 +96,7 @@ class DetailMateriView extends GetView<DetailMateriController> {
                         }
                       : null,
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF3B82F6),
+                    backgroundColor: const Color(0xFF0D9488),
                     disabledBackgroundColor: Colors.grey.shade300,
                     minimumSize: const Size(double.infinity, 50),
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
@@ -117,7 +117,7 @@ class DetailMateriView extends GetView<DetailMateriController> {
         onPressed: () {
           Get.toNamed(Routes.CHATBOT);
         },
-        backgroundColor: const Color(0xFF1E3A8A),
+        backgroundColor: const Color(0xFF0F766E),
         icon: const Icon(Icons.smart_toy_rounded, color: Colors.white),
         label: const Text("Tanya AI Tutor", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
       ),

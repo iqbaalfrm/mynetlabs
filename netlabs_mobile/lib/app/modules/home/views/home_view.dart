@@ -1,4 +1,4 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../controllers/home_controller.dart';
 
@@ -6,8 +6,8 @@ class HomeView extends GetView<HomeController> {
   const HomeView({super.key});
 
   // Warna tema Netlabs
-  static const Color _primary = Color(0xFF3B82F6);
-  static const Color _dark = Color(0xFF1E3A8A);
+  static const Color _primary = Color(0xFF0D9488);
+  static const Color _dark = Color(0xFF0F766E);
   static const Color _bg = Color(0xFFF8FAFC);
 
   @override
@@ -45,11 +45,7 @@ class HomeView extends GetView<HomeController> {
       ),
       floatingActionButton: Container(
         decoration: BoxDecoration(
-          gradient: const LinearGradient(
-            colors: [Color(0xFF7C3AED), Color(0xFF5B21B6)],
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-          ),
+          color: const Color(0xFF0F766E),
           borderRadius: BorderRadius.circular(20),
           boxShadow: [
             BoxShadow(color: const Color(0xFF7C3AED).withAlpha(80), blurRadius: 12, offset: const Offset(0, 6)),
@@ -82,11 +78,7 @@ class HomeView extends GetView<HomeController> {
                 width: 48,
                 height: 48,
                 decoration: BoxDecoration(
-                  gradient: const LinearGradient(
-                    colors: [_primary, _dark],
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                  ),
+                  color: const Color(0xFF0F766E),
                   borderRadius: BorderRadius.circular(14),
                 ),
                 child: Center(
@@ -151,11 +143,7 @@ class HomeView extends GetView<HomeController> {
       width: double.infinity,
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        gradient: const LinearGradient(
-          colors: [_dark, _primary],
-          begin: Alignment.centerLeft,
-          end: Alignment.centerRight,
-        ),
+        color: const Color(0xFF0F766E),
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(color: _primary.withAlpha(40), blurRadius: 12, offset: const Offset(0, 6)),
@@ -333,11 +321,7 @@ class HomeView extends GetView<HomeController> {
         width: 230,
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          gradient: LinearGradient(
-            colors: [_primary.withAlpha(25), Colors.white],
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-          ),
+          color: const Color(0xFF0F766E),
           borderRadius: BorderRadius.circular(16),
           border: Border.all(color: _primary.withAlpha(40)),
           boxShadow: [

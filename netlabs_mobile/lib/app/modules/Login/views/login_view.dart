@@ -26,13 +26,13 @@ class LoginView extends GetView<LoginController> {
                     child: Container(
                       padding: const EdgeInsets.all(20),
                       decoration: BoxDecoration(
-                        color: const Color(0xFF3B82F6).withOpacity(0.1),
+                        color: const Color(0xFF0D9488).withOpacity(0.1),
                         shape: BoxShape.circle,
                       ),
                       child: const Icon(
                         Icons.router_rounded,
                         size: 60,
-                        color: Color(0xFF3B82F6), // Netlabs Blue
+                        color: Color(0xFF0D9488), // Netlabs Blue
                       ),
                     ),
                   ),
@@ -115,7 +115,7 @@ class LoginView extends GetView<LoginController> {
                             ),
                             focusedBorder: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(14),
-                              borderSide: const BorderSide(color: Color(0xFF3B82F6), width: 1.5),
+                              borderSide: const BorderSide(color: Color(0xFF0D9488), width: 1.5),
                             ),
                             errorBorder: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(14),
@@ -165,7 +165,7 @@ class LoginView extends GetView<LoginController> {
                               ),
                               focusedBorder: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(14),
-                                borderSide: const BorderSide(color: Color(0xFF3B82F6), width: 1.5),
+                                borderSide: const BorderSide(color: Color(0xFF0D9488), width: 1.5),
                               ),
                               errorBorder: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(14),
@@ -197,14 +197,14 @@ class LoginView extends GetView<LoginController> {
                                 ? null
                                 : () => controller.login(),
                             style: ElevatedButton.styleFrom(
-                              backgroundColor: const Color(0xFF3B82F6),
+                              backgroundColor: const Color(0xFF0D9488),
                               foregroundColor: Colors.white,
                               padding: const EdgeInsets.symmetric(vertical: 16),
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(14),
                               ),
                               elevation: 2,
-                              shadowColor: const Color(0xFF3B82F6).withOpacity(0.3),
+                              shadowColor: const Color(0xFF0D9488).withOpacity(0.3),
                             ),
                             child: controller.isLoading.value
                                 ? const SizedBox(
@@ -235,20 +235,20 @@ class LoginView extends GetView<LoginController> {
                   Container(
                     padding: const EdgeInsets.all(14),
                     decoration: BoxDecoration(
-                      color: const Color(0xFF3B82F6).withOpacity(0.06),
+                      color: const Color(0xFF0D9488).withOpacity(0.06),
                       borderRadius: BorderRadius.circular(16),
-                      border: Border.all(color: const Color(0xFF3B82F6).withOpacity(0.15)),
+                      border: Border.all(color: const Color(0xFF0D9488).withOpacity(0.15)),
                     ),
                     child: Row(
                       children: [
-                        const Icon(Icons.info_outline_rounded, size: 20, color: Color(0xFF3B82F6)),
+                        const Icon(Icons.info_outline_rounded, size: 20, color: Color(0xFF0D9488)),
                         const SizedBox(width: 10),
                         Expanded(
                           child: Text(
                             "Lupa kata sandi? Silakan hubungi Guru / Wali Kelas Anda di sekolah untuk mereset sandi Anda.",
                             style: TextStyle(
                               fontSize: 11,
-                              color: const Color(0xFF1E3A8A).withOpacity(0.8),
+                              color: const Color(0xFF0F766E).withOpacity(0.8),
                               height: 1.4,
                               fontWeight: FontWeight.w500,
                             ),

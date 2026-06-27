@@ -13,7 +13,7 @@ class ChatbotView extends GetView<ChatbotController> {
     return Scaffold(
       backgroundColor: const Color(0xFFF8FAFC),
       appBar: AppBar(
-        title: const Text("AI Tutor Kelompok Jaringan", style: TextStyle(fontWeight: FontWeight.bold, color: Color(0xFF1E3A8A))),
+        title: const Text("AI Tutor Kelompok Jaringan", style: TextStyle(fontWeight: FontWeight.bold, color: Color(0xFF0F766E))),
         backgroundColor: Colors.white,
         elevation: 0,
         centerTitle: true,
@@ -39,7 +39,7 @@ class ChatbotView extends GetView<ChatbotController> {
                           padding: const EdgeInsets.all(14),
                           constraints: BoxConstraints(maxWidth: Get.width * 0.75),
                           decoration: BoxDecoration(
-                            color: isSiswa ? const Color(0xFF3B82F6) : Colors.white,
+                            color: isSiswa ? const Color(0xFF0D9488) : Colors.white,
                             borderRadius: BorderRadius.circular(16).copyWith(
                               bottomRight: isSiswa ? const Radius.circular(0) : const Radius.circular(16),
                               topLeft: !isSiswa ? const Radius.circular(0) : const Radius.circular(16),
@@ -56,9 +56,9 @@ class ChatbotView extends GetView<ChatbotController> {
                           Padding(
                             padding: const EdgeInsets.only(left: 4, bottom: 8),
                             child: Chip(
-                              avatar: const Icon(Icons.bookmark_outline, size: 12, color: Color(0xFF3B82F6)),
-                              label: Text(chat['sumber'], style: const TextStyle(fontSize: 10, color: Color(0xFF3B82F6))),
-                              backgroundColor: const Color(0xFF3B82F6).withAlpha(15),
+                              avatar: const Icon(Icons.bookmark_outline, size: 12, color: Color(0xFF0D9488)),
+                              label: Text(chat['sumber'], style: const TextStyle(fontSize: 10, color: Color(0xFF0D9488))),
+                              backgroundColor: const Color(0xFF0D9488).withAlpha(15),
                               side: BorderSide.none,
                               visualDensity: VisualDensity.compact,
                             ),
@@ -76,7 +76,7 @@ class ChatbotView extends GetView<ChatbotController> {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      SpinKitThreeBounce(color: Color(0xFF3B82F6), size: 18),
+                      SpinKitThreeBounce(color: Color(0xFF0D9488), size: 18),
                       SizedBox(width: 8),
                       Text("AI Tutor sedang menyusun jawaban...", style: TextStyle(fontSize: 12, color: Colors.grey)),
                     ],
@@ -96,7 +96,7 @@ class ChatbotView extends GetView<ChatbotController> {
                     itemBuilder: (context, index) {
                       var chipText = controller.suggestionChips[index];
                       return ActionChip(
-                        label: Text(chipText, style: const TextStyle(fontSize: 12, color: Color(0xFF1E3A8A))),
+                        label: Text(chipText, style: const TextStyle(fontSize: 12, color: Color(0xFF0F766E))),
                         backgroundColor: Colors.white,
                         onPressed: () => controller.sendMessage(chipText),
                       );
@@ -127,7 +127,7 @@ class ChatbotView extends GetView<ChatbotController> {
                 ),
                 const SizedBox(width: 8),
                 IconButton(
-                  icon: const Icon(Icons.send_rounded, color: Color(0xFF3B82F6)),
+                  icon: const Icon(Icons.send_rounded, color: Color(0xFF0D9488)),
                   onPressed: () => controller.sendMessage(controller.messageController.text),
                 )
               ],

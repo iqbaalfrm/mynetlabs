@@ -1,4 +1,4 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../controllers/materi_controller.dart';
 
@@ -16,14 +16,14 @@ class MateriView extends GetView<MateriController> {
         appBar: AppBar(
           title: const Text(
             "Modul Praktikum",
-            style: TextStyle(fontWeight: FontWeight.bold, color: Color(0xFF1E3A8A)),
+            style: TextStyle(fontWeight: FontWeight.bold, color: Color(0xFF0F766E)),
           ),
           backgroundColor: Colors.white,
           elevation: 0,
           bottom: const TabBar(
-            labelColor: Color(0xFF3B82F6),
+            labelColor: Color(0xFF0D9488),
             unselectedLabelColor: Colors.grey,
-            indicatorColor: Color(0xFF3B82F6),
+            indicatorColor: Color(0xFF0D9488),
             indicatorWeight: 3,
             tabs: [
               Tab(text: "Semester 1"),
@@ -33,7 +33,7 @@ class MateriView extends GetView<MateriController> {
         ),
         body: Obx(() {
           if (controller.isLoading.value) {
-            return const Center(child: CircularProgressIndicator(color: Color(0xFF3B82F6)));
+            return const Center(child: CircularProgressIndicator(color: Color(0xFF0D9488)));
           }
           return TabBarView(
             children: [
@@ -101,7 +101,7 @@ class MateriView extends GetView<MateriController> {
                   Container(
                     padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                     decoration: BoxDecoration(
-                      color: const Color(0xFF3B82F6).withAlpha(25),
+                      color: const Color(0xFF0D9488).withAlpha(25),
                       borderRadius: BorderRadius.circular(20),
                     ),
                     child: Text(
@@ -109,14 +109,14 @@ class MateriView extends GetView<MateriController> {
                       style: const TextStyle(
                         fontSize: 11,
                         fontWeight: FontWeight.bold,
-                        color: Color(0xFF3B82F6),
+                        color: Color(0xFF0D9488),
                       ),
                     ),
                   ),
                   Icon(
                     isCompleted ? Icons.check_circle_rounded : Icons.arrow_forward_ios_rounded,
                     size: 16,
-                    color: isCompleted ? Colors.green : const Color(0xFF3B82F6),
+                    color: isCompleted ? Colors.green : const Color(0xFF0D9488),
                   ),
                 ],
               ),
@@ -126,7 +126,7 @@ class MateriView extends GetView<MateriController> {
                 style: const TextStyle(
                   fontSize: 15,
                   fontWeight: FontWeight.bold,
-                  color: Color(0xFF1E3A8A),
+                  color: Color(0xFF0F766E),
                 ),
               ),
               const SizedBox(height: 12),
@@ -149,7 +149,7 @@ class MateriView extends GetView<MateriController> {
               LinearProgressIndicator(
                 value: progress,
                 backgroundColor: Colors.grey.withAlpha(30),
-                color: progress >= 1.0 ? Colors.green : const Color(0xFF3B82F6),
+                color: progress >= 1.0 ? Colors.green : const Color(0xFF0D9488),
                 minHeight: 6,
                 borderRadius: BorderRadius.circular(10),
               ),

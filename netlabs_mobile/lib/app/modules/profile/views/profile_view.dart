@@ -14,7 +14,7 @@ class ProfileView extends GetView<ProfileController> {
       backgroundColor: const Color(0xFFF8FAFC), // Slate 50 background
       body: Obx(() {
         if (controller.isLoading.value) {
-          return const Center(child: CircularProgressIndicator(color: Color(0xFF3B82F6)));
+          return const Center(child: CircularProgressIndicator(color: Color(0xFF0D9488)));
         }
         
         return SingleChildScrollView(
@@ -27,7 +27,7 @@ class ProfileView extends GetView<ProfileController> {
                 width: double.infinity,
                 padding: const EdgeInsets.only(top: 60, bottom: 80),
                 decoration: const BoxDecoration(
-                  color: Color(0xFF3B82F6), // Solid royal blue
+                  color: Color(0xFF0D9488), // Solid royal blue
                   borderRadius: BorderRadius.only(
                     bottomLeft: Radius.circular(32),
                     bottomRight: Radius.circular(32),
@@ -74,7 +74,7 @@ class ProfileView extends GetView<ProfileController> {
                             border: Border.all(color: Colors.white, width: 4),
                             boxShadow: [
                               BoxShadow(
-                                  color: const Color(0xFF3B82F6).withOpacity(0.3),
+                                  color: const Color(0xFF0D9488).withOpacity(0.3),
                                   blurRadius: 16,
                                   offset: const Offset(0, 4),
                                 ),
@@ -82,7 +82,7 @@ class ProfileView extends GetView<ProfileController> {
                           ),
                           child: const CircleAvatar(
                             radius: 40,
-                            backgroundColor: Color(0xFF3B82F6),
+                            backgroundColor: Color(0xFF0D9488),
                             child: Icon(Icons.person_rounded, size: 45, color: Colors.white),
                           ),
                         ),
@@ -142,7 +142,7 @@ class ProfileView extends GetView<ProfileController> {
                           "${controller.totalPertemuanSelesai.value}/${controller.totalPertemuan.value}",
                           "Modul Praktikum",
                           Icons.menu_book_rounded,
-                          const Color(0xFF3B82F6), // Blue
+                          const Color(0xFF0D9488), // Blue
                         )),
                         const SizedBox(width: 12),
                         Obx(() => _buildStatBox(

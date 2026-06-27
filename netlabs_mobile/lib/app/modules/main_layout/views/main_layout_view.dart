@@ -28,7 +28,7 @@ class MainLayoutView extends GetView<MainLayoutController> {
           currentIndex: controller.currentIndex.value,
           onTap: controller.changePage,
           type: BottomNavigationBarType.fixed,
-          selectedItemColor: const Color(0xFF3B82F6),
+          selectedItemColor: const Color(0xFF0D9488),
           unselectedItemColor: Colors.grey,
           showUnselectedLabels: true,
           items: const [
