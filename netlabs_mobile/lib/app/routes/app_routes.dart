@@ -1,8 +1,9 @@
-part of 'app_pages.dart';
+﻿part of 'app_pages.dart';
 // DO NOT EDIT. This is code generated via package:get_cli/get_cli.dart
 
 abstract class Routes {
   Routes._();
+  static const ONBOARDING = _Paths.ONBOARDING;
   static const LOGIN = _Paths.LOGIN;
   static const HOME = _Paths.HOME;
   static const CHAT_TUTOR = _Paths.CHAT_TUTOR;
@@ -15,6 +16,7 @@ abstract class Routes {
 
 abstract class _Paths {
   _Paths._();
+  static const ONBOARDING = '/onboarding';
   static const LOGIN = '/login';
   static const HOME = '/home';
   static const CHAT_TUTOR = '/chat-tutor';
