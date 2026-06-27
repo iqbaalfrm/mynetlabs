@@ -1,4 +1,4 @@
-﻿import 'package:get/get.dart';
+import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import '../../../data/providers/api_provider.dart';
 import '../../../routes/app_pages.dart';
@@ -37,6 +37,12 @@ class HomeController extends GetxController {
   @override
   void onInit() {
     super.onInit();
+    // Guard: kalau belum login (gak ada token), tendang ke halaman login
+    if (storage.read('token') == null) {
+      Get.offAllNamed(Routes.LOGIN);
+      return;
+    }
+
     studentName.value = storage.read('nama') ?? 'Siswa';
     studentClass.value = storage.read('kelas') ?? '-';
     updateGreeting();
