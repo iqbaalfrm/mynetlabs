@@ -487,6 +487,285 @@ def chat():
 
 
 # ═══════════════════════════════════════════════════════════════════════════════
+# ENDPOINT 3: POST /generate-quiz
+# ═══════════════════════════════════════════════════════════════════════════════
+
+# System Prompt ketat untuk Quiz Generator
+QUIZ_SYSTEM_PROMPT = """Kamu adalah Profesor Jaringan Komputer dan Ahli Evaluasi Pendidikan SMK.
+
+TUGAS:
+Buatlah {jumlah_soal} butir soal kuis pilihan ganda yang valid, berbobot, dan relevan HANYA berdasarkan konteks materi praktikum yang disediakan di bawah ini.
+
+ATURAN KETAT:
+1. JANGAN membuat soal di luar konteks materi yang diberikan.
+2. Setiap soal HARUS memiliki 4 pilihan jawaban (A, B, C, D).
+3. Hanya SATU jawaban yang benar untuk setiap soal.
+4. Sertakan pembahasan/penjelasan logis mengapa jawaban tersebut benar berdasarkan materi.
+5. Variasikan tingkat kesulitan soal: mudah, sedang, dan sulit.
+6. Gunakan bahasa Indonesia yang formal dan jelas.
+7. Pastikan pilihan jawaban pengecoh (distractor) masuk akal dan tidak asal-asalan.
+8. Soal harus menguji pemahaman konsep, BUKAN hafalan semata.
+9. Kunci jawaban harus berupa huruf kapital: A, B, C, atau D.
+
+KONTEKS MATERI PRAKTIKUM:
+---
+{konteks}
+---
+
+Buatlah tepat {jumlah_soal} soal kuis pilihan ganda berdasarkan HANYA materi di atas."""
+
+# Schema JSON untuk Structured Output Gemini
+QUIZ_RESPONSE_SCHEMA = {
+    "type": "array",
+    "items": {
+        "type": "object",
+        "properties": {
+            "pertanyaan": {
+                "type": "string",
+                "description": "Teks pertanyaan soal kuis"
+            },
+            "pilihan_a": {
+                "type": "string",
+                "description": "Teks pilihan jawaban A"
+            },
+            "pilihan_b": {
+                "type": "string",
+                "description": "Teks pilihan jawaban B"
+            },
+            "pilihan_c": {
+                "type": "string",
+                "description": "Teks pilihan jawaban C"
+            },
+            "pilihan_d": {
+                "type": "string",
+                "description": "Teks pilihan jawaban D"
+            },
+            "kunci_jawaban": {
+                "type": "string",
+                "description": "Huruf jawaban yang benar (A/B/C/D)",
+                "enum": ["A", "B", "C", "D"]
+            },
+            "pembahasan": {
+                "type": "string",
+                "description": "Penjelasan mengapa jawaban tersebut benar berdasarkan modul"
+            }
+        },
+        "required": [
+            "pertanyaan", "pilihan_a", "pilihan_b",
+            "pilihan_c", "pilihan_d", "kunci_jawaban", "pembahasan"
+        ]
+    }
+}
+
+# Model Gemini khusus untuk quiz generation (dengan structured output)
+gemini_quiz_model = genai.GenerativeModel(
+    model_name="gemini-1.5-flash",
+    generation_config=genai.GenerationConfig(
+        temperature=0.7,       # Sedikit lebih kreatif untuk variasi soal
+        top_p=0.9,
+        top_k=40,
+        max_output_tokens=4096,
+        response_mime_type="application/json",
+        response_schema=QUIZ_RESPONSE_SCHEMA,
+    ),
+)
+
+
+@app.route("/generate-quiz", methods=["POST"])
+def generate_quiz():
+    """
+    Membuat soal kuis pilihan ganda dari materi modul di pertemuan tertentu.
+    Menggunakan Gemini Structured Output agar hasil selalu JSON valid.
+
+    Request JSON:
+    {
+        "pertemuan_id": 2,
+        "jumlah_soal": 5
+    }
+    """
+    try:
+        data = request.get_json(force=True)
+
+        # ── Validasi input ──────────────────────────────────────────────
+        pertemuan_id = data.get("pertemuan_id")
+        jumlah_soal = data.get("jumlah_soal", 5)
+
+        if not pertemuan_id:
+            return jsonify({
+                "success": False,
+                "message": "Parameter 'pertemuan_id' wajib diisi."
+            }), 400
+
+        try:
+            pertemuan_id = int(pertemuan_id)
+        except (ValueError, TypeError):
+            return jsonify({
+                "success": False,
+                "message": "Parameter 'pertemuan_id' harus berupa angka."
+            }), 400
+
+        try:
+            jumlah_soal = int(jumlah_soal)
+            if jumlah_soal < 1 or jumlah_soal > 20:
+                raise ValueError
+        except (ValueError, TypeError):
+            return jsonify({
+                "success": False,
+                "message": "Parameter 'jumlah_soal' harus berupa angka antara 1-20."
+            }), 400
+
+        logger.info(f"{'='*60}")
+        logger.info(f"📝 GENERATE-QUIZ dimulai | pertemuan_id={pertemuan_id}, "
+                     f"jumlah_soal={jumlah_soal}")
+        logger.info(f"{'='*60}")
+
+        # ── Langkah 1: Ambil seluruh dokumen dari ChromaDB ──────────────
+        hasil = collection.get(
+            where={"pertemuan_id": {"$eq": pertemuan_id}},
+            include=["documents", "metadatas"],
+        )
+
+        dokumen_list = hasil.get("documents", [])
+        metadatas_list = hasil.get("metadatas", [])
+
+        if not dokumen_list:
+            logger.warning(f"⚠️ Tidak ada dokumen untuk pertemuan_id={pertemuan_id}")
+            return jsonify({
+                "success": False,
+                "message": f"Belum ada modul yang di-index untuk pertemuan_id={pertemuan_id}. "
+                           f"Silakan upload dan index modul PDF terlebih dahulu."
+            }), 404
+
+        logger.info(f"📚 Ditemukan {len(dokumen_list)} chunk dokumen "
+                     f"untuk pertemuan_id={pertemuan_id}")
+
+        # ── Langkah 2: Gabungkan semua chunks menjadi konteks ───────────
+        #    Urutkan berdasarkan chunk_index agar konteks berurutan
+        paired = list(zip(dokumen_list, metadatas_list))
+        paired.sort(key=lambda x: x[1].get("chunk_index", 0))
+        konteks_gabungan = "\n\n".join([doc for doc, _ in paired])
+
+        # Batasi konteks agar tidak terlalu panjang (max ~15000 karakter)
+        MAX_KONTEKS = 15000
+        if len(konteks_gabungan) > MAX_KONTEKS:
+            konteks_gabungan = konteks_gabungan[:MAX_KONTEKS]
+            logger.info(f"✂️ Konteks dipotong ke {MAX_KONTEKS} karakter")
+
+        logger.info(f"📄 Total konteks: {len(konteks_gabungan)} karakter")
+
+        # ── Langkah 3: Kirim ke Gemini dengan Structured Output ─────────
+        prompt = QUIZ_SYSTEM_PROMPT.format(
+            jumlah_soal=jumlah_soal,
+            konteks=konteks_gabungan,
+        )
+
+        logger.info(f"🤖 Mengirim ke Gemini untuk generate {jumlah_soal} soal quiz...")
+
+        response = gemini_quiz_model.generate_content(
+            contents=[
+                {"role": "user", "parts": [{"text": prompt}]},
+            ],
+        )
+
+        # ── Langkah 4: Parse dan validasi output JSON ───────────────────
+        raw_text = response.text.strip() if response.text else ""
+
+        if not raw_text:
+            logger.warning("⚠️ Gemini mengembalikan respons kosong.")
+            return jsonify({
+                "success": False,
+                "message": "Gemini tidak menghasilkan soal. Silakan coba lagi."
+            }), 500
+
+        logger.info(f"📥 Raw response diterima: {len(raw_text)} karakter")
+
+        # Parse JSON — Structured Output seharusnya sudah valid JSON
+        import json as _json
+
+        try:
+            soal_list = _json.loads(raw_text)
+        except _json.JSONDecodeError:
+            # Fallback: coba ekstrak JSON dari markdown code block
+            logger.warning("⚠️ Response bukan JSON murni, mencoba ekstrak...")
+            json_match = re.search(r'\[.*\]', raw_text, re.DOTALL)
+            if json_match:
+                soal_list = _json.loads(json_match.group())
+            else:
+                logger.error(f"❌ Gagal parse JSON dari Gemini: {raw_text[:500]}")
+                return jsonify({
+                    "success": False,
+                    "message": "Gagal memproses output dari AI. Silakan coba lagi."
+                }), 500
+
+        # Validasi struktur setiap soal
+        REQUIRED_KEYS = {"pertanyaan", "pilihan_a", "pilihan_b",
+                         "pilihan_c", "pilihan_d", "kunci_jawaban", "pembahasan"}
+        VALID_JAWABAN = {"A", "B", "C", "D"}
+
+        soal_valid = []
+        for i, soal in enumerate(soal_list):
+            if not isinstance(soal, dict):
+                logger.warning(f"⚠️ Soal #{i+1} bukan dict, dilewati")
+                continue
+
+            # Cek semua key wajib ada
+            missing = REQUIRED_KEYS - set(soal.keys())
+            if missing:
+                logger.warning(f"⚠️ Soal #{i+1} kekurangan key: {missing}, dilewati")
+                continue
+
+            # Normalisasi kunci jawaban ke huruf kapital
+            soal["kunci_jawaban"] = soal["kunci_jawaban"].strip().upper()
+            if soal["kunci_jawaban"] not in VALID_JAWABAN:
+                logger.warning(f"⚠️ Soal #{i+1} kunci jawaban invalid: "
+                               f"'{soal['kunci_jawaban']}', dilewati")
+                continue
+
+            # Pastikan semua value adalah string non-kosong
+            all_filled = all(
+                isinstance(soal[k], str) and soal[k].strip()
+                for k in REQUIRED_KEYS
+            )
+            if not all_filled:
+                logger.warning(f"⚠️ Soal #{i+1} memiliki field kosong, dilewati")
+                continue
+
+            # Bersihkan whitespace berlebih
+            for key in REQUIRED_KEYS:
+                soal[key] = soal[key].strip()
+
+            soal_valid.append(soal)
+
+        if not soal_valid:
+            logger.error("❌ Tidak ada soal valid yang dihasilkan.")
+            return jsonify({
+                "success": False,
+                "message": "AI tidak menghasilkan soal yang valid. Silakan coba lagi."
+            }), 500
+
+        logger.info(f"✅ GENERATE-QUIZ selesai | {len(soal_valid)} soal valid dihasilkan "
+                     f"dari {len(soal_list)} total output")
+
+        return jsonify({
+            "success": True,
+            "message": f"Berhasil menghasilkan {len(soal_valid)} soal kuis.",
+            "data": {
+                "pertemuan_id": pertemuan_id,
+                "jumlah_soal_diminta": jumlah_soal,
+                "jumlah_soal_dihasilkan": len(soal_valid),
+                "soal": soal_valid,
+            }
+        }), 200
+
+    except Exception as e:
+        logger.exception(f"❌ Error saat generate quiz: {e}")
+        return jsonify({
+            "success": False,
+            "message": f"Terjadi kesalahan internal saat membuat soal: {str(e)}"
+        }), 500
+
+
+# ═══════════════════════════════════════════════════════════════════════════════
 # ENDPOINT TAMBAHAN: Health Check & Status
 # ═══════════════════════════════════════════════════════════════════════════════
 
