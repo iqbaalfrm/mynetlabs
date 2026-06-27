@@ -1,282 +1,632 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../controllers/home_controller.dart';
 
 class HomeView extends GetView<HomeController> {
   const HomeView({super.key});
 
+  // Warna tema Netlabs
+  static const Color _primary = Color(0xFF3B82F6);
+  static const Color _dark = Color(0xFF1E3A8A);
+  static const Color _bg = Color(0xFFF8FAFC);
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF8FAFC), // Background abu-abu terang netral
+      backgroundColor: _bg,
       body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(20.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+        child: Obx(() {
+          if (controller.isLoading.value) {
+            return const Center(child: CircularProgressIndicator(color: _primary));
+          }
+          return RefreshIndicator(
+            onRefresh: () async => controller.loadDashboard(),
+            color: _primary,
+            child: SingleChildScrollView(
+              physics: const AlwaysScrollableScrollPhysics(),
+              padding: const EdgeInsets.all(20.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _buildHeader(),
+                  const SizedBox(height: 24),
+                  _buildProgressRing(),
+                  const SizedBox(height: 24),
+                  _buildStatGrid(),
+                  const SizedBox(height: 28),
+                  _buildLanjutBelajar(),
+                  const SizedBox(height: 28),
+                  _buildPertemuanAktif(),
+                  const SizedBox(height: 28),
+                  _buildKuisPending(),
+                  const SizedBox(height: 28),
+                  _buildAiTutorShortcut(),
+                  const SizedBox(height: 20),
+                ],
+              ),
+            ),
+          );
+        }),
+      ),
+    );
+  }
+
+  // ===== SECTION 1: HEADER DENGAN GREETING DINAMIS =====
+  Widget _buildHeader() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Expanded(
+          child: Row(
             children: [
-              // ==========================================
-              // SECTION 1: HEADER & IDENTITAS SISWA
-              // ==========================================
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Text(
-                        "Selamat Belajar,",
-                        style: TextStyle(fontSize: 14, color: Colors.grey),
-                      ),
-                      Obx(() => Text(
-                            controller.studentName.value,
-                            style: const TextStyle(
-                              fontSize: 20,
-                              fontWeight: FontWeight.bold,
-                              color: Color(0xFF1E3A8A),
-                            ),
-                          )),
-                      Obx(() => Text(
-                            controller.studentClass.value,
-                            style: const TextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w500,
-                              color: Color(0xFF3B82F6),
-                            ),
-                          )),
-                    ],
-                  ),
-                  // Tombol Logout Sementara di Pojok Kanan Atas
-                  IconButton(
-                    icon: const Icon(Icons.logout_rounded, color: Colors.redAccent),
-                    onPressed: () => _showLogoutConfirmation(),
-                  )
-                ],
-              ),
-              const SizedBox(height: 24),
-
-              // ==========================================
-              // SECTION 2: PROGRESS CARDS (STATISTIK)
-              // ==========================================
-              Row(
-                children: [
-                  _buildStatCard("Pertemuan", controller.totalPertemuan.value, Icons.book_rounded, Colors.blue),
-                  const SizedBox(width: 12),
-                  _buildStatCard("Rata-rata Nilai", controller.rataRataNilai.value, Icons.assignment_turned_in_rounded, Colors.green),
-                ],
-              ),
-              const SizedBox(height: 28),
-
-              // ==========================================
-              // SECTION 3: BANNER PERTEMUAN AKTIF
-              // ==========================================
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  const Text(
-                    "Pertemuan Aktif",
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Color(0xFF1E3A8A)),
-                  ),
-                  TextButton(
-                    onPressed: () {}, // Nanti mengarah ke Tab Materi penuh
-                    child: const Text("Lihat semua"),
-                  )
-                ],
-              ),
-              const SizedBox(height: 12),
-              
-              // Horizontal Scroll Cards
-              SizedBox(
-                height: 140,
-                child: Obx(() {
-                  if (controller.pertemuanAktif.isEmpty) {
-                    return Container(
-                      width: double.infinity,
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(16),
-                        border: Border.all(color: Colors.grey.withAlpha(30)),
-                      ),
-                      child: const Center(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(Icons.event_busy_rounded, color: Colors.grey, size: 36),
-                            SizedBox(height: 8),
-                            Text(
-                              "Tidak ada pertemuan aktif saat ini",
-                              style: TextStyle(fontSize: 12, color: Colors.grey, fontWeight: FontWeight.w500),
-                            ),
-                          ],
-                        ),
-                      ),
-                    );
-                  }
-                  return ListView.separated(
-                    scrollDirection: Axis.horizontal,
-                    itemCount: controller.pertemuanAktif.length,
-                    separatorBuilder: (context, index) => const SizedBox(width: 14),
-                    itemBuilder: (context, index) {
-                      var item = controller.pertemuanAktif[index];
-                      return _buildActivePertemuanCard(
-                        (item['nomor'] as num).toInt(),
-                        item['judul'] as String,
-                        item['topik'] as String,
-                        (item['progress'] as num).toDouble(),
-                      );
-                    },
-                  );
-                }),
-              ),
-              const SizedBox(height: 28),
-
-              // ==========================================
-              // SECTION 4: QUICK ACCESS AI TUTOR (RINGKASAN CHAT)
-              // ==========================================
-              const Text(
-                "Aktivitas AI Tutor Terakhir",
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Color(0xFF1E3A8A)),
-              ),
-              const SizedBox(height: 12),
+              // Avatar bulat dengan inisial
               Container(
-                padding: const EdgeInsets.all(16),
+                width: 48,
+                height: 48,
                 decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(16),
-                  border: Border.all(color: Colors.grey.withAlpha(30)),
-                  boxShadow: [
-                    BoxShadow(color: Colors.grey.withAlpha(15), blurRadius: 10, offset: const Offset(0, 4)),
-                  ],
+                  gradient: const LinearGradient(
+                    colors: [_primary, _dark],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  ),
+                  borderRadius: BorderRadius.circular(14),
                 ),
+                child: Center(
+                  child: Obx(() => Text(
+                        _getInitials(controller.studentName.value),
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 18,
+                        ),
+                      )),
+                ),
+              ),
+              const SizedBox(width: 14),
+              Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Row(
-                      children: [
-                        const Icon(Icons.psychology_rounded, color: Color(0xFF3B82F6)),
-                        const SizedBox(width: 8),
-                        const Text("AI Chat Tutor", style: TextStyle(fontWeight: FontWeight.bold)),
-                        const Spacer(),
-                        Obx(() => Text(
-                              controller.waktuTanyaAI.value,
-                              style: const TextStyle(fontSize: 11, color: Colors.grey),
-                            )),
-                      ],
-                    ),
-                    const SizedBox(height: 10),
                     Obx(() => Text(
-                          '"${controller.terakhirTanyaAI.value}"',
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
-                          style: const TextStyle(fontStyle: FontStyle.italic, color: Colors.black87),
+                          controller.greeting.value,
+                          style: const TextStyle(fontSize: 13, color: Colors.grey),
                         )),
-                    const SizedBox(height: 14),
-                    ElevatedButton.icon(
-                      onPressed: () {
-                        // Nanti mengarah ke halaman Chat Tutor RAG
-                      },
-                      icon: const Icon(Icons.chat_bubble_outline_rounded, size: 18, color: Colors.white),
-                      label: const Text("Tanya AI Tutor Sekarang", style: TextStyle(color: Colors.white)),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF3B82F6),
-                        minimumSize: const Size(double.infinity, 40),
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-                      ),
-                    )
+                    Obx(() => Text(
+                          controller.studentName.value,
+                          style: const TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            color: _dark,
+                          ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        )),
+                    Obx(() => Container(
+                          margin: const EdgeInsets.only(top: 2),
+                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                          decoration: BoxDecoration(
+                            color: _primary.withAlpha(20),
+                            borderRadius: BorderRadius.circular(6),
+                          ),
+                          child: Text(
+                            controller.studentClass.value,
+                            style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w600, color: _primary),
+                          ),
+                        )),
                   ],
                 ),
               ),
             ],
           ),
         ),
-      ),
+        IconButton(
+          icon: const Icon(Icons.logout_rounded, color: Colors.redAccent),
+          onPressed: () => _showLogoutConfirmation(),
+        ),
+      ],
     );
   }
 
-  // Helper Widget: Membuat 3 Kartu Statistik Atas
-  Widget _buildStatCard(String title, String value, IconData icon, Color color) {
-    return Expanded(
-      child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 10),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(16),
-          boxShadow: [
-            BoxShadow(color: Colors.grey.withAlpha(10), blurRadius: 10, offset: const Offset(0, 4)),
-          ],
-        ),
-        child: Column(
-          children: [
-            CircleAvatar(
-              radius: 18,
-              backgroundColor: color.withAlpha(25),
-              child: Icon(icon, color: color, size: 18),
-            ),
-            const SizedBox(height: 10),
-            Text(value, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.black87)),
-            const SizedBox(height: 2),
-            Text(title, textAlign: TextAlign.center, style: const TextStyle(fontSize: 11, color: Colors.grey)),
-          ],
-        ),
-      ),
-    );
-  }
-
-  // Helper Widget: Membuat Horizontal Scroll Card Pertemuan Aktif
-  Widget _buildActivePertemuanCard(int nomor, String judul, String topik, double progress) {
+  // ===== SECTION 2: PROGRESS RING SEMESTER =====
+  Widget _buildProgressRing() {
     return Container(
-      width: 240,
-      padding: const EdgeInsets.all(16),
+      width: double.infinity,
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        gradient: const LinearGradient(
+          colors: [_dark, _primary],
+          begin: Alignment.centerLeft,
+          end: Alignment.centerRight,
+        ),
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: [
+          BoxShadow(color: _primary.withAlpha(40), blurRadius: 12, offset: const Offset(0, 6)),
+        ],
+      ),
+      child: Row(
+        children: [
+          // Progress ring melingkar
+          SizedBox(
+            width: 80,
+            height: 80,
+            child: Stack(
+              children: [
+                Obx(() => CircularProgressIndicator(
+                      value: controller.progressSemester.value,
+                      backgroundColor: Colors.white.withAlpha(40),
+                      color: Colors.white,
+                      strokeWidth: 7,
+                    )),
+                Center(
+                  child: Obx(() => Text(
+                        '${(controller.progressSemester.value * 100).toInt()}%',
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 18,
+                        ),
+                      )),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(width: 20),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  'Progress Semester',
+                  style: TextStyle(color: Colors.white70, fontSize: 13),
+                ),
+                const SizedBox(height: 4),
+                Obx(() => Text(
+                      '${controller.totalTopikSelesai.value} dari ${controller.totalTopik.value} topik selesai',
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    )),
+                const SizedBox(height: 6),
+                Obx(() => Text(
+                      '${controller.totalPertemuanSelesai.value}/${controller.totalPertemuan.value} pertemuan tuntas',
+                      style: const TextStyle(color: Colors.white70, fontSize: 12),
+                    )),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // ===== SECTION 3: GRID 4 KARTU STATISTIK =====
+  Widget _buildStatGrid() {
+    return GridView.count(
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      crossAxisCount: 2,
+      mainAxisSpacing: 12,
+      crossAxisSpacing: 12,
+      childAspectRatio: 1.6,
+      children: [
+        Obx(() => _buildStatCard(
+              'Pertemuan',
+              '${controller.totalPertemuanSelesai.value}/${controller.totalPertemuan.value}',
+              Icons.book_rounded,
+              Colors.blue,
+            )),
+        Obx(() => _buildStatCard(
+              'Rata-rata Nilai',
+              controller.rataRataNilai.value.toStringAsFixed(1),
+              Icons.assignment_turned_in_rounded,
+              Colors.green,
+            )),
+        Obx(() => _buildStatCard(
+              'Topik Selesai',
+              '${controller.totalTopikSelesai.value}/${controller.totalTopik.value}',
+              Icons.check_circle_rounded,
+              Colors.orange,
+            )),
+        Obx(() => _buildStatCard(
+              'Chat AI',
+              '${controller.totalChatAI.value}',
+              Icons.smart_toy_rounded,
+              Colors.purple,
+            )),
+      ],
+    );
+  }
+
+  Widget _buildStatCard(String label, String value, IconData icon, Color color) {
+    return Container(
+      padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Colors.grey.withAlpha(30)),
+        border: Border.all(color: Colors.grey.withAlpha(25)),
         boxShadow: [
-          BoxShadow(color: Colors.grey.withAlpha(15), blurRadius: 8, offset: const Offset(0, 4)),
+          BoxShadow(color: Colors.grey.withAlpha(10), blurRadius: 6, offset: const Offset(0, 3)),
         ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text("Pertemuan $nomor â€” $topik", style: const TextStyle(fontSize: 11, color: Color(0xFF3B82F6), fontWeight: FontWeight.bold)),
-              const SizedBox(height: 4),
-              Text(
-                judul,
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-                style: const TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: Colors.black87),
+              Container(
+                padding: const EdgeInsets.all(6),
+                decoration: BoxDecoration(
+                  color: color.withAlpha(20),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Icon(icon, size: 18, color: color),
               ),
             ],
           ),
           Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  const Text("Progress Belajar", style: TextStyle(fontSize: 10, color: Colors.grey)),
-                  Text("${(progress * 100).toInt()}%", style: const TextStyle(fontSize: 10, fontWeight: FontWeight.bold)),
-                ],
+              Text(
+                value,
+                style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: _dark),
               ),
-              const SizedBox(height: 4),
-              LinearProgressIndicator(
-                value: progress,
-                backgroundColor: Colors.grey.withAlpha(30),
-                color: const Color(0xFF3B82F6),
-                minHeight: 5,
-                borderRadius: BorderRadius.circular(10),
-              )
+              Text(label, style: TextStyle(fontSize: 11, color: Colors.grey.shade600)),
             ],
-          )
+          ),
         ],
       ),
     );
   }
 
-  // Bottom Sheet Konfirmasi Logout
+  // ===== SECTION 4: SHORTCUT LANJUT BELAJAR =====
+  Widget _buildLanjutBelajar() {
+    return Obx(() {
+      final p = controller.lanjutBelajar.value;
+      if (p == null) return const SizedBox.shrink();
+      double progress = (p['progress'] as num?)?.toDouble() ?? 0.0;
+      return GestureDetector(
+        onTap: () => controller.bukaPertemuan(p),
+        child: Container(
+          width: double.infinity,
+          padding: const EdgeInsets.all(18),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(color: _primary.withAlpha(60), width: 1.5),
+            boxShadow: [
+              BoxShadow(color: _primary.withAlpha(20), blurRadius: 10, offset: const Offset(0, 4)),
+            ],
+          ),
+          child: Row(
+            children: [
+              Container(
+                width: 50,
+                height: 50,
+                decoration: BoxDecoration(
+                  color: _primary.withAlpha(15),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: const Icon(Icons.play_circle_fill_rounded, color: _primary, size: 30),
+              ),
+              const SizedBox(width: 14),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text('Lanjut Belajar', style: TextStyle(fontSize: 12, color: _primary, fontWeight: FontWeight.bold)),
+                    const SizedBox(height: 2),
+                    Text(
+                      'Pertemuan ${p['nomor']} - ${p['judul']}',
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: _dark),
+                    ),
+                    const SizedBox(height: 6),
+                    LinearProgressIndicator(
+                      value: progress,
+                      backgroundColor: Colors.grey.withAlpha(30),
+                      color: _primary,
+                      minHeight: 5,
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(width: 8),
+              const Icon(Icons.arrow_forward_ios_rounded, size: 16, color: _primary),
+            ],
+          ),
+        ),
+      );
+    });
+  }
+
+  // ===== SECTION 5: PERTEMUAN AKTIF (BERWARNA TEMA) =====
+  Widget _buildPertemuanAktif() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            const Text(
+              'Pertemuan Aktif',
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: _dark),
+            ),
+            TextButton(
+              onPressed: () => controller.bukaMateri(),
+              child: const Text('Lihat Semua', style: TextStyle(fontSize: 13, color: _primary, fontWeight: FontWeight.w600)),
+            ),
+          ],
+        ),
+        const SizedBox(height: 12),
+        Obx(() {
+          if (controller.pertemuanAktif.isEmpty) {
+            return _buildEmptyState('Belum ada pertemuan yang sedang berjalan', Icons.book_outlined);
+          }
+          return SizedBox(
+            height: 150,
+            child: ListView.separated(
+              scrollDirection: Axis.horizontal,
+              itemCount: controller.pertemuanAktif.length,
+              separatorBuilder: (_, __) => const SizedBox(width: 14),
+              itemBuilder: (context, index) {
+                final p = controller.pertemuanAktif[index];
+                return _buildPertemuanCard(p);
+              },
+            ),
+          );
+        }),
+      ],
+    );
+  }
+
+  Widget _buildPertemuanCard(Map<String, dynamic> p) {
+    double progress = (p['progress'] as num?)?.toDouble() ?? 0.0;
+    int nomor = (p['nomor'] as num?)?.toInt() ?? 0;
+    String judul = p['judul'] ?? '';
+    String topikInfo = p['topik'] ?? '-';
+
+    return GestureDetector(
+      onTap: () => controller.bukaPertemuan(p),
+      child: Container(
+        width: 230,
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: [_primary.withAlpha(25), Colors.white],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: _primary.withAlpha(40)),
+          boxShadow: [
+            BoxShadow(color: Colors.grey.withAlpha(15), blurRadius: 8, offset: const Offset(0, 4)),
+          ],
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                      decoration: BoxDecoration(
+                        color: _primary,
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Text(
+                        'Pertemuan $nomor',
+                        style: const TextStyle(fontSize: 10, color: Colors.white, fontWeight: FontWeight.bold),
+                      ),
+                    ),
+                    const Spacer(),
+                    Icon(Icons.layers_rounded, size: 12, color: Colors.grey.shade500),
+                    const SizedBox(width: 3),
+                    Text(topikInfo, style: TextStyle(fontSize: 10, color: Colors.grey.shade600)),
+                  ],
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  judul,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                  style: const TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: _dark),
+                ),
+              ],
+            ),
+            Column(
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text('Progress', style: TextStyle(fontSize: 10, color: Colors.grey.shade600)),
+                    Text('${(progress * 100).toInt()}%', style: const TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: _primary)),
+                  ],
+                ),
+                const SizedBox(height: 5),
+                LinearProgressIndicator(
+                  value: progress,
+                  backgroundColor: Colors.grey.withAlpha(30),
+                  color: _primary,
+                  minHeight: 5,
+                  borderRadius: BorderRadius.circular(10),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  // ===== SECTION 6: KUIS BELUM DIKERJAKAN =====
+  Widget _buildKuisPending() {
+    return Obx(() {
+      if (controller.kuisBelumDikerjakan.isEmpty) return const SizedBox.shrink();
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              const Icon(Icons.assignment_late_rounded, size: 18, color: Colors.orange),
+              const SizedBox(width: 6),
+              const Text(
+                'Kuis Siap Dikerjakan',
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: _dark),
+              ),
+              const Spacer(),
+              Text(
+                '${controller.kuisBelumDikerjakan.length}',
+                style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.white, backgroundColor: Colors.orange),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          ...controller.kuisBelumDikerjakan.map((p) => _buildKuisCard(p)),
+        ],
+      );
+    });
+  }
+
+  Widget _buildKuisCard(Map<String, dynamic> p) {
+    int nomor = (p['nomor'] as num?)?.toInt() ?? 0;
+    String judul = p['judul'] ?? '';
+    int pertemuanId = (p['id'] as num?)?.toInt() ?? 0;
+
+    return Container(
+      margin: const EdgeInsets.only(bottom: 10),
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: Colors.orange.withAlpha(8),
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: Colors.orange.withAlpha(50)),
+      ),
+      child: Row(
+        children: [
+          Container(
+            width: 40,
+            height: 40,
+            decoration: BoxDecoration(
+              color: Colors.orange.withAlpha(20),
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: const Icon(Icons.quiz_rounded, color: Colors.orange, size: 22),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text('Pertemuan $nomor', style: const TextStyle(fontSize: 10, color: Colors.orange, fontWeight: FontWeight.bold)),
+                Text(
+                  judul,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: _dark),
+                ),
+              ],
+            ),
+          ),
+          ElevatedButton(
+            onPressed: () => controller.bukaQuiz(pertemuanId),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.orange,
+              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+            ),
+            child: const Text('Kerjakan', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.white)),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // ===== SECTION 7: SHORTCUT AI TUTOR =====
+  Widget _buildAiTutorShortcut() {
+    return GestureDetector(
+      onTap: () => controller.bukaChatbot(),
+      child: Container(
+        width: double.infinity,
+        padding: const EdgeInsets.all(18),
+        decoration: BoxDecoration(
+          gradient: const LinearGradient(
+            colors: [Color(0xFF7C3AED), Color(0xFF5B21B6)],
+            begin: Alignment.centerLeft,
+            end: Alignment.centerRight,
+          ),
+          borderRadius: BorderRadius.circular(16),
+        ),
+        child: Row(
+          children: [
+            Container(
+              width: 46,
+              height: 46,
+              decoration: BoxDecoration(
+                color: Colors.white.withAlpha(30),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: const Icon(Icons.smart_toy_rounded, color: Colors.white, size: 26),
+            ),
+            const SizedBox(width: 14),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text('Netlabs AI Tutor', style: TextStyle(color: Colors.white, fontSize: 15, fontWeight: FontWeight.bold)),
+                  const SizedBox(height: 2),
+                  Text(
+                    'Punya pertanyaan? Tanya AI sekarang',
+                    style: TextStyle(color: Colors.white.withAlpha(200), fontSize: 12),
+                  ),
+                ],
+              ),
+            ),
+            const Icon(Icons.arrow_forward_ios_rounded, size: 16, color: Colors.white),
+          ],
+        ),
+      ),
+    );
+  }
+
+  // ===== HELPER WIDGETS =====
+  Widget _buildEmptyState(String text, IconData icon) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(24),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: Colors.grey.withAlpha(30)),
+      ),
+      child: Column(
+        children: [
+          Icon(icon, size: 36, color: Colors.grey.shade400),
+          const SizedBox(height: 8),
+          Text(text, style: TextStyle(fontSize: 13, color: Colors.grey.shade500), textAlign: TextAlign.center),
+        ],
+      ),
+    );
+  }
+
+  String _getInitials(String name) {
+    if (name.isEmpty) return '?';
+    final parts = name.trim().split(' ');
+    if (parts.length >= 2) {
+      return '${parts[0][0]}${parts[1][0]}'.toUpperCase();
+    }
+    return name[0].toUpperCase();
+  }
+
+  // ===== LOGOUT CONFIRMATION =====
   void _showLogoutConfirmation() {
     Get.bottomSheet(
       Container(
@@ -288,16 +638,16 @@ class HomeView extends GetView<HomeController> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Text("Keluar Akun", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.red)),
+            const Text('Keluar Akun', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.red)),
             const SizedBox(height: 10),
-            const Text("Apakah kamu yakin ingin keluar dari aplikasi Netlabs?", textAlign: TextAlign.center),
+            const Text('Apakah kamu yakin ingin keluar dari aplikasi Netlabs?', textAlign: TextAlign.center),
             const SizedBox(height: 20),
             Row(
               children: [
                 Expanded(
                   child: OutlinedButton(
                     onPressed: () => Get.back(),
-                    child: const Text("Batal"),
+                    child: const Text('Batal'),
                   ),
                 ),
                 const SizedBox(width: 12),
@@ -308,7 +658,7 @@ class HomeView extends GetView<HomeController> {
                       controller.logout();
                     },
                     style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
-                    child: const Text("Ya, Keluar", style: TextStyle(color: Colors.white)),
+                    child: const Text('Ya, Keluar', style: TextStyle(color: Colors.white)),
                   ),
                 ),
               ],
