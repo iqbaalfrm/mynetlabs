@@ -17,6 +17,8 @@ Cara pakai:  python deploy.py
 """
 
 import subprocess
+import sys
+
 import time
 import paramiko
 
@@ -60,14 +62,24 @@ def run_remote(ssh, cmd, label=""):
         print(f"\n>>> {label}")
     print(f"[VPS] $ {cmd}")
     stdin, stdout, stderr = ssh.exec_command(cmd)
-    out = stdout.read().decode("utf-8").strip()
-    err = stderr.read().decode("utf-8").strip()
+    out = stdout.read().decode("utf-8", errors="replace").strip()
+    err = stderr.read().decode("utf-8", errors="replace").strip()
     if out:
-        print(out)
+        safe_print(out)
     if err:
         # Beberapa perintah (nginx, git) menulis progress ke stderr
-        print(f"[VPS] (stderr) {err}")
+        safe_print(f"[VPS] (stderr) {err}")
     return out, err
+
+
+def safe_print(text):
+    """Print yang aman terhadap karakter Unicode di Windows console."""
+    try:
+        print(text)
+    except UnicodeEncodeError:
+        # Hapus karakter yang tidak bisa di-encode console Windows
+        enc = getattr(sys.stdout, "encoding", "utf-8") or "utf-8"
+        print(text.encode(enc, errors="replace").decode(enc, errors="replace"))
 
 
 # ============================================================
