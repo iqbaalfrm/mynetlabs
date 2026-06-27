@@ -2,11 +2,14 @@
 
 namespace Database\Seeders;
 
+use App\Models\ChatHistory;
 use App\Models\HasilKuis;
 use App\Models\ModulPdf;
 use App\Models\Pertemuan;
+use App\Models\ProgressSiswa;
 use App\Models\SoalKuis;
 use App\Models\TopikMateri;
+use App\Models\User;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 
@@ -43,6 +46,9 @@ class NetlabsDataSeeder extends Seeder
         $this->seedPertemuan10();
         $this->seedPertemuan11();
         $this->seedPertemuan12();
+
+        // Seed hasil kuis + progress + chat history untuk 3 siswa demo
+        $this->seedHasilKuisProgress();
     }
 
     private function buatPertemuan($nomor, $judul, $deskripsi, $semester, $warna, array $topiks, array $soals, array $moduls = [])
@@ -642,5 +648,101 @@ class NetlabsDataSeeder extends Seeder
             ],
             ['Modul-12-ACL.pdf']
         );
+    }
+
+    /**
+     * Seed hasil kuis + progress belajar + chat history untuk 3 siswa demo
+     * (siswa nis: 23001 Iqbal, 23002 Rani, 23003 Sandi — XI TKJ 1)
+     */
+    private function seedHasilKuisProgress(): void
+    {
+        $siswaIds = [23001, 23002, 23003];
+        $siswaMap = [];
+        foreach ($siswaIds as $nis) {
+            $u = User::where('username', (string) $nis)->first();
+            if ($u) {
+                $siswaMap[$nis] = $u->id;
+            }
+        }
+
+        if (empty($siswaMap)) {
+            return;
+        }
+
+        // ── Hasil Kuis: 3 siswa × 6 pertemuan pertama (semester 1) ──
+        $pertemuanIds = Pertemuan::where('semester', '1')
+            ->orderBy('nomor_urut')
+            ->take(6)
+            ->pluck('id')
+            ->toArray();
+
+        $rekomendasiAI = [
+            'A' => 'Sangat baik! Kamu sudah menguasai materi ini. Lanjutkan ke bab berikutnya.',
+            'B' => 'Kamu cukup memahami materi. Perdalam lagi bagian topologi jaringan.',
+            'C' => 'Nilai kamu masih bisa ditingkatkan. Coba pelajari ulang konsep dasar dan latihan soal.',
+            'D' => 'Perlu belajar lebih giat. Baca kembali modul dan tonton video praktikum.',
+        ];
+
+        foreach ($siswaMap as $nis => $siswaId) {
+            foreach ($pertemuanIds as $pId) {
+                $benar = random_int(1, 2); // 1-2 benar dari 2 soal (nilai 50 atau 100)
+                $total = 2;
+                $nilai = round(($benar / $total) * 100, 2);
+                $grade = $nilai >= 90 ? 'A' : ($nilai >= 75 ? 'B' : ($nilai >= 60 ? 'C' : 'D'));
+
+                HasilKuis::updateOrCreate(
+                    ['siswa_id' => $siswaId, 'pertemuan_id' => $pId],
+                    [
+                        'nilai' => $nilai,
+                        'jumlah_benar' => $benar,
+                        'total_soal' => $total,
+                        'rekomendasi_ai' => $rekomendasiAI[$grade],
+                    ]
+                );
+            }
+        }
+
+        // ── Progress Siswa: semua topik selesai untuk 3 siswa di semester 1 ──
+        foreach ($siswaMap as $siswaId) {
+            $topikIds = TopikMateri::whereIn('pertemuan_id', $pertemuanIds)->pluck('id');
+            foreach ($topikIds as $topikId) {
+                ProgressSiswa::updateOrCreate(
+                    ['siswa_id' => $siswaId, 'topik_id' => $topikId],
+                    ['is_completed' => true]
+                );
+            }
+        }
+
+        // ── Chat History: 3-5 percakapan demo per siswa ──
+        $chatDemo = [
+            ['pesan' => 'Apa itu IP Address?', 'jawaban' => 'IP Address adalah alamat unik yang digunakan untuk mengidentifikasi perangkat dalam jaringan komputer. Ada dua versi: IPv4 (32-bit) dan IPv6 (128-bit). Contoh IPv4: 192.168.1.10.', 'ref' => 'Modul-03-IP-Addressing.pdf'],
+            ['pesan' => 'Bagaimana cara menghitung subnet mask /26?', 'jawaban' => 'Subnet mask /26 berarti 26 bit untuk network, 6 bit untuk host. Subnet mask-nya: 255.255.255.192. Jumlah host per subnet: 2^6 - 2 = 62 host.', 'ref' => 'Modul-04-Subnetting.pdf'],
+            ['pesan' => 'Apa beda TCP dan UDP?', 'jawaban' => 'TCP (Transmission Control Protocol) bersifat connection-oriented, menjamin data sampai dengan urut. UDP (User Datagram Protocol) connectionless, lebih cepat tapi tidak menjamin data sampai.', 'ref' => 'Modul-06-Transport-Layer.pdf'],
+            ['pesan' => 'Jelaskan cara kerja DHCP!', 'jawaban' => 'DHCP (Dynamic Host Configuration Protocol) bekerja dengan 4 tahap: DISCOVER (client mencari server), OFFER (server menawarkan IP), REQUEST (client meminta IP), ACKNOWLEDGE (server konfirmasi).', 'ref' => 'Modul-07-DHCP-Server.pdf'],
+            ['pesan' => 'Apa itu DNS?', 'jawaban' => 'DNS (Domain Name System) adalah sistem yang menerjemahkan nama domain (seperti google.com) menjadi alamat IP yang bisa dimengerti komputer. DNS menggunakan port 53.', 'ref' => 'Modul-08-DNS-Server.pdf'],
+        ];
+
+        foreach ($siswaMap as $siswaId) {
+            foreach ($chatDemo as $i => $chat) {
+                $pertemuanId = $pertemuanIds[array_rand($pertemuanIds)];
+
+                // Pesan siswa
+                ChatHistory::create([
+                    'siswa_id' => $siswaId,
+                    'pertemuan_id' => $pertemuanId,
+                    'sender' => 'siswa',
+                    'pesan' => $chat['pesan'],
+                ]);
+
+                // Balasan AI
+                ChatHistory::create([
+                    'siswa_id' => $siswaId,
+                    'pertemuan_id' => $pertemuanId,
+                    'sender' => 'ai',
+                    'pesan' => $chat['jawaban'],
+                    'sumber_referensi' => $chat['ref'],
+                ]);
+            }
+        }
     }
 }
