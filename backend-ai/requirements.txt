@@ -1,0 +1,24 @@
+# =============================================================================
+# NetLabs AI Backend — Python Dependencies
+# =============================================================================
+# Install: pip install -r requirements.txt
+# =============================================================================
+
+# Flask Web Framework
+Flask==3.1.1
+python-dotenv==1.1.0
+
+# Google Generative AI (Gemini + Embedding)
+google-generativeai==0.8.5
+
+# ChromaDB — Vector Database
+chromadb==0.6.3
+
+# PyMuPDF — Ekstraksi Teks PDF (lebih cepat dari PyPDF2)
+PyMuPDF==1.25.4
+
+# LangChain Text Splitter (hanya modul splitter, ringan)
+langchain-text-splitters==0.3.8
+
+# Production WSGI Server
+gunicorn==23.0.0

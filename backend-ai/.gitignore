@@ -1,0 +1,11 @@
+# NetLabs AI Backend
+__pycache__/
+*.pyc
+*.pyo
+.env
+chroma_data/
+*.egg-info/
+dist/
+build/
+venv/
+.venv/

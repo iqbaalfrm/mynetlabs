@@ -1,4 +1,4 @@
-﻿"""
+"""
 ============================================================
  NETLABS AUTO-DEPLOY SCRIPT (Paramiko)
  Backend Laravel 12 + Mobile Flutter Integration
@@ -30,6 +30,10 @@ VPS_PORT = 22
 VPS_USER = "root"
 VPS_PASS = "@Kodoka123ya"
 PROJECT_PATH = "/var/www/mynetlabs/backend-web"
+AI_PROJECT_PATH = "/var/www/mynetlabs/backend-ai"
+
+# API Key Gemini untuk backend AI
+GEMINI_API_KEY = "AIzaSyAQ.Ab8RN6KlRqg0fjnumwGtC5yn8Kj6RnPnvXMwFq1ETJCDQumZ3g"
 
 # Konfigurasi Git lokal (path folder backend-web relatif terhadap root repo)
 LOCAL_BACKEND_PATH = "backend-web"
@@ -173,7 +177,7 @@ def deploy_to_vps():
             "        include fastcgi_params;\n"
             "    }\n"
             "    location /ai-api/ {\n"
-            "        proxy_pass http://127.0.0.1:5000/;\n"
+            "        proxy_pass http://127.0.0.1:5050/;\n"
             "        proxy_set_header Host $host;\n"
             "        proxy_set_header X-Real-IP $remote_addr;\n"
             "    }\n"
@@ -190,12 +194,73 @@ def deploy_to_vps():
         # 9. Tes endpoint API login (harusnya 401/422, BUKAN 500)
         run_remote(ssh, "curl -s -o /dev/null -w '%{http_code}' http://localhost/api/login -X POST -H 'Content-Type: application/json' -d '{\"username\":\"test\",\"password\":\"test\"}'", "9. Tes endpoint /api/login (401 = sukses)")
 
+        # ============================================================
+        # TAHAP BACKEND AI: Setup Python Flask + ChromaDB + Gemini
+        # ============================================================
         print("\n" + "=" * 60)
-        print("[OK] DEPLOY BERHASIL!")
+        print("TAHAP 3: Deploy Backend AI (Flask + ChromaDB)")
         print("=" * 60)
-        print(f"\n[WEB] Backend API tersedia di: http://{VPS_IP}/api")
-        print(f"[ADMIN] Panel Filament: http://{VPS_IP}/admin")
-        print(f"[MOBILE] Base URL: http://{VPS_IP}/api")
+
+        # 10. Install Python3, pip, venv jika belum ada
+        run_remote(ssh, "apt-get update -qq && apt-get install -y -qq python3 python3-pip python3-venv", "10. Install Python3 + pip + venv")
+
+        # 11. Buat virtual environment
+        run_remote(ssh, f"cd {AI_PROJECT_PATH} && python3 -m venv venv", "11. Buat Python virtual environment")
+
+        # 12. Install dependensi Python
+        run_remote(ssh, f"cd {AI_PROJECT_PATH} && venv/bin/pip install --upgrade pip && venv/bin/pip install -r requirements.txt", "12. Install Python dependencies")
+
+        # 13. Buat file .env untuk backend AI
+        env_content = (
+            f"GEMINI_API_KEY={GEMINI_API_KEY}\n"
+            f"CHROMA_PERSIST_DIR=./chroma_data\n"
+            f"CHROMA_COLLECTION_NAME=netlabs_modul\n"
+            f"FLASK_PORT=5050\n"
+            f"FLASK_DEBUG=false\n"
+        )
+        env_cmd = f"cat > {AI_PROJECT_PATH}/.env << 'ENVEOF'\n{env_content}ENVEOF"
+        run_remote(ssh, env_cmd, "13. Tulis .env backend AI")
+
+        # 14. Buat systemd service untuk backend AI
+        service_content = (
+            "[Unit]\n"
+            "Description=NetLabs AI Backend (Flask + ChromaDB + Gemini)\n"
+            "After=network.target\n\n"
+            "[Service]\n"
+            "User=www-data\n"
+            f"WorkingDirectory={AI_PROJECT_PATH}\n"
+            f"Environment=PATH={AI_PROJECT_PATH}/venv/bin:/usr/bin\n"
+            f"ExecStart={AI_PROJECT_PATH}/venv/bin/gunicorn -w 2 -b 0.0.0.0:5050 --timeout 120 app:app\n"
+            "Restart=always\n"
+            "RestartSec=5\n\n"
+            "[Install]\n"
+            "WantedBy=multi-user.target\n"
+        )
+        svc_cmd = f"cat > /etc/systemd/system/netlabs-ai.service << 'SVCEOF'\n{service_content}SVCEOF"
+        run_remote(ssh, svc_cmd, "14a. Buat systemd service netlabs-ai")
+
+        # Set ownership
+        run_remote(ssh, f"chown -R www-data:www-data {AI_PROJECT_PATH}", "14b. Set ownership backend-ai")
+
+        # Reload dan start service
+        run_remote(ssh, "systemctl daemon-reload", "14c. Daemon reload")
+        run_remote(ssh, "systemctl enable netlabs-ai", "14d. Enable service netlabs-ai")
+        run_remote(ssh, "systemctl restart netlabs-ai", "14e. Restart service netlabs-ai")
+
+        # 15. Tunggu sebentar lalu cek status
+        import time as _time
+        _time.sleep(3)
+        run_remote(ssh, "systemctl status netlabs-ai --no-pager -l", "15a. Cek status service AI")
+        run_remote(ssh, "curl -s http://localhost:5050/ 2>/dev/null || echo 'AI backend belum siap'", "15b. Tes health check AI")
+
+        print("\n" + "=" * 60)
+        print("[OK] DEPLOY BERHASIL! (Laravel + AI Backend)")
+        print("=" * 60)
+        print(f"\n[WEB]    Backend API   : http://{VPS_IP}/api")
+        print(f"[ADMIN]  Panel Filament: http://{VPS_IP}/admin")
+        print(f"[MOBILE] Base URL      : http://{VPS_IP}/api")
+        print(f"[AI]     Flask Backend : http://{VPS_IP}:5050")
+        print(f"[AI]     Via Nginx     : http://{VPS_IP}/ai-api/")
 
     except paramiko.AuthenticationException:
         print("[X] Autentikasi SSH gagal. Periksa user/password VPS.")
