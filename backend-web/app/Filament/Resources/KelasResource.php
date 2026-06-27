@@ -24,6 +24,8 @@ class KelasResource extends Resource
 
     protected static ?string $navigationLabel = 'Manajemen Kelas';
 
+    protected static ?int $navigationSort = 2;
+
     protected static ?string $recordTitleAttribute = 'nama_kelas';
 
     public static function form(Schema $schema): Schema

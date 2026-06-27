@@ -20,7 +20,9 @@ class HasilKuisResource extends Resource
 
     protected static \BackedEnum|string|null $navigationIcon = 'heroicon-o-academic-cap';
 
-    protected static ?string $navigationLabel = 'Manajemen Nilai Siswa';
+    protected static ?string $navigationLabel = 'Manajemen Nilai';
+
+    protected static ?int $navigationSort = 4;
 
     protected static ?string $pluralModelLabel = 'Nilai Siswa';
 

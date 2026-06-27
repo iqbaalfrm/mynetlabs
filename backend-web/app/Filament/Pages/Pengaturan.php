@@ -24,7 +24,9 @@ class Pengaturan extends Page
 
     protected string $view = 'filament.pages.pengaturan';
 
-    protected static ?string $navigationLabel = 'Pengaturan & AI';
+    protected static ?string $navigationLabel = 'Pengaturan';
+
+    protected static ?int $navigationSort = 5;
 
     protected static ?string $title = 'Pengaturan Akun & AI';
 

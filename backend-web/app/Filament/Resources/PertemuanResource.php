@@ -16,7 +16,10 @@ class PertemuanResource extends Resource
     protected static ?string $model = Pertemuan::class;
 
     protected static \BackedEnum|string|null $navigationIcon = 'heroicon-o-rectangle-stack';
+
     protected static ?string $navigationLabel = 'Modul Pertemuan';
+
+    protected static ?int $navigationSort = 3;
 
     public static function form(Schema $form): Schema
     {
