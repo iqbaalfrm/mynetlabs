@@ -59,9 +59,26 @@ class ChatController extends Controller
             'sumber_referensi' => null,
         ]);
 
-        // 2. Generate balasan AI (placeholder berbasis aturan)
-        $balasan = $this->generateAiReply($request->pesan);
+        // 2. Generate balasan AI (menggunakan Flask AI Engine / RAG)
         $sumber = 'Netlabs AI Tutor';
+        $balasan = 'Maaf, terjadi kesalahan saat menghubungi AI Tutor.';
+
+        try {
+            $response = \Illuminate\Support\Facades\Http::timeout(60)->post('http://127.0.0.1:5050/chat', [
+                'pertemuan_id' => $request->pertemuan_id,
+                'message' => $request->pesan,
+            ]);
+
+            if ($response->successful() && $response->json('success')) {
+                $balasan = $response->json('answer');
+                // Bisa juga menambahkan info chunk_used jika ingin dikembalikan ke mobile
+            } else {
+                $balasan = $response->json('answer') ?? 'Maaf, gagal mendapatkan jawaban dari AI (Error API).';
+            }
+        } catch (\Exception $e) {
+            \Illuminate\Support\Facades\Log::error('AI Chat Error: ' . $e->getMessage());
+            $balasan = 'Maaf, koneksi ke mesin AI sedang bermasalah. Coba lagi nanti.';
+        }
 
         // 3. Simpan balasan AI
         ChatHistory::create([
@@ -81,30 +98,5 @@ class ChatController extends Controller
                 'waktu' => now()->format('Y-m-d H:i'),
             ],
         ], 200);
-    }
-
-    // Helper: Balasan AI sederhana berbasis kata kunci.
-    // Catatan: Ganti fungsi ini dengan pemanggilan service AI/RAG sungguhan nantinya.
-    private function generateAiReply($pesan)
-    {
-        $pesanLower = strtolower($pesan);
-
-        if (str_contains($pesanLower, 'vlsm') || str_contains($pesanLower, 'subnetting')) {
-            return 'Untuk menghitung subnetting menggunakan metode VLSM, urutkan kebutuhan host dari yang terbesar ke terkecil. Alokasikan blok IP mulai dari prefix yang paling besar (mis. /26 untuk 64 IP) hingga prefix terkecil. Hal ini menjaga efisiensi alokasi IP Address.';
-        }
-
-        if (str_contains($pesanLower, 'cidr') || str_contains($pesanLower, 'classless')) {
-            return 'CIDR (Classless Inter-Domain Routing) adalah metode pengalamatan IP tanpa kelas. CIDR menggunakan prefix (mis. /24, /25) untuk menentukan batas network dan host secara fleksibel dibanding sistem classful klasik.';
-        }
-
-        if (str_contains($pesanLower, 'ping') || str_contains($pesanLower, 'rto')) {
-            return 'Jika ping ke gateway menghasilkan "Request Timed Out" (RTO), periksa: (1) kabel jaringan tersambung, (2) IP perangkat satu subnet dengan gateway, (3) firewall tidak memblokir ICMP, dan (4) gateway dalam keadaan aktif.';
-        }
-
-        if (str_contains($pesanLower, 'dhcp')) {
-            return 'DHCP (Dynamic Host Configuration Protocol) memberikan konfigurasi IP secara otomatis ke klien. Pastikan server DHCP aktif, pool IP cukup, dan klien berada pada VLAN/jaringan yang sama dengan server DHCP atau DHCP Relay sudah dikonfigurasi.';
-        }
-
-        return 'Pertanyaan yang menarik! Saat ini aku masih dalam mode pengembangan dan dapat menjawab seputar subnetting VLSM, CIDR, ping/RTO, dan DHCP. Silakan tanyakan lebih spesifik ya, atau cek modul pertemuan terkait.';
     }
 }
