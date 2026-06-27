@@ -1,4 +1,4 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../controllers/home_controller.dart';
 
@@ -88,20 +88,45 @@ class HomeView extends GetView<HomeController> {
               // Horizontal Scroll Cards
               SizedBox(
                 height: 140,
-                child: Obx(() => ListView.separated(
-                      scrollDirection: Axis.horizontal,
-                      itemCount: controller.pertemuanAktif.length,
-                      separatorBuilder: (context, index) => const SizedBox(width: 14),
-                      itemBuilder: (context, index) {
-                        var item = controller.pertemuanAktif[index];
-                        return _buildActivePertemuanCard(
-                          (item['nomor'] as num).toInt(),
-                          item['judul'] as String,
-                          item['topik'] as String,
-                          (item['progress'] as num).toDouble(),
-                        );
-                      },
-                    )),
+                child: Obx(() {
+                  if (controller.pertemuanAktif.isEmpty) {
+                    return Container(
+                      width: double.infinity,
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(16),
+                        border: Border.all(color: Colors.grey.withAlpha(30)),
+                      ),
+                      child: const Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(Icons.event_busy_rounded, color: Colors.grey, size: 36),
+                            SizedBox(height: 8),
+                            Text(
+                              "Tidak ada pertemuan aktif saat ini",
+                              style: TextStyle(fontSize: 12, color: Colors.grey, fontWeight: FontWeight.w500),
+                            ),
+                          ],
+                        ),
+                      ),
+                    );
+                  }
+                  return ListView.separated(
+                    scrollDirection: Axis.horizontal,
+                    itemCount: controller.pertemuanAktif.length,
+                    separatorBuilder: (context, index) => const SizedBox(width: 14),
+                    itemBuilder: (context, index) {
+                      var item = controller.pertemuanAktif[index];
+                      return _buildActivePertemuanCard(
+                        (item['nomor'] as num).toInt(),
+                        item['judul'] as String,
+                        item['topik'] as String,
+                        (item['progress'] as num).toDouble(),
+                      );
+                    },
+                  );
+                }),
               ),
               const SizedBox(height: 28),
 
