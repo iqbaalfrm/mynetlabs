@@ -32,8 +32,6 @@ class HomeView extends GetView<HomeController> {
                   const SizedBox(height: 24),
                   _buildProgressRing(),
                   const SizedBox(height: 24),
-                  _buildStatGrid(),
-                  const SizedBox(height: 28),
                   _buildLanjutBelajar(),
                   const SizedBox(height: 28),
                   _buildPertemuanAktif(),
@@ -200,88 +198,6 @@ class HomeView extends GetView<HomeController> {
       ),
     );
   }
-
-  // ===== SECTION 3: GRID 4 KARTU STATISTIK =====
-  Widget _buildStatGrid() {
-    return GridView.count(
-      shrinkWrap: true,
-      physics: const NeverScrollableScrollPhysics(),
-      crossAxisCount: 2,
-      mainAxisSpacing: 12,
-      crossAxisSpacing: 12,
-      childAspectRatio: 1.6,
-      children: [
-        Obx(() => _buildStatCard(
-              'Pertemuan',
-              '${controller.totalPertemuanSelesai.value}/${controller.totalPertemuan.value}',
-              Icons.book_rounded,
-              Colors.blue,
-            )),
-        Obx(() => _buildStatCard(
-              'Rata-rata Nilai',
-              controller.rataRataNilai.value.toStringAsFixed(1),
-              Icons.assignment_turned_in_rounded,
-              Colors.green,
-            )),
-        Obx(() => _buildStatCard(
-              'Topik Selesai',
-              '${controller.totalTopikSelesai.value}/${controller.totalTopik.value}',
-              Icons.check_circle_rounded,
-              Colors.orange,
-            )),
-        Obx(() => _buildStatCard(
-              'Chat AI',
-              '${controller.totalChatAI.value}',
-              Icons.smart_toy_rounded,
-              Colors.purple,
-            )),
-      ],
-    );
-  }
-
-  Widget _buildStatCard(String label, String value, IconData icon, Color color) {
-    return Container(
-      padding: const EdgeInsets.all(14),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Colors.grey.withAlpha(25)),
-        boxShadow: [
-          BoxShadow(color: Colors.grey.withAlpha(10), blurRadius: 6, offset: const Offset(0, 3)),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Container(
-                padding: const EdgeInsets.all(6),
-                decoration: BoxDecoration(
-                  color: color.withAlpha(20),
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: Icon(icon, size: 18, color: color),
-              ),
-            ],
-          ),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                value,
-                style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: _dark),
-              ),
-              Text(label, style: TextStyle(fontSize: 11, color: Colors.grey.shade600)),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
-
   // ===== SECTION 4: SHORTCUT LANJUT BELAJAR =====
   Widget _buildLanjutBelajar() {
     return Obx(() {
