@@ -1,4 +1,4 @@
-﻿import 'package:dio/dio.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
@@ -22,7 +22,7 @@ class LoginController extends GetxController {
     nisController = TextEditingController();
     passwordController = TextEditingController();
 
-    if (storage.has('token') && storage.read('token') != null) {
+    if (storage.read('token') != null) {
       Future.delayed(Duration.zero, () => Get.offAllNamed(Routes.HOME));
     }
   }

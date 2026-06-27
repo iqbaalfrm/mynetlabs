@@ -1,4 +1,3 @@
-﻿import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import '../../../data/providers/api_provider.dart';
@@ -70,8 +69,10 @@ class HomeController extends GetxController {
     }
   }
 
-  void logout() {
-    _api.logout().catchError((_) {});
+  void logout() async {
+    try {
+      await _api.logout();
+    } catch (_) {}
     storage.remove('token');
     storage.remove('nama');
     storage.remove('kelas');
