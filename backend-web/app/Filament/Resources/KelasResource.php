@@ -63,16 +63,16 @@ class KelasResource extends Resource
                 //
             ])
             ->actions([
-                Tables\Actions\ViewAction::make()
+                Actions\ViewAction::make()
                     ->label('Kelola Siswa')
                     ->icon('heroicon-o-users')
                     ->color('info'),
-                Tables\Actions\EditAction::make(),
-                Tables\Actions\DeleteAction::make(),
+                Actions\EditAction::make(),
+                Actions\DeleteAction::make(),
             ])
             ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
+                Actions\BulkActionGroup::make([
+                    Actions\DeleteBulkAction::make(),
                 ]),
             ]);
     }
