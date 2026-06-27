@@ -109,34 +109,7 @@ class ProfileView extends GetView<ProfileController> {
                             fontWeight: FontWeight.w500,
                           ),
                         )),
-                        
                         const SizedBox(height: 16),
-                        const Divider(height: 1),
-                        const SizedBox(height: 16),
-                        
-                        // Meta details (Class & School)
-                        Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Expanded(
-                              child: _buildMetaInfoTile(
-                                Icons.class_outlined,
-                                "Kelas Jaringan",
-                                controller.kelas.value.isEmpty ? "-" : controller.kelas.value,
-                                const Color(0xFF3B82F6),
-                              ),
-                            ),
-                            Container(height: 40, width: 1, color: const Color(0xFFE2E8F0)),
-                            Expanded(
-                              child: _buildMetaInfoTile(
-                                Icons.school_outlined,
-                                "Asal Sekolah",
-                                controller.sekolah.value.isEmpty ? "-" : controller.sekolah.value,
-                                const Color(0xFF10B981),
-                              ),
-                            ),
-                          ],
-                        ),
                       ],
                     ),
                   ),
@@ -262,39 +235,6 @@ class ProfileView extends GetView<ProfileController> {
     );
   }
 
-  // Meta Info tile for Class/School
-  Widget _buildMetaInfoTile(IconData icon, String label, String value, Color color) {
-    return Column(
-      children: [
-        CircleAvatar(
-          radius: 16,
-          backgroundColor: color.withOpacity(0.1),
-          child: Icon(icon, color: color, size: 16),
-        ),
-        const SizedBox(height: 8),
-        Text(
-          label,
-          style: const TextStyle(
-            fontSize: 10,
-            color: Color(0xFF94A3B8),
-            fontWeight: FontWeight.w500,
-          ),
-        ),
-        const SizedBox(height: 2),
-        Text(
-          value,
-          textAlign: TextAlign.center,
-          maxLines: 1,
-          overflow: TextOverflow.ellipsis,
-          style: const TextStyle(
-            fontSize: 12,
-            fontWeight: FontWeight.w700,
-            color: Color(0xFF0F172A),
-          ),
-        ),
-      ],
-    );
-  }
 
   // Beautiful Grid Stat Card
   Widget _buildStatBox(String title, String value, String subtitle, IconData icon, Color color) {
