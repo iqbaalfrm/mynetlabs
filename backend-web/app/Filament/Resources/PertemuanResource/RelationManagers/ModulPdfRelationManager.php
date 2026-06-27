@@ -70,6 +70,41 @@ class ModulPdfRelationManager extends RelationManager
                     ->label('Unggah PDF Baru'),
             ])
             ->actions([
+                Actions\Action::make('index_pdf_ai')
+                    ->label('Index AI')
+                    ->icon('heroicon-o-cpu-chip')
+                    ->color('success')
+                    ->requiresConfirmation()
+                    ->action(function ($record) {
+                        try {
+                            $filePath = storage_path('app/public/' . $record->file_name);
+                            $response = \Illuminate\Support\Facades\Http::timeout(300)->post('http://127.0.0.1:5050/index-pdf', [
+                                'pertemuan_id' => $record->pertemuan_id,
+                                'file_path' => $filePath,
+                            ]);
+
+                            if ($response->successful() && $response->json('success')) {
+                                $record->update(['status_indexing' => 'success']);
+                                \Filament\Notifications\Notification::make()
+                                    ->title('Berhasil di-index ke AI!')
+                                    ->success()
+                                    ->send();
+                            } else {
+                                $record->update(['status_indexing' => 'failed']);
+                                \Filament\Notifications\Notification::make()
+                                    ->title('Gagal: ' . $response->json('message', 'Terjadi kesalahan'))
+                                    ->danger()
+                                    ->send();
+                            }
+                        } catch (\Exception $e) {
+                            $record->update(['status_indexing' => 'failed']);
+                            \Filament\Notifications\Notification::make()
+                                ->title('Error koneksi ke AI Backend')
+                                ->body($e->getMessage())
+                                ->danger()
+                                ->send();
+                        }
+                    }),
                 Actions\EditAction::make(),
                 Actions\DeleteAction::make(),
             ])
