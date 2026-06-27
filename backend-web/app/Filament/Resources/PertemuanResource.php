@@ -83,12 +83,16 @@ class PertemuanResource extends Resource
             ])
             ->filters([])
             ->actions([
-                Actions\EditAction::make(),
-                Actions\DeleteAction::make(),
+                Tables\Actions\ViewAction::make()
+                    ->label('Kelola Materi')
+                    ->icon('heroicon-o-book-open')
+                    ->color('info'),
+                Tables\Actions\EditAction::make(),
+                Tables\Actions\DeleteAction::make(),
             ])
             ->bulkActions([
-                Actions\BulkActionGroup::make([
-                    Actions\DeleteBulkAction::make(),
+                Tables\Actions\BulkActionGroup::make([
+                    Tables\Actions\DeleteBulkAction::make(),
                 ]),
             ]);
     }
@@ -106,8 +110,7 @@ class PertemuanResource extends Resource
     {
         return [
             'index' => \App\Filament\Resources\PertemuanResource\Pages\ListPertemuans::route('/'),
-            'create' => \App\Filament\Resources\PertemuanResource\Pages\CreatePertemuan::route('/create'),
-            'edit' => \App\Filament\Resources\PertemuanResource\Pages\EditPertemuan::route('/{record}/edit'),
+            'view' => \App\Filament\Resources\PertemuanResource\Pages\ViewPertemuan::route('/{record}'),
         ];
     }
 }

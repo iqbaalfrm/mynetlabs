@@ -3,9 +3,9 @@
 namespace App\Filament\Resources\KelasResource\Pages;
 
 use App\Filament\Resources\KelasResource;
-use Filament\Resources\Pages\CreateRecord;
+use Filament\Resources\Pages\ViewRecord;
 
-class CreateKelas extends CreateRecord
+class ViewKelas extends ViewRecord
 {
     protected static string $resource = KelasResource::class;
 }

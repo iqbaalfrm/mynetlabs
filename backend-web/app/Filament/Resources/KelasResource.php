@@ -63,12 +63,16 @@ class KelasResource extends Resource
                 //
             ])
             ->actions([
-                Actions\EditAction::make(),
-                Actions\DeleteAction::make(),
+                Tables\Actions\ViewAction::make()
+                    ->label('Kelola Siswa')
+                    ->icon('heroicon-o-users')
+                    ->color('info'),
+                Tables\Actions\EditAction::make(),
+                Tables\Actions\DeleteAction::make(),
             ])
             ->bulkActions([
-                Actions\BulkActionGroup::make([
-                    Actions\DeleteBulkAction::make(),
+                Tables\Actions\BulkActionGroup::make([
+                    Tables\Actions\DeleteBulkAction::make(),
                 ]),
             ]);
     }
@@ -84,8 +88,7 @@ class KelasResource extends Resource
     {
         return [
             'index' => Pages\ListKelas::route('/'),
-            'create' => Pages\CreateKelas::route('/create'),
-            'edit' => Pages\EditKelas::route('/{record}/edit'),
+            'view' => Pages\ViewKelas::route('/{record}'),
         ];
     }
 }
