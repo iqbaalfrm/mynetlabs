@@ -155,13 +155,40 @@ def deploy_to_vps():
         run_remote(ssh, "chown -R www-data:www-data /var/www/mynetlabs", "7a. Set ownership www-data")
         run_remote(ssh, f"chmod -R 775 {PROJECT_PATH}/storage {PROJECT_PATH}/bootstrap/cache", "7b. Set permission 775")
 
-        # 8. Validasi & restart Nginx + PHP-FPM
-        run_remote(ssh, "nginx -t", "8a. Validasi konfigurasi Nginx")
-        run_remote(ssh, "systemctl restart nginx", "8b. Restart Nginx")
-        run_remote(ssh, f"systemctl restart php{php_ver}-fpm", f"8c. Restart PHP {php_ver}-FPM")
+        # 8. Tulis ulang config Nginx yang BENAR (tanpa backslash escape salah)
+        nginx_conf = (
+            "server {\n"
+            "    listen 80;\n"
+            "    server_name _;\n"
+            "    root /var/www/mynetlabs/backend-web/public;\n"
+            "    index index.php index.html;\n"
+            "    client_max_body_size 64M;\n"
+            "    location / {\n"
+            "        try_files $uri $uri/ /index.php?$query_string;\n"
+            "    }\n"
+            "    location ~ \\.php$ {\n"
+            "        include snippets/fastcgi-php.conf;\n"
+            "        fastcgi_pass unix:/var/run/php/php{php_ver}-fpm.sock;\n"
+            "        fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;\n"
+            "        include fastcgi_params;\n"
+            "    }\n"
+            "    location /ai-api/ {\n"
+            "        proxy_pass http://127.0.0.1:5000/;\n"
+            "        proxy_set_header Host $host;\n"
+            "        proxy_set_header X-Real-IP $remote_addr;\n"
+            "    }\n"
+            "}\n"
+        )
+        write_cmd = "cat > /etc/nginx/sites-available/netlabs << 'NGINXEOF'" + chr(10) + nginx_conf + "NGINXEOF"
+        run_remote(ssh, write_cmd, "8a. Tulis config Nginx baru")
+        run_remote(ssh, "ln -sf /etc/nginx/sites-available/netlabs /etc/nginx/sites-enabled/", "8b. Symlink sites-enabled")
+        run_remote(ssh, "rm -f /etc/nginx/sites-enabled/default /etc/nginx/sites-enabled/default.conf", "8c. Hapus default nginx")
+        run_remote(ssh, "nginx -t", "8d. Validasi konfigurasi Nginx")
+        run_remote(ssh, "systemctl restart nginx", "8e. Restart Nginx")
+        run_remote(ssh, f"systemctl restart php{php_ver}-fpm", f"8f. Restart PHP {php_ver}-FPM")
 
-        # 9. Tes endpoint API login
-        run_remote(ssh, f"curl -s -o /dev/null -w '%{{http_code}}' http://localhost/api/login -X POST -H 'Content-Type: application/json' -d '{{\"username\":\"test\",\"password\":\"test\"}}'", "9. Tes endpoint /api/login")
+        # 9. Tes endpoint API login (harusnya 401/422, BUKAN 500)
+        run_remote(ssh, "curl -s -o /dev/null -w '%{http_code}' http://localhost/api/login -X POST -H 'Content-Type: application/json' -d '{\"username\":\"test\",\"password\":\"test\"}'", "9. Tes endpoint /api/login (401 = sukses)")
 
         print("\n" + "=" * 60)
         print("[OK] DEPLOY BERHASIL!")

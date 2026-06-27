@@ -1,0 +1,308 @@
+openapi: 3.0.3
+info:
+  title: Netlabs API Documentation
+  description: Dokumentasi API Resmi untuk Aplikasi Praktikum Jaringan Komputer Netlabs (Fiqh Muamalah & Educational Terminology).
+  version: 1.0.0
+servers:
+  - url: http://157.230.93.99/api
+    description: VPS Production Server
+  - url: http://127.0.0.1:8000/api
+    description: Localhost Development Server
+paths:
+  /register:
+    post:
+      summary: Registrasi Akun Siswa Baru
+      tags:
+        - Authentication
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - nama
+                - username
+                - password
+              properties:
+                nama:
+                  type: string
+                  example: Moch Iqbal Firmansyah
+                username:
+                  type: string
+                  description: NIS (Nomor Induk Siswa) unik untuk login
+                  example: "22041001"
+                password:
+                  type: string
+                  example: siswa123
+      responses:
+        '201':
+          description: Registrasi berhasil
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Registrasi berhasil
+                  user:
+                    type: object
+        '422':
+          description: Validasi gagal (username sudah terdaftar)
+
+  /login:
+    post:
+      summary: Login Akun Guru / Siswa
+      tags:
+        - Authentication
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - username
+                - password
+              properties:
+                username:
+                  type: string
+                  description: NIP (Guru) atau NIS (Siswa)
+                  example: "22041001"
+                password:
+                  type: string
+                  example: siswa123
+      responses:
+        '200':
+          description: Login berhasil, mengembalikan Token Sanctum
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  token:
+                    type: string
+                    example: 1|laravel_sanctum_token_string
+                  user:
+                    type: object
+        '401':
+          description: Kredensial login salah
+
+  /logout:
+    post:
+      summary: Keluar dari Aplikasi (Revoke Token)
+      tags:
+        - Authentication
+      security:
+        - SanctumAuth: []
+      responses:
+        '200':
+          description: Logout berhasil
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Token berhasil dihapus
+
+  /user-profile:
+    get:
+      summary: Ambil Detail Akun Pengguna Aktif
+      tags:
+        - Profile
+      security:
+        - SanctumAuth: []
+      responses:
+        '200':
+          description: Profil berhasil diambil
+          content:
+            application/json:
+              schema:
+                type: object
+
+  /pertemuan:
+    get:
+      summary: Ambil Daftar Semua Bab Pertemuan Praktikum
+      tags:
+        - Materi & Pertemuan
+      security:
+        - SanctumAuth: []
+      responses:
+        '200':
+          description: Berhasil memuat daftar pertemuan
+
+  /pertemuan/{id}:
+    get:
+      summary: Ambil Detail Pertemuan (Topik & PDF)
+      tags:
+        - Materi & Pertemuan
+      security:
+        - SanctumAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+          example: 1
+      responses:
+        '200':
+          description: Berhasil memuat detail pertemuan
+
+  /pertemuan/{pertemuanId}/topik/{topikId}/selesai:
+    post:
+      summary: Tandai Pembacaan Topik Materi Selesai
+      tags:
+        - Materi & Pertemuan
+      security:
+        - SanctumAuth: []
+      parameters:
+        - name: pertemuanId
+          in: path
+          required: true
+          schema:
+            type: integer
+          example: 1
+        - name: topikId
+          in: path
+          required: true
+          schema:
+            type: integer
+          example: 2
+      responses:
+        '200':
+          description: Progress belajar berhasil disimpan
+
+  /pertemuan/{id}/kuis:
+    get:
+      summary: Ambil Soal Kuis untuk Bab Tertentu
+      tags:
+        - Kuis & Evaluasi
+      security:
+        - SanctumAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+          example: 1
+      responses:
+        '200':
+          description: Berhasil memuat daftar pertanyaan kuis
+
+  /kuis/submit:
+    post:
+      summary: Kirim Jawaban Kuis Siswa
+      tags:
+        - Kuis & Evaluasi
+      security:
+        - SanctumAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - pertemuan_id
+                - jawaban
+              properties:
+                pertemuan_id:
+                  type: integer
+                  example: 1
+                jawaban:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      soal_id:
+                        type: integer
+                        example: 12
+                      jawaban_siswa:
+                        type: string
+                        example: A
+      responses:
+        '200':
+          description: Hasil kuis sukses dihitung & disimpan, mengembalikan nilai dan rekomendasi AI
+
+  /kuis/riwayat:
+    get:
+      summary: Ambil Riwayat Nilai Kuis Siswa
+      tags:
+        - Kuis & Evaluasi
+      security:
+        - SanctumAuth: []
+      responses:
+        '200':
+          description: Berhasil memuat riwayat nilai
+
+  /chat/riwayat:
+    get:
+      summary: Ambil Riwayat Chat dengan AI Tutor
+      tags:
+        - AI Chatbot Tutor
+      security:
+        - SanctumAuth: []
+      responses:
+        '200':
+          description: Berhasil memuat riwayat obrolan
+
+  /chat:
+    post:
+      summary: Kirim Pesan Pertanyaan ke AI Tutor (RAG)
+      tags:
+        - AI Chatbot Tutor
+      security:
+        - SanctumAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - pesan
+              properties:
+                pertemuan_id:
+                  type: integer
+                  description: ID Pertemuan untuk konteks materi pencarian PDF
+                  example: 1
+                pesan:
+                  type: string
+                  example: Bagaimana konsep routing statis bekerja?
+      responses:
+        '200':
+          description: Berhasil menghasilkan jawaban AI
+
+  /siswa/statistik:
+    get:
+      summary: Ambil Statistik Belajar Siswa (Rata-rata Nilai, dsb)
+      tags:
+        - Dashboard & Metrics
+      security:
+        - SanctumAuth: []
+      responses:
+        '200':
+          description: Berhasil memuat statistik
+
+  /siswa/pertemuan-aktif:
+    get:
+      summary: Ambil Daftar Pertemuan Jaringan yang Aktif Minggu Ini
+      tags:
+        - Dashboard & Metrics
+      security:
+        - SanctumAuth: []
+      responses:
+        '200':
+          description: Berhasil memuat pertemuan aktif
+
+components:
+  securitySchemes:
+    SanctumAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
