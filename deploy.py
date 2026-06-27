@@ -32,8 +32,11 @@ VPS_PASS = "@Kodoka123ya"
 PROJECT_PATH = "/var/www/mynetlabs/backend-web"
 AI_PROJECT_PATH = "/var/www/mynetlabs/backend-ai"
 
-# API Key Gemini untuk backend AI
-GEMINI_API_KEY = "AIzaSyAQ.Ab8RN6KlRqg0fjnumwGtC5yn8Kj6RnPnvXMwFq1ETJCDQumZ3g"
+# API Key Gemini untuk backend AI (baca dari environment / .env)
+import os as _os
+from dotenv import load_dotenv as _load_dotenv
+_load_dotenv(_os.path.join(_os.path.dirname(_os.path.abspath(__file__)), "backend-ai", ".env"))
+GEMINI_API_KEY = _os.getenv("GEMINI_API_KEY", "")
 
 # Konfigurasi Git lokal (path folder backend-web relatif terhadap root repo)
 LOCAL_BACKEND_PATH = "backend-web"

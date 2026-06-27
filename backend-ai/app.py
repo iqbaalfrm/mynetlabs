@@ -158,9 +158,9 @@ def potong_teks_menjadi_chunks(teks: str, chunk_size: int = 1000, chunk_overlap:
 def buat_embedding(teks: str) -> list[float]:
     """Membuat embedding vektor dari teks menggunakan Google GenAI embedding-001."""
     result = genai.embed_content(
-        model="models/embedding-001",
+        model="models/gemini-embedding-001",
         content=teks,
-        task_type="retrieval_document",
+        task_type="RETRIEVAL_DOCUMENT",
     )
     return result['embedding']
 
@@ -168,9 +168,9 @@ def buat_embedding(teks: str) -> list[float]:
 def buat_embedding_query(teks: str) -> list[float]:
     """Membuat embedding vektor dari query siswa (task_type=retrieval_query)."""
     result = genai.embed_content(
-        model="models/embedding-001",
+        model="models/gemini-embedding-001",
         content=teks,
-        task_type="retrieval_query",
+        task_type="RETRIEVAL_QUERY",
     )
     return result['embedding']
 
