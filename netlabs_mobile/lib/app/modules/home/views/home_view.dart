@@ -37,14 +37,34 @@ class HomeView extends GetView<HomeController> {
                   _buildPertemuanAktif(),
                   const SizedBox(height: 28),
                   _buildKuisPending(),
-                  const SizedBox(height: 28),
-                  _buildAiTutorShortcut(),
-                  const SizedBox(height: 20),
                 ],
               ),
             ),
           );
         }),
+      ),
+      floatingActionButton: Container(
+        decoration: BoxDecoration(
+          gradient: const LinearGradient(
+            colors: [Color(0xFF7C3AED), Color(0xFF5B21B6)],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
+          borderRadius: BorderRadius.circular(20),
+          boxShadow: [
+            BoxShadow(color: const Color(0xFF7C3AED).withAlpha(80), blurRadius: 12, offset: const Offset(0, 6)),
+          ],
+        ),
+        child: FloatingActionButton.extended(
+          onPressed: () => controller.bukaChatbot(),
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+          icon: const Icon(Icons.smart_toy_rounded, color: Colors.white, size: 24),
+          label: const Text(
+            'AI Tutor',
+            style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 14),
+          ),
+        ),
       ),
     );
   }
@@ -466,52 +486,6 @@ class HomeView extends GetView<HomeController> {
     );
   }
 
-  // ===== SECTION 7: SHORTCUT AI TUTOR =====
-  Widget _buildAiTutorShortcut() {
-    return GestureDetector(
-      onTap: () => controller.bukaChatbot(),
-      child: Container(
-        width: double.infinity,
-        padding: const EdgeInsets.all(18),
-        decoration: BoxDecoration(
-          gradient: const LinearGradient(
-            colors: [Color(0xFF7C3AED), Color(0xFF5B21B6)],
-            begin: Alignment.centerLeft,
-            end: Alignment.centerRight,
-          ),
-          borderRadius: BorderRadius.circular(16),
-        ),
-        child: Row(
-          children: [
-            Container(
-              width: 46,
-              height: 46,
-              decoration: BoxDecoration(
-                color: Colors.white.withAlpha(30),
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: const Icon(Icons.smart_toy_rounded, color: Colors.white, size: 26),
-            ),
-            const SizedBox(width: 14),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text('Netlabs AI Tutor', style: TextStyle(color: Colors.white, fontSize: 15, fontWeight: FontWeight.bold)),
-                  const SizedBox(height: 2),
-                  Text(
-                    'Punya pertanyaan? Tanya AI sekarang',
-                    style: TextStyle(color: Colors.white.withAlpha(200), fontSize: 12),
-                  ),
-                ],
-              ),
-            ),
-            const Icon(Icons.arrow_forward_ios_rounded, size: 16, color: Colors.white),
-          ],
-        ),
-      ),
-    );
-  }
 
   // ===== HELPER WIDGETS =====
   Widget _buildEmptyState(String text, IconData icon) {
