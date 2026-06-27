@@ -1,5 +1,7 @@
 ﻿import 'package:get/get.dart';
 import '../../../data/providers/api_provider.dart';
+import '../../home/controllers/home_controller.dart';
+import '../../materi/controllers/materi_controller.dart';
 
 class DetailMateriController extends GetxController {
   final ApiProvider _api = Get.find<ApiProvider>();
@@ -43,11 +45,23 @@ class DetailMateriController extends GetxController {
   void toggleCompleteTopik(int index) async {
     var topik = Map<String, dynamic>.from(daftarTopik[index]);
     topik['is_completed'] = !(topik['is_completed'] as bool);
-    daftarTopik[index] = topik;
+
+    // Refresh list agar UI (Obx) ikut rebuild
+    var newList = List<Map<String, dynamic>>.from(daftarTopik);
+    newList[index] = topik;
+    daftarTopik.value = newList;
 
     if (topik['is_completed'] == true) {
       try {
         await _api.tandaiTopikSelesai(pertemuanId, topik['id']);
+        // Reload MateriController & HomeController agar progress update di mana-mana
+        if (Get.isRegistered<MateriController>()) {
+          Get.find<MateriController>().refreshMateri();
+        }
+        if (Get.isRegistered<HomeController>()) {
+          Get.find<HomeController>().loadStatistik();
+          Get.find<HomeController>().loadPertemuan();
+        }
       } catch (e) {
         print('Gagal menyimpan progress: $e');
       }

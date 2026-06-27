@@ -14,6 +14,11 @@ class MateriController extends GetxController {
     loadMateri();
   }
 
+  /// Reload data materi (dipanggil saat balik dari detail_materi)
+  void refreshMateri() {
+    loadMateri();
+  }
+
   void loadMateri() async {
     isLoading.value = true;
     try {
