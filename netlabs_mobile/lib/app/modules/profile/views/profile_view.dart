@@ -21,146 +21,127 @@ class ProfileView extends GetView<ProfileController> {
           child: Column(
             children: [
               // ==========================================
-              // PREMIUM HEADER WITH GRADIENT
+              // PREMIUM HEADER - SOLID BLUE COLOR
               // ==========================================
-              Stack(
-                clipBehavior: Clip.none,
-                alignment: Alignment.center,
-                children: [
-                  Container(
-                    height: 220,
-                    width: double.infinity,
-                    decoration: const BoxDecoration(
-                      gradient: LinearGradient(
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
-                        colors: [
-                          Color(0xFF0F172A), // Dark slate
-                          Color(0xFF1E3A8A), // Deep navy
-                          Color(0xFF3B82F6), // Royal Blue
-                        ],
-                      ),
-                      borderRadius: BorderRadius.only(
-                        bottomLeft: Radius.circular(32),
-                        bottomRight: Radius.circular(32),
-                      ),
-                    ),
-                    child: const SafeArea(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text(
-                            "PROFIL SISWA",
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 16,
-                              fontWeight: FontWeight.w900,
-                              letterSpacing: 2.0,
-                            ),
-                          ),
-                          SizedBox(height: 40),
-                        ],
-                      ),
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.only(top: 60, bottom: 80),
+                decoration: const BoxDecoration(
+                  color: Color(0xFF3B82F6), // Solid royal blue
+                  borderRadius: BorderRadius.only(
+                    bottomLeft: Radius.circular(32),
+                    bottomRight: Radius.circular(32),
+                  ),
+                ),
+                child: const Center(
+                  child: Text(
+                    "PROFIL SISWA",
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 16,
+                      fontWeight: FontWeight.w900,
+                      letterSpacing: 2.0,
                     ),
                   ),
-                  
-                  // Overlapping Avatar Card
-                  Positioned(
-                    top: 130,
-                    child: Container(
-                      width: MediaQuery.of(context).size.width * 0.9,
-                      padding: const EdgeInsets.all(20),
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(24),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withOpacity(0.06),
-                            blurRadius: 20,
-                            offset: const Offset(0, 10),
-                          ),
-                        ],
-                      ),
-                      child: Column(
-                        children: [
-                          // Glowing Avatar
-                          Container(
-                            decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              border: Border.all(color: Colors.white, width: 4),
-                              boxShadow: [
-                                BoxShadow(
+                ),
+              ),
+
+              // Overlapping Avatar Card in natural layout flow to prevent overlaps
+              Transform.translate(
+                offset: const Offset(0.0, -50.0),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  child: Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.all(20),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(24),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.06),
+                          blurRadius: 20,
+                          offset: const Offset(0, 10),
+                        ),
+                      ],
+                    ),
+                    child: Column(
+                      children: [
+                        // Glowing Avatar
+                        Container(
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            border: Border.all(color: Colors.white, width: 4),
+                            boxShadow: [
+                              BoxShadow(
                                   color: const Color(0xFF3B82F6).withOpacity(0.3),
                                   blurRadius: 16,
                                   offset: const Offset(0, 4),
                                 ),
-                              ],
-                            ),
-                            child: const CircleAvatar(
-                              radius: 40,
-                              backgroundColor: Color(0xFF3B82F6),
-                              child: Icon(Icons.person_rounded, size: 45, color: Colors.white),
-                            ),
-                          ),
-                          const SizedBox(height: 12),
-                          
-                          // Student Name
-                          Obx(() => Text(
-                            controller.nama.value.isEmpty ? "Siswa" : controller.nama.value,
-                            textAlign: TextAlign.center,
-                            style: const TextStyle(
-                              fontSize: 20,
-                              fontWeight: FontWeight.w800,
-                              color: Color(0xFF0F172A),
-                            ),
-                          )),
-                          const SizedBox(height: 4),
-                          
-                          // Student NIS
-                          Obx(() => Text(
-                            "NIS: ${controller.nis.value.isEmpty ? '-' : controller.nis.value}",
-                            style: const TextStyle(
-                              fontSize: 13,
-                              color: Color(0xFF64748B),
-                              fontWeight: FontWeight.w500,
-                            ),
-                          )),
-                          
-                          const SizedBox(height: 16),
-                          const Divider(height: 1),
-                          const SizedBox(height: 16),
-                          
-                          // Meta details (Class & School)
-                          Row(
-                            children: [
-                              Expanded(
-                                child: _buildMetaInfoTile(
-                                  Icons.class_outlined,
-                                  "Kelas Jaringan",
-                                  controller.kelas.value.isEmpty ? "-" : controller.kelas.value,
-                                  const Color(0xFF3B82F6),
-                                ),
-                              ),
-                              Container(height: 30, width: 1, color: const Color(0xFFE2E8F0)),
-                              Expanded(
-                                child: _buildMetaInfoTile(
-                                  Icons.school_outlined,
-                                  "Asal Sekolah",
-                                  controller.sekolah.value.isEmpty ? "-" : controller.sekolah.value,
-                                  const Color(0xFF10B981),
-                                ),
-                              ),
                             ],
                           ),
-                        ],
-                      ),
+                          child: const CircleAvatar(
+                            radius: 40,
+                            backgroundColor: Color(0xFF3B82F6),
+                            child: Icon(Icons.person_rounded, size: 45, color: Colors.white),
+                          ),
+                        ),
+                        const SizedBox(height: 12),
+                        
+                        // Student Name
+                        Obx(() => Text(
+                          controller.nama.value.isEmpty ? "Siswa" : controller.nama.value,
+                          textAlign: TextAlign.center,
+                          style: const TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.w800,
+                            color: Color(0xFF0F172A),
+                          ),
+                        )),
+                        const SizedBox(height: 4),
+                        
+                        // Student NIS
+                        Obx(() => Text(
+                          "NIS: ${controller.nis.value.isEmpty ? '-' : controller.nis.value}",
+                          style: const TextStyle(
+                            fontSize: 13,
+                            color: Color(0xFF64748B),
+                            fontWeight: FontWeight.w500,
+                          ),
+                        )),
+                        
+                        const SizedBox(height: 16),
+                        const Divider(height: 1),
+                        const SizedBox(height: 16),
+                        
+                        // Meta details (Class & School)
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Expanded(
+                              child: _buildMetaInfoTile(
+                                Icons.class_outlined,
+                                "Kelas Jaringan",
+                                controller.kelas.value.isEmpty ? "-" : controller.kelas.value,
+                                const Color(0xFF3B82F6),
+                              ),
+                            ),
+                            Container(height: 40, width: 1, color: const Color(0xFFE2E8F0)),
+                            Expanded(
+                              child: _buildMetaInfoTile(
+                                Icons.school_outlined,
+                                "Asal Sekolah",
+                                controller.sekolah.value.isEmpty ? "-" : controller.sekolah.value,
+                                const Color(0xFF10B981),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
                     ),
                   ),
-                ],
+                ),
               ),
-              
-              // Spacing for overlapping card
-              const SizedBox(height: 160),
               
               // ==========================================
               // STATISTICS SECTION
