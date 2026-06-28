@@ -10,7 +10,7 @@ use Filament\Tables\Columns\TextColumn;
 
 class HasilKuisTerbaruTable extends BaseWidget
 {
-    protected ?string $heading = 'Aktivitas Ujian/Kuis Terbaru';
+    protected static ?string $heading = 'Aktivitas Ujian/Kuis Terbaru';
 
     protected static ?int $sort = 3;
     
