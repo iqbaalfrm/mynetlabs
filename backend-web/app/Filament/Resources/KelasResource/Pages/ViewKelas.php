@@ -8,4 +8,11 @@ use Filament\Resources\Pages\ViewRecord;
 class ViewKelas extends ViewRecord
 {
     protected static string $resource = KelasResource::class;
+
+    protected function getHeaderWidgets(): array
+    {
+        return [
+            KelasResource\Widgets\KelasStatsWidget::class,
+        ];
+    }
 }

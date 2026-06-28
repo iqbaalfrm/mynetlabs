@@ -86,6 +86,13 @@ class KelasResource extends Resource
         ];
     }
 
+    public static function getWidgets(): array
+    {
+        return [
+            KelasResource\Widgets\KelasStatsWidget::class,
+        ];
+    }
+
     public static function getPages(): array
     {
         return [

@@ -74,4 +74,9 @@ class User extends Authenticatable implements HasName
         }
         return null;
     }
+
+    public function hasilKuis()
+    {
+        return $this->hasMany(HasilKuis::class, 'siswa_id');
+    }
 }

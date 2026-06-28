@@ -46,6 +46,10 @@ class SiswaRelationManager extends RelationManager
         return $table
             ->recordTitleAttribute('nama')
             ->columns([
+                Tables\Columns\ImageColumn::make('foto_profil')
+                    ->label('Foto')
+                    ->circular()
+                    ->defaultImageUrl(fn ($record) => 'https://ui-avatars.com/api/?background=4f46e5&color=fff&name=' . urlencode($record->nama)),
                 TextColumn::make('username')
                     ->label('NIS')
                     ->searchable()
@@ -54,6 +58,21 @@ class SiswaRelationManager extends RelationManager
                     ->label('Nama Siswa')
                     ->searchable()
                     ->sortable(),
+                TextColumn::make('hasil_kuis_avg_nilai')
+                    ->avg('hasilKuis', 'nilai')
+                    ->label('Rata-rata Nilai')
+                    ->numeric(1)
+                    ->sortable()
+                    ->placeholder('Belum kuis')
+                    ->badge()
+                    ->color(function ($state) {
+                        $kkm = 75;
+                        if (\Illuminate\Support\Facades\Storage::disk('local')->exists('settings.json')) {
+                            $settings = json_decode(\Illuminate\Support\Facades\Storage::disk('local')->get('settings.json'), true);
+                            $kkm = $settings['kkm'] ?? 75;
+                        }
+                        return $state >= $kkm ? 'success' : 'danger';
+                    }),
             ])
             ->filters([
                 //
