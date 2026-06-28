@@ -20,7 +20,7 @@ use Filament\Forms;
 
 class Pengaturan extends Page
 {
-    protected static \BackedEnum|string|null $navigationIcon = 'heroicon-o-sparkles';
+    protected static \BackedEnum|string|null $navigationIcon = 'heroicon-o-cog-6-tooth';
 
     protected string $view = 'filament.pages.pengaturan';
 
