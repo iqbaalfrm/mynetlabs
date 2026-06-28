@@ -91,7 +91,6 @@ class PertemuanResource extends Resource
                     ->label('Kelola Materi')
                     ->icon('heroicon-o-book-open')
                     ->color('info'),
-                Actions\EditAction::make(),
                 Actions\DeleteAction::make(),
             ])
             ->bulkActions([
