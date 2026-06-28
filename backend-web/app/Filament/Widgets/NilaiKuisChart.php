@@ -8,7 +8,7 @@ use Filament\Widgets\ChartWidget;
 
 class NilaiKuisChart extends ChartWidget
 {
-    protected static ?string $heading = 'Rata-rata Nilai Siswa Per Modul';
+    protected ?string $heading = 'Rata-rata Nilai Siswa Per Modul';
     
     protected static ?int $sort = 2;
 
