@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import '../../theme/netlabs_theme.dart';
 import '../controllers/profile_controller.dart';
 
 class ProfileView extends GetView<ProfileController> {
@@ -11,10 +12,10 @@ class ProfileView extends GetView<ProfileController> {
     final controller = Get.put(ProfileController());
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF8FAFC), // Slate 50 background
+      backgroundColor: NetlabsTheme.surface,
       body: Obx(() {
         if (controller.isLoading.value) {
-          return const Center(child: CircularProgressIndicator(color: Color(0xFF0D9488)));
+          return const Center(child: CircularProgressIndicator(color: NetlabsTheme.primary));
         }
         
         return SingleChildScrollView(
@@ -27,7 +28,7 @@ class ProfileView extends GetView<ProfileController> {
                 width: double.infinity,
                 padding: const EdgeInsets.only(top: 60, bottom: 80),
                 decoration: const BoxDecoration(
-                  color: Color(0xFF0D9488), // Solid royal blue
+                  color: NetlabsTheme.primary,
                   borderRadius: BorderRadius.only(
                     bottomLeft: Radius.circular(32),
                     bottomRight: Radius.circular(32),
@@ -55,7 +56,7 @@ class ProfileView extends GetView<ProfileController> {
                     width: double.infinity,
                     padding: const EdgeInsets.all(20),
                     decoration: BoxDecoration(
-                      color: Colors.white,
+                      color: NetlabsTheme.card,
                       borderRadius: BorderRadius.circular(24),
                       boxShadow: [
                         BoxShadow(
@@ -74,16 +75,41 @@ class ProfileView extends GetView<ProfileController> {
                             border: Border.all(color: Colors.white, width: 4),
                             boxShadow: [
                               BoxShadow(
-                                  color: const Color(0xFF0D9488).withOpacity(0.3),
+                                  color: NetlabsTheme.primary.withAlpha(50),
                                   blurRadius: 16,
                                   offset: const Offset(0, 4),
                                 ),
                             ],
                           ),
-                          child: const CircleAvatar(
-                            radius: 40,
-                            backgroundColor: Color(0xFF0D9488),
-                            child: Icon(Icons.person_rounded, size: 45, color: Colors.white),
+                          child: Stack(
+                            alignment: Alignment.bottomRight,
+                            children: [
+                              Obx(() => CircleAvatar(
+                                radius: 40,
+                                backgroundColor: NetlabsTheme.primary,
+                                backgroundImage: controller.fotoProfilUrl.value != null 
+                                  ? NetworkImage(controller.fotoProfilUrl.value!) 
+                                  : null,
+                                child: controller.fotoProfilUrl.value == null 
+                                  ? const Icon(Icons.person_rounded, size: 45, color: Colors.white)
+                                  : null,
+                              )),
+                              GestureDetector(
+                                onTap: () => controller.gantiFotoProfil(),
+                                child: Container(
+                                  padding: const EdgeInsets.all(6),
+                                  decoration: BoxDecoration(
+                                    color: NetlabsTheme.dark,
+                                    shape: BoxShape.circle,
+                                    border: Border.all(color: Colors.white, width: 2),
+                                  ),
+                                  child: Obx(() => controller.isUploading.value 
+                                    ? const SizedBox(width: 14, height: 14, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
+                                    : const Icon(Icons.camera_alt_rounded, size: 14, color: Colors.white)
+                                  ),
+                                ),
+                              ),
+                            ],
                           ),
                         ),
                         const SizedBox(height: 12),
@@ -95,7 +121,7 @@ class ProfileView extends GetView<ProfileController> {
                           style: const TextStyle(
                             fontSize: 20,
                             fontWeight: FontWeight.w800,
-                            color: Color(0xFF0F172A),
+                            color: NetlabsTheme.dark,
                           ),
                         )),
                         const SizedBox(height: 4),
@@ -105,7 +131,7 @@ class ProfileView extends GetView<ProfileController> {
                           "NIS: ${controller.nis.value.isEmpty ? '-' : controller.nis.value}",
                           style: const TextStyle(
                             fontSize: 13,
-                            color: Color(0xFF64748B),
+                            color: NetlabsTheme.textSecondary,
                             fontWeight: FontWeight.w500,
                           ),
                         )),
@@ -129,7 +155,7 @@ class ProfileView extends GetView<ProfileController> {
                       style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w800,
-                        color: Color(0xFF0F172A),
+                        color: NetlabsTheme.dark,
                       ),
                     ),
                     const SizedBox(height: 12),
@@ -150,7 +176,7 @@ class ProfileView extends GetView<ProfileController> {
                           "${controller.rataRataNilai.value}",
                           "Skor Evaluasi",
                           Icons.analytics_rounded,
-                          const Color(0xFF10B981), // Emerald Green
+                          NetlabsTheme.success, // Emerald Green
                         )),
                       ],
                     ),
@@ -161,8 +187,8 @@ class ProfileView extends GetView<ProfileController> {
                       "Interaksi AI Chat Tutor",
                       "${controller.totalChatKeAI.value} Pertanyaan Praktikum",
                       "Telah dijawab oleh AI",
-                      Icons.psychology_rounded,
-                      const Color(0xFF8B5CF6), // Purple
+                      Icons.auto_awesome_rounded,
+                      NetlabsTheme.accent, // Purple
                     )),
                     
                     const SizedBox(height: 28),
@@ -172,9 +198,9 @@ class ProfileView extends GetView<ProfileController> {
                     // ==========================================
                     Container(
                       decoration: BoxDecoration(
-                        color: Colors.white,
+                        color: NetlabsTheme.card,
                         borderRadius: BorderRadius.circular(16),
-                        border: Border.all(color: const Color(0xFFE2E8F0)),
+                        border: Border.all(color: NetlabsTheme.border, width: 0.5),
                       ),
                       child: Column(
                         children: [
@@ -183,7 +209,7 @@ class ProfileView extends GetView<ProfileController> {
                             "Kebijakan Privasi",
                             () {},
                           ),
-                          const Divider(height: 1, indent: 56, color: Color(0xFFF8FAFC)),
+                          const Divider(height: 1, indent: 56, color: NetlabsTheme.surface),
                           _buildActionTile(
                             Icons.info_outline_rounded,
                             "Tentang Aplikasi Netlabs",
@@ -199,19 +225,19 @@ class ProfileView extends GetView<ProfileController> {
                     ElevatedButton(
                       onPressed: () => _showLogoutBottomSheet(),
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.white,
-                        foregroundColor: Colors.red.shade600,
+                        backgroundColor: NetlabsTheme.card,
+                        foregroundColor: NetlabsTheme.danger,
                         minimumSize: const Size(double.infinity, 52),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(16),
-                          side: BorderSide(color: Colors.red.shade100, width: 1),
+                          side: BorderSide(color: NetlabsTheme.danger.withAlpha(50), width: 0.5),
                         ),
                         elevation: 0,
                       ),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Icon(Icons.logout_rounded, size: 20, color: Colors.red.shade600),
+                          Icon(Icons.logout_rounded, size: 20, color: NetlabsTheme.danger),
                           const SizedBox(width: 8),
                           const Text(
                             "Keluar dari Aplikasi",
@@ -242,16 +268,10 @@ class ProfileView extends GetView<ProfileController> {
       child: Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: NetlabsTheme.card,
           borderRadius: BorderRadius.circular(20),
-          border: Border.all(color: const Color(0xFFE2E8F0)),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.02),
-              blurRadius: 10,
-              offset: const Offset(0, 4),
-            ),
-          ],
+          border: Border.all(color: NetlabsTheme.border, width: 0.5),
+          boxShadow: NetlabsTheme.shadowSm,
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -267,7 +287,7 @@ class ProfileView extends GetView<ProfileController> {
               style: const TextStyle(
                 fontSize: 22,
                 fontWeight: FontWeight.w900,
-                color: Color(0xFF0F172A),
+                color: NetlabsTheme.dark,
               ),
             ),
             const SizedBox(height: 2),
@@ -276,14 +296,14 @@ class ProfileView extends GetView<ProfileController> {
               style: const TextStyle(
                 fontSize: 12,
                 fontWeight: FontWeight.bold,
-                color: Color(0xFF475569),
+                color: NetlabsTheme.textSecondary,
               ),
             ),
             Text(
               subtitle,
               style: const TextStyle(
                 fontSize: 10,
-                color: Color(0xFF94A3B8),
+                color: NetlabsTheme.textMuted,
               ),
             ),
           ],
@@ -297,16 +317,10 @@ class ProfileView extends GetView<ProfileController> {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: NetlabsTheme.card,
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: const Color(0xFFE2E8F0)),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.02),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
-          ),
-        ],
+        border: Border.all(color: NetlabsTheme.border, width: 0.5),
+        boxShadow: NetlabsTheme.shadowSm,
       ),
       child: Row(
         children: [
@@ -325,7 +339,7 @@ class ProfileView extends GetView<ProfileController> {
                   style: const TextStyle(
                     fontSize: 13,
                     fontWeight: FontWeight.bold,
-                    color: Color(0xFF0F172A),
+                    color: NetlabsTheme.dark,
                   ),
                 ),
                 Text(
@@ -333,7 +347,7 @@ class ProfileView extends GetView<ProfileController> {
                   style: const TextStyle(
                     fontSize: 12,
                     fontWeight: FontWeight.w500,
-                    color: Color(0xFF64748B),
+                    color: NetlabsTheme.textSecondary,
                   ),
                 ),
               ],
@@ -362,13 +376,13 @@ class ProfileView extends GetView<ProfileController> {
   // Action Tile
   Widget _buildActionTile(IconData icon, String title, VoidCallback onTap) {
     return ListTile(
-      leading: Icon(icon, color: const Color(0xFF475569), size: 22),
+      leading: Icon(icon, color: NetlabsTheme.textSecondary, size: 22),
       title: Text(
         title,
         style: const TextStyle(
           fontSize: 14,
           fontWeight: FontWeight.bold,
-          color: Color(0xFF334155),
+          color: NetlabsTheme.textPrimary,
         ),
       ),
       trailing: const Icon(Icons.arrow_forward_ios_rounded, size: 14, color: Colors.grey),
@@ -384,7 +398,7 @@ class ProfileView extends GetView<ProfileController> {
       Container(
         padding: const EdgeInsets.all(24),
         decoration: const BoxDecoration(
-          color: Colors.white,
+          color: NetlabsTheme.card,
           borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
         ),
         child: Column(
@@ -394,7 +408,7 @@ class ProfileView extends GetView<ProfileController> {
               width: 40,
               height: 4,
               decoration: BoxDecoration(
-                color: const Color(0xFFCBD5E1),
+                color: NetlabsTheme.border,
                 borderRadius: BorderRadius.circular(2),
               ),
             ),
@@ -404,15 +418,15 @@ class ProfileView extends GetView<ProfileController> {
               style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.w900,
-                color: Color(0xFFEF4444),
+                color: NetlabsTheme.danger,
               ),
             ),
             const SizedBox(height: 12),
-            Text(
+            const Text(
               "Apakah kamu yakin ingin keluar dari akun Netlabs siswa?",
               textAlign: TextAlign.center,
-              style: const TextStyle(
-                color: Color(0xFF64748B),
+              style: TextStyle(
+                color: NetlabsTheme.textSecondary,
                 fontSize: 14,
               ),
             ),
@@ -427,7 +441,7 @@ class ProfileView extends GetView<ProfileController> {
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(14),
                       ),
-                      side: const BorderSide(color: Color(0xFFCBD5E1)),
+                      side: const BorderSide(color: NetlabsTheme.border),
                     ),
                     child: const Text("Batal"),
                   ),
@@ -440,7 +454,7 @@ class ProfileView extends GetView<ProfileController> {
                       controller.logout();
                     },
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFFEF4444),
+                      backgroundColor: NetlabsTheme.danger,
                       minimumSize: const Size(double.infinity, 48),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(14),

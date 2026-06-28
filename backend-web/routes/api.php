@@ -37,4 +37,5 @@ Route::middleware('auth:sanctum')->group(function () {
     // Statistik Siswa
     Route::get('/siswa/statistik', [SiswaController::class, 'statistik']);
     Route::get('/siswa/pertemuan-aktif', [SiswaController::class, 'pertemuanAktif']);
+    Route::post('/siswa/foto-profil', [SiswaController::class, 'updateFotoProfil']);
 });

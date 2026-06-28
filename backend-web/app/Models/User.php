@@ -20,7 +20,10 @@ class User extends Authenticatable implements HasName
         'role',
         'kelas',
         'kelas_id',
+        'foto_profil',
     ];
+
+    protected $appends = ['foto_profil_url'];
 
     // Sembunyikan password saat data user di-return dalam bentuk JSON
     protected $hidden = [
@@ -62,5 +65,13 @@ class User extends Authenticatable implements HasName
                 }
             }
         });
+    }
+
+    public function getFotoProfilUrlAttribute()
+    {
+        if ($this->foto_profil) {
+            return url('storage/' . $this->foto_profil);
+        }
+        return null;
     }
 }

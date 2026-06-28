@@ -18,13 +18,13 @@ class HasilKuisResource extends Resource
 {
     protected static ?string $model = HasilKuis::class;
 
-    protected static \BackedEnum|string|null $navigationIcon = 'heroicon-o-academic-cap';
+    protected static \BackedEnum|string|null $navigationIcon = 'heroicon-o-clipboard-document-check';
 
-    protected static ?string $navigationLabel = 'Manajemen Nilai';
+    protected static ?string $navigationLabel = 'Hasil Kuis';
 
     protected static ?int $navigationSort = 4;
 
-    protected static ?string $pluralModelLabel = 'Nilai Siswa';
+    protected static ?string $pluralModelLabel = 'Hasil Kuis';
 
     public static function form(Schema $schema): Schema
     {

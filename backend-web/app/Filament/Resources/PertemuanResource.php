@@ -15,7 +15,7 @@ class PertemuanResource extends Resource
 {
     protected static ?string $model = Pertemuan::class;
 
-    protected static \BackedEnum|string|null $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static \BackedEnum|string|null $navigationIcon = 'heroicon-o-academic-cap';
 
     protected static ?string $navigationLabel = 'Modul Pertemuan';
 

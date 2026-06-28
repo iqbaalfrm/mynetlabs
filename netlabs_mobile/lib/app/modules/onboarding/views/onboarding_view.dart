@@ -1,4 +1,4 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import '../../../routes/app_pages.dart';
@@ -27,7 +27,7 @@ class _OnboardingViewState extends State<OnboardingView> {
       'color': const Color(0xFF0F766E),
     },
     {
-      'icon': Icons.smart_toy_rounded,
+      'icon': Icons.auto_awesome_rounded,
       'title': 'AI Tutor Siap Membantu',
       'desc': 'Bingung dengan materi? Tanya langsung ke AI Tutor 24/7. Dapatkan penjelasan tentang VLSM, CIDR, DHCP, dan lainnya.',
       'color': const Color(0xFF14B8A6),

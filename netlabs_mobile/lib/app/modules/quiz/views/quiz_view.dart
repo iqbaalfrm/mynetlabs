@@ -55,7 +55,7 @@ class QuizView extends GetView<QuizController> {
                     children: [
                       const Row(
                         children: [
-                          Icon(Icons.psychology_rounded, color: Colors.purple, size: 20),
+                          Icon(Icons.auto_awesome_rounded, color: Colors.purple, size: 20),
                           SizedBox(width: 6),
                           Text("Rekomendasi AI Tutor:", style: TextStyle(fontWeight: FontWeight.bold, color: Colors.purple, fontSize: 13)),
                         ],

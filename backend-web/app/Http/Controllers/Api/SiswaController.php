@@ -59,6 +59,7 @@ class SiswaController extends Controller
                     'nama' => $siswa->nama,
                     'kelas' => $siswa->kelas,
                     'role' => $siswa->role,
+                    'foto_profil_url' => $siswa->foto_profil_url,
                 ],
                 'statistik' => [
                     'total_pertemuan_selesai' => $pertemuanSelesai,
@@ -112,5 +113,39 @@ class SiswaController extends Controller
             'message' => 'Pertemuan aktif berhasil dimuat.',
             'data' => $aktif,
         ], 200);
+    }
+
+    // POST /api/siswa/foto-profil
+    // Mengunggah dan memperbarui foto profil siswa
+    public function updateFotoProfil(Request $request)
+    {
+        $request->validate([
+            'foto' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
+        ]);
+
+        $siswa = $request->user();
+
+        if ($request->hasFile('foto')) {
+            // Hapus foto lama jika ada
+            if ($siswa->foto_profil && \Illuminate\Support\Facades\Storage::disk('public')->exists($siswa->foto_profil)) {
+                \Illuminate\Support\Facades\Storage::disk('public')->delete($siswa->foto_profil);
+            }
+
+            // Simpan foto baru
+            $path = $request->file('foto')->store('avatars', 'public');
+            $siswa->foto_profil = $path;
+            $siswa->save();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Foto profil berhasil diperbarui.',
+                'foto_profil_url' => $siswa->foto_profil_url,
+            ], 200);
+        }
+
+        return response()->json([
+            'success' => false,
+            'message' => 'Gagal mengunggah foto profil.',
+        ], 400);
     }
 }

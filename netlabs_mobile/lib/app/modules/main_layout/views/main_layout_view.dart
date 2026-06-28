@@ -41,7 +41,7 @@ class MainLayoutView extends GetView<MainLayoutController> {
               label: 'Materi',
             ),
             BottomNavigationBarItem(
-              icon: Icon(Icons.psychology_rounded),
+              icon: Icon(Icons.blur_on_rounded),
               label: 'Chatbot',
             ),
             BottomNavigationBarItem(

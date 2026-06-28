@@ -1,5 +1,5 @@
 import 'package:dio/dio.dart';
-import 'package:get/get.dart' hide Response;
+import 'package:get/get.dart' hide Response, FormData, MultipartFile;
 import 'package:get_storage/get_storage.dart';
 
 /// Kelas penyedia HTTP tunggal (Dio) untuk seluruh aplikasi Netlabs.
@@ -18,7 +18,7 @@ class ApiProvider extends GetxController {
     _dio = Dio(BaseOptions(
       baseUrl: baseUrl,
       connectTimeout: const Duration(seconds: 15),
-      receiveTimeout: const Duration(seconds: 20),
+      receiveTimeout: const Duration(seconds: 60),
       headers: {
         'Accept': 'application/json',
         'Content-Type': 'application/json',
@@ -62,6 +62,18 @@ class ApiProvider extends GetxController {
 
   Future<Response> getUserProfile() async {
     return await _dio.get('/user-profile');
+  }
+
+  Future<Response> updateFotoProfil(String filePath) async {
+    String fileName = filePath.split('/').last;
+    FormData formData = FormData.fromMap({
+      "foto": await MultipartFile.fromFile(filePath, filename: fileName),
+    });
+    return await _dio.post(
+      '/siswa/foto-profil',
+      data: formData,
+      options: Options(headers: {"Content-Type": "multipart/form-data"}),
+    );
   }
 
   // ============ MATERI ============

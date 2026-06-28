@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
+import '../../theme/netlabs_theme.dart';
 import '../controllers/chatbot_controller.dart';
 
 class ChatbotView extends GetView<ChatbotController> {
@@ -8,133 +9,206 @@ class ChatbotView extends GetView<ChatbotController> {
 
   @override
   Widget build(BuildContext context) {
-    final controller = Get.put(ChatbotController());
-
+    Get.put(ChatbotController());
     return Scaffold(
-      backgroundColor: const Color(0xFFF8FAFC),
+      backgroundColor: NetlabsTheme.surface,
       appBar: AppBar(
-        title: const Text("AI Tutor Kelompok Jaringan", style: TextStyle(fontWeight: FontWeight.bold, color: Color(0xFF0F766E))),
-        backgroundColor: Colors.white,
+        title: const Text('AI Tutor', style: TextStyle(fontWeight: FontWeight.w700, color: NetlabsTheme.textPrimary)),
+        backgroundColor: NetlabsTheme.surface,
         elevation: 0,
         centerTitle: true,
       ),
-      body: Column(
-        children: [
-          // 1. Daftar Bubble Chat[cite: 1]
-          Expanded(
-            child: Obx(() => ListView.builder(
-                  controller: controller.scrollController,
-                  padding: const EdgeInsets.all(16),
-                  itemCount: controller.chatMessages.length,
-                  itemBuilder: (context, index) {
-                    var chat = controller.chatMessages[index];
-                    bool isSiswa = chat['sender'] == 'siswa';
+      body: Column(children: [
+        Expanded(child: _buildChatList()),
+        Obx(() => controller.isAiTyping.value
+            ? Padding(
+                padding: const EdgeInsets.symmetric(vertical: 10),
+                child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+                  const SpinKitThreeBounce(color: NetlabsTheme.primary, size: 18),
+                  const SizedBox(width: 8),
+                  Text('AI Tutor sedang menyusun jawaban...', style: TextStyle(fontSize: 12, color: NetlabsTheme.textMuted)),
+                ]),
+              )
+            : const SizedBox.shrink()),
+        _buildSuggestionChips(),
+        const SizedBox(height: 8),
+        _buildInputBar(),
+      ]),
+    );
+  }
 
-                    return Column(
-                      crossAxisAlignment: isSiswa ? CrossAxisAlignment.end : CrossAxisAlignment.start,
-                      children: [
-                        // Bubble balon chat
-                        Container(
-                          margin: const EdgeInsets.symmetric(vertical: 6),
-                          padding: const EdgeInsets.all(14),
-                          constraints: BoxConstraints(maxWidth: Get.width * 0.75),
-                          decoration: BoxDecoration(
-                            color: isSiswa ? const Color(0xFF0D9488) : Colors.white,
-                            borderRadius: BorderRadius.circular(16).copyWith(
-                              bottomRight: isSiswa ? const Radius.circular(0) : const Radius.circular(16),
-                              topLeft: !isSiswa ? const Radius.circular(0) : const Radius.circular(16),
-                            ),
-                            boxShadow: [BoxShadow(color: Colors.grey.withAlpha(10), blurRadius: 5)],
-                          ),
-                          child: Text(
-                            chat['pesan'],
-                            style: TextStyle(color: isSiswa ? Colors.white : Colors.black87, fontSize: 14, height: 1.4),
-                          ),
-                        ),
-                        // Label Referensi Sumber RAG[cite: 1]
-                        if (!isSiswa && chat['sumber'] != null)
-                          Padding(
-                            padding: const EdgeInsets.only(left: 4, bottom: 8),
-                            child: Chip(
-                              avatar: const Icon(Icons.bookmark_outline, size: 12, color: Color(0xFF0D9488)),
-                              label: Text(chat['sumber'], style: const TextStyle(fontSize: 10, color: Color(0xFF0D9488))),
-                              backgroundColor: const Color(0xFF0D9488).withAlpha(15),
-                              side: BorderSide.none,
-                              visualDensity: VisualDensity.compact,
-                            ),
-                          ),
-                      ],
-                    );
-                  },
-                )),
+  Widget _buildChatList() {
+    return Obx(() {
+      return ListView.builder(
+        controller: controller.scrollCtrl,
+        padding: const EdgeInsets.all(16),
+        itemCount: controller.messages.length,
+        itemBuilder: (context, index) {
+          final chat = controller.messages[index];
+          final isSiswa = chat['sender'] == 'siswa';
+          return _ChatBubble(isSiswa: isSiswa, message: chat['pesan'] ?? '', source: chat['sumber']);
+        },
+      );
+    });
+  }
+
+  Widget _buildSuggestionChips() {
+    return Obx(() {
+      if (controller.messages.length > 1) return const SizedBox.shrink();
+      return SizedBox(
+        height: 40,
+        child: ListView.separated(
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          scrollDirection: Axis.horizontal,
+          itemCount: controller.chips.length,
+          separatorBuilder: (_, __) => const SizedBox(width: 8),
+          itemBuilder: (_, i) => ActionChip(
+            label: Text(controller.chips[i], style: const TextStyle(fontSize: 12, color: NetlabsTheme.primary)),
+            backgroundColor: NetlabsTheme.card,
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(99)),
+            side: const BorderSide(color: NetlabsTheme.border),
+            onPressed: () => controller.sendMessage(controller.chips[i]),
           ),
+        ),
+      );
+    });
+  }
 
-          // 2. Indikator Loading AI Mengetik[cite: 1]
-          Obx(() => controller.isAiTyping.value
-              ? const Padding(
-                  padding: EdgeInsets.symmetric(vertical: 10),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      SpinKitThreeBounce(color: Color(0xFF0D9488), size: 18),
-                      SizedBox(width: 8),
-                      Text("AI Tutor sedang menyusun jawaban...", style: TextStyle(fontSize: 12, color: Colors.grey)),
-                    ],
-                  ),
-                )
-              : const SizedBox()),
+  Widget _buildInputBar() {
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: NetlabsTheme.card,
+        boxShadow: [BoxShadow(color: NetlabsTheme.dark.withAlpha(6), blurRadius: 10, offset: const Offset(0, -2))],
+      ),
+      child: Row(children: [
+        Expanded(
+          child: TextField(
+            controller: controller.msgCtrl,
+            decoration: InputDecoration(
+              hintText: 'Tanyakan materi jaringan...',
+              border: OutlineInputBorder(borderRadius: BorderRadius.circular(NetlabsTheme.radiusSm), borderSide: BorderSide.none),
+              filled: true, fillColor: NetlabsTheme.surface,
+              contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            ),
+            onSubmitted: (v) => controller.sendMessage(v),
+          ),
+        ),
+        const SizedBox(width: 8),
+        Container(
+          decoration: BoxDecoration(
+            color: NetlabsTheme.primary,
+            borderRadius: BorderRadius.circular(NetlabsTheme.radiusSm),
+            boxShadow: NetlabsTheme.shadowMd,
+          ),
+          child: IconButton(
+            icon: const Icon(Icons.send_rounded, color: Colors.white, size: 20),
+            onPressed: () => controller.sendMessage(controller.msgCtrl.text),
+          ),
+        ),
+      ]),
+    );
+  }
+}
 
-          // 3. Suggestion Chips (Pertanyaan Otomatis)[cite: 1]
-          Obx(() => controller.chatMessages.length <= 1
-              ? SizedBox(
-                  height: 40,
-                  child: ListView.separated(
-                    padding: const EdgeInsets.symmetric(horizontal: 16),
-                    scrollDirection: Axis.horizontal,
-                    itemCount: controller.suggestionChips.length,
-                    separatorBuilder: (context, index) => const SizedBox(width: 8),
-                    itemBuilder: (context, index) {
-                      var chipText = controller.suggestionChips[index];
-                      return ActionChip(
-                        label: Text(chipText, style: const TextStyle(fontSize: 12, color: Color(0xFF0F766E))),
-                        backgroundColor: Colors.white,
-                        onPressed: () => controller.sendMessage(chipText),
-                      );
-                    },
-                  ),
-                )
-              : const SizedBox()),
-          const SizedBox(height: 8),
+class _ChatBubble extends StatelessWidget {
+  final bool isSiswa;
+  final String message;
+  final String? source;
+  const _ChatBubble({required this.isSiswa, required this.message, this.source});
 
-          // 4. Input Teks Lapangan[cite: 1]
-          Container(
-            padding: const EdgeInsets.all(12),
-            color: Colors.white,
-            child: Row(
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 14),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.end,
+        mainAxisAlignment: isSiswa ? MainAxisAlignment.end : MainAxisAlignment.start,
+        children: [
+          if (!isSiswa) _buildAiAvatar(),
+          if (!isSiswa) const SizedBox(width: 8),
+          Flexible(
+            child: Column(
+              crossAxisAlignment: isSiswa ? CrossAxisAlignment.end : CrossAxisAlignment.start,
               children: [
-                Expanded(
-                  child: TextField(
-                    controller: controller.messageController,
-                    decoration: InputDecoration(
-                      hintText: "Tanyakan kendala jaringan di sini...[cite: 1]",
-                      border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide.none),
-                      filled: true,
-                      fillColor: const Color(0xFFF1F5F9),
-                      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                Container(
+                  padding: const EdgeInsets.all(14),
+                  constraints: BoxConstraints(maxWidth: Get.width * 0.72),
+                  decoration: BoxDecoration(
+                    color: isSiswa ? NetlabsTheme.primary : const Color(0xFFF1F5F9), // Solid Soft Slate Grey
+                    borderRadius: BorderRadius.only(
+                      topLeft: const Radius.circular(NetlabsTheme.radiusLg),
+                      topRight: const Radius.circular(NetlabsTheme.radiusLg),
+                      bottomLeft: isSiswa ? const Radius.circular(NetlabsTheme.radiusLg) : const Radius.circular(6),
+                      bottomRight: isSiswa ? const Radius.circular(6) : const Radius.circular(NetlabsTheme.radiusLg),
                     ),
-                    onSubmitted: (val) => controller.sendMessage(val),
                   ),
+                  child: _isCliText(message)
+                      ? _buildCliBlock(message)
+                      : Text(message, style: TextStyle(color: isSiswa ? Colors.white : NetlabsTheme.dark, fontSize: 14, height: 1.5)),
                 ),
-                const SizedBox(width: 8),
-                IconButton(
-                  icon: const Icon(Icons.send_rounded, color: Color(0xFF0D9488)),
-                  onPressed: () => controller.sendMessage(controller.messageController.text),
-                )
+                if (!isSiswa && source != null) ...[
+                  const SizedBox(height: 4),
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                    decoration: BoxDecoration(color: NetlabsTheme.success.withAlpha(15), borderRadius: BorderRadius.circular(6), border: Border.all(color: NetlabsTheme.success.withAlpha(50))),
+                    child: Row(mainAxisSize: MainAxisSize.min, children: [
+                      const Icon(Icons.bookmark_outline, size: 11, color: NetlabsTheme.success),
+                      const SizedBox(width: 4),
+                      Text(source!, style: const TextStyle(fontSize: 10, fontWeight: FontWeight.w600, color: NetlabsTheme.success)),
+                    ]),
+                  ),
+                ],
               ],
             ),
-          )
+          ),
         ],
       ),
     );
   }
+
+  Widget _buildAiAvatar() {
+    return Container(
+      width: 32, height: 32, margin: const EdgeInsets.only(bottom: 4),
+      decoration: BoxDecoration(
+        color: NetlabsTheme.primary.withAlpha(25), // 10% Opacity Deep Indigo
+        borderRadius: BorderRadius.circular(10), 
+      ),
+      child: const Icon(Icons.auto_awesome_rounded, color: NetlabsTheme.primary, size: 18),
+    );
+  }
+
+  bool _isCliText(String t) {
+    return t.contains('interface ') || t.contains('ip ') || t.contains('router ') ||
+        t.contains('show ') || t.contains('enable') || t.contains('conf t') ||
+        t.contains('switchport') || t.contains('access-list') || t.contains('vlan ') ||
+        t.contains('ping ') || t.contains('tracert');
+  }
+
+  Widget _buildCliBlock(String text) {
+    final lines = text.split('\n');
+    return Container(
+      width: double.infinity, padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(color: const Color(0xFF1E293B), borderRadius: BorderRadius.circular(10)),
+      child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+        Row(children: [
+          _dot(const Color(0xFFFF5F56)), const SizedBox(width: 6),
+          _dot(const Color(0xFFFFBD2E)), const SizedBox(width: 6),
+          _dot(const Color(0xFF27C93F)),
+          const Spacer(),
+          const Text('CLI - Cisco IOS', style: TextStyle(fontSize: 10, color: Colors.white38, fontFamily: 'monospace')),
+        ]),
+        const SizedBox(height: 10),
+        ...lines.map((line) {
+          final isCmd = line.trimLeft().startsWith(RegExp(r'Router|Switch|#|>'));
+          return Padding(
+            padding: const EdgeInsets.only(bottom: 2),
+            child: Text(line, style: TextStyle(fontSize: 13, fontFamily: 'monospace', height: 1.4, color: isCmd ? const Color(0xFF22D3EE) : const Color(0xFFF8FAFC))), // Cyan/White
+          );
+        }),
+      ]),
+    );
+  }
+
+  Widget _dot(Color c) => Container(width: 10, height: 10, decoration: BoxDecoration(color: c, shape: BoxShape.circle));
 }

@@ -1,545 +1,566 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
+import '../../theme/netlabs_theme.dart';
 import '../controllers/home_controller.dart';
 
 class HomeView extends GetView<HomeController> {
   const HomeView({super.key});
 
-  // Warna tema Netlabs
-  static const Color _primary = Color(0xFF0D9488);
-  static const Color _dark = Color(0xFF0F766E);
-  static const Color _bg = Color(0xFFF8FAFC);
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: _bg,
+      backgroundColor: NetlabsTheme.surface,
       body: SafeArea(
         child: Obx(() {
-          if (controller.isLoading.value) {
-            return const Center(child: CircularProgressIndicator(color: _primary));
-          }
+          if (controller.isLoading.value) return _buildLoading();
+          if (controller.isError.value) return _buildError();
           return RefreshIndicator(
             onRefresh: () async => controller.loadDashboard(),
-            color: _primary,
-            child: SingleChildScrollView(
+            color: NetlabsTheme.primary,
+            child: CustomScrollView(
               physics: const AlwaysScrollableScrollPhysics(),
-              padding: const EdgeInsets.all(20.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  _buildHeader(),
-                  const SizedBox(height: 24),
-                  _buildProgressRing(),
-                  const SizedBox(height: 24),
-                  _buildLanjutBelajar(),
-                  const SizedBox(height: 28),
-                  _buildPertemuanAktif(),
-                  const SizedBox(height: 28),
-                  _buildKuisPending(),
-                ],
-              ),
+              slivers: [
+                _buildSliverHeader(),
+                _buildSliverStatCards(),
+                _buildSliverLanjutBelajar(),
+                _buildSliverQuickActions(),
+                _buildSliverSectionTitle('Modul Tersedia', 'Lihat Semua', () => controller.bukaMateri()),
+                _buildSliverHorizontalModules(),
+                _buildSliverSectionTitle('Insight Jaringan', null, null),
+                _buildSliverAiInsight(),
+                const SliverToBoxAdapter(child: SizedBox(height: 100)),
+              ],
             ),
           );
         }),
       ),
-      floatingActionButton: Container(
-        decoration: BoxDecoration(
-          color: const Color(0xFF0F766E),
-          borderRadius: BorderRadius.circular(20),
-          boxShadow: [
-            BoxShadow(color: const Color(0xFF7C3AED).withAlpha(80), blurRadius: 12, offset: const Offset(0, 6)),
+    );
+  }
+
+  SliverToBoxAdapter _buildSliverHeader() {
+    return SliverToBoxAdapter(
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(20, 16, 20, 8),
+        child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+          Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+            Obx(() => Text(controller.greeting.value, style: const TextStyle(fontSize: 14, color: NetlabsTheme.textSecondary))),
+            const SizedBox(height: 2),
+            Obx(() => Text(controller.studentName.value, style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w800, color: NetlabsTheme.dark))),
+            Obx(() => Text('${controller.studentClass.value}', style: const TextStyle(fontSize: 13, color: NetlabsTheme.primaryLight))),
+          ]),
+          Obx(() {
+            final hasPhoto = controller.fotoProfilUrl.value != null;
+            return GestureDetector(
+              onTap: () => Get.toNamed('/profile'),
+              child: Container(
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  boxShadow: NetlabsTheme.shadowSm,
+                ),
+                child: CircleAvatar(
+                  radius: 22, // 44 diameter
+                  backgroundColor: NetlabsTheme.primary,
+                  backgroundImage: hasPhoto ? NetworkImage(controller.fotoProfilUrl.value!) : null,
+                  child: hasPhoto 
+                    ? null 
+                    : const Icon(Icons.person_rounded, size: 28, color: Colors.white),
+                ),
+              ),
+            );
+          }),
+        ]),
+      ),
+    );
+  }
+
+  SliverToBoxAdapter _buildSliverStatCards() {
+    return SliverToBoxAdapter(
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(20, 12, 20, 8),
+        child: Row(children: [
+          Expanded(child: _statTile(Icons.check_circle_rounded, 'Selesai', '${controller.totalTopikSelesai.value}/${controller.totalTopik.value}', NetlabsTheme.success)),
+          const SizedBox(width: 10),
+          Expanded(child: _statTile(Icons.quiz_rounded, 'Nilai', '${controller.rataRataNilai.value.toStringAsFixed(0)}', NetlabsTheme.accent)),
+          const SizedBox(width: 10),
+          Expanded(child: _statTile(Icons.auto_awesome_rounded, 'AI Chat', '${controller.totalChatAI.value}', NetlabsTheme.warning)),
+        ]),
+      ),
+    );
+  }
+
+  Widget _statTile(IconData icon, String label, String value, Color color) {
+    return Container(
+      padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 12),
+      decoration: BoxDecoration(color: color.withAlpha(18), borderRadius: BorderRadius.circular(NetlabsTheme.radiusMd)),
+      child: Column(children: [
+        Icon(icon, size: 22, color: color), const SizedBox(height: 6),
+        Text(value, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w700, color: NetlabsTheme.textPrimary)),
+        Text(label, style: const TextStyle(fontSize: 11, color: NetlabsTheme.textSecondary)),
+      ]),
+    );
+  }
+
+  SliverToBoxAdapter _buildSliverSectionTitle(String title, String? action, VoidCallback? onAction) {
+    return SliverToBoxAdapter(
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(20, 24, 20, 12),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(title, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w800, color: NetlabsTheme.dark)),
+            if (action != null)
+              GestureDetector(
+                onTap: onAction,
+                child: Text(action, style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: NetlabsTheme.primary)),
+              ),
           ],
         ),
-        child: FloatingActionButton.extended(
-          onPressed: () => controller.bukaChatbot(),
-          backgroundColor: Colors.transparent,
-          elevation: 0,
-          icon: const Icon(Icons.smart_toy_rounded, color: Colors.white, size: 24),
-          label: const Text(
-            'AI Tutor',
-            style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 14),
-          ),
-        ),
       ),
     );
   }
 
-  // ===== SECTION 1: HEADER DENGAN GREETING DINAMIS =====
-  Widget _buildHeader() {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        Expanded(
-          child: Row(
-            children: [
-              // Avatar bulat dengan inisial
-              Container(
-                width: 48,
-                height: 48,
-                decoration: BoxDecoration(
-                  color: const Color(0xFF0F766E),
-                  borderRadius: BorderRadius.circular(14),
-                ),
-                child: Center(
-                  child: Obx(() => Text(
-                        _getInitials(controller.studentName.value),
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 18,
-                        ),
-                      )),
-                ),
-              ),
-              const SizedBox(width: 14),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Obx(() => Text(
-                          controller.greeting.value,
-                          style: const TextStyle(fontSize: 13, color: Colors.grey),
-                        )),
-                    Obx(() => Text(
-                          controller.studentName.value,
-                          style: const TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                            color: _dark,
-                          ),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                        )),
-                    Obx(() => Container(
-                          margin: const EdgeInsets.only(top: 2),
-                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-                          decoration: BoxDecoration(
-                            color: _primary.withAlpha(20),
-                            borderRadius: BorderRadius.circular(6),
-                          ),
-                          child: Text(
-                            controller.studentClass.value,
-                            style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w600, color: _primary),
-                          ),
-                        )),
-                  ],
-                ),
-              ),
-            ],
-          ),
-        ),
-        IconButton(
-          icon: const Icon(Icons.logout_rounded, color: Colors.redAccent),
-          onPressed: () => _showLogoutConfirmation(),
-        ),
-      ],
+  SliverToBoxAdapter _buildSliverLanjutBelajar() {
+    return SliverToBoxAdapter(
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(20, 12, 20, 12),
+        child: _buildLanjutBelajarCard(),
+      ),
     );
   }
 
-  // ===== SECTION 2: PROGRESS RING SEMESTER =====
-  Widget _buildProgressRing() {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: const Color(0xFF0F766E),
-        borderRadius: BorderRadius.circular(20),
-        boxShadow: [
-          BoxShadow(color: _primary.withAlpha(40), blurRadius: 12, offset: const Offset(0, 6)),
-        ],
-      ),
-      child: Row(
-        children: [
-          // Progress ring melingkar
-          SizedBox(
-            width: 80,
-            height: 80,
-            child: Stack(
-              children: [
-                Obx(() => CircularProgressIndicator(
-                      value: controller.progressSemester.value,
-                      backgroundColor: Colors.white.withAlpha(40),
-                      color: Colors.white,
-                      strokeWidth: 7,
-                    )),
-                Center(
-                  child: Obx(() => Text(
-                        '${(controller.progressSemester.value * 100).toInt()}%',
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 18,
-                        ),
-                      )),
+  SliverToBoxAdapter _buildSliverHorizontalModules() {
+    return SliverToBoxAdapter(
+      child: SizedBox(
+        height: 145, // Fixed height for horizontal swiper
+        child: Obx(() {
+          if (controller.bentoCards.isEmpty) return const SizedBox.shrink();
+          return ListView.separated(
+            padding: const EdgeInsets.symmetric(horizontal: 20),
+            scrollDirection: Axis.horizontal,
+            physics: const BouncingScrollPhysics(),
+            itemCount: controller.bentoCards.length,
+            separatorBuilder: (context, index) => const SizedBox(width: 12),
+            itemBuilder: (context, index) {
+              final card = controller.bentoCards[index];
+              return SizedBox(
+                width: 160, // Fixed width for each card so they can be swiped
+                child: _BentoCard(
+                  card: card, 
+                  onTap: () => controller.bukaPertemuan(card), 
+                  onQuizTap: card.adaKuis ? () => controller.bukaQuiz(card.id) : null
                 ),
-              ],
-            ),
-          ),
-          const SizedBox(width: 20),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Text(
-                  'Progress Semester',
-                  style: TextStyle(color: Colors.white70, fontSize: 13),
-                ),
-                const SizedBox(height: 4),
-                Obx(() => Text(
-                      '${controller.totalTopikSelesai.value} dari ${controller.totalTopik.value} topik selesai',
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    )),
-                const SizedBox(height: 6),
-                Obx(() => Text(
-                      '${controller.totalPertemuanSelesai.value}/${controller.totalPertemuan.value} pertemuan tuntas',
-                      style: const TextStyle(color: Colors.white70, fontSize: 12),
-                    )),
-              ],
-            ),
-          ),
-        ],
+              );
+            },
+          );
+        }),
       ),
     );
   }
-  // ===== SECTION 4: SHORTCUT LANJUT BELAJAR =====
-  Widget _buildLanjutBelajar() {
-    return Obx(() {
-      final p = controller.lanjutBelajar.value;
-      if (p == null) return const SizedBox.shrink();
-      double progress = (p['progress'] as num?)?.toDouble() ?? 0.0;
-      return GestureDetector(
-        onTap: () => controller.bukaPertemuan(p),
+
+  SliverToBoxAdapter _buildSliverAiInsight() {
+    return SliverToBoxAdapter(
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 20),
         child: Container(
-          width: double.infinity,
-          padding: const EdgeInsets.all(18),
           decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: _primary.withAlpha(60), width: 1.5),
-            boxShadow: [
-              BoxShadow(color: _primary.withAlpha(20), blurRadius: 10, offset: const Offset(0, 4)),
-            ],
+            color: NetlabsTheme.primaryLight.withAlpha(15),
+            borderRadius: BorderRadius.circular(NetlabsTheme.radiusLg),
+            border: Border.all(color: NetlabsTheme.primaryLight.withAlpha(40)),
           ),
+          padding: const EdgeInsets.all(16),
           child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Container(
-                width: 50,
-                height: 50,
+                padding: const EdgeInsets.all(10),
                 decoration: BoxDecoration(
-                  color: _primary.withAlpha(15),
-                  borderRadius: BorderRadius.circular(12),
+                  color: Colors.white,
+                  shape: BoxShape.circle,
+                  boxShadow: NetlabsTheme.shadowSm,
                 ),
-                child: const Icon(Icons.play_circle_fill_rounded, color: _primary, size: 30),
+                child: const Icon(Icons.tips_and_updates_rounded, color: NetlabsTheme.primary, size: 24),
               ),
-              const SizedBox(width: 14),
-              Expanded(
+              const SizedBox(width: 12),
+              const Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text('Lanjut Belajar', style: TextStyle(fontSize: 12, color: _primary, fontWeight: FontWeight.bold)),
-                    const SizedBox(height: 2),
+                    Text('Fakta AI Hari Ini', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w800, color: NetlabsTheme.primaryDark)),
+                    SizedBox(height: 6),
                     Text(
-                      'Pertemuan ${p['nomor']} - ${p['judul']}',
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: _dark),
-                    ),
-                    const SizedBox(height: 6),
-                    LinearProgressIndicator(
-                      value: progress,
-                      backgroundColor: Colors.grey.withAlpha(30),
-                      color: _primary,
-                      minHeight: 5,
-                      borderRadius: BorderRadius.circular(10),
+                      'Router bertugas menghubungkan dua atau lebih jaringan yang berbeda subnet. Tanpa router, komputer di Lab A tidak bisa nge-ping komputer di Lab B lho!',
+                      style: TextStyle(fontSize: 12, color: NetlabsTheme.textSecondary, height: 1.4),
                     ),
                   ],
                 ),
               ),
-              const SizedBox(width: 8),
-              const Icon(Icons.arrow_forward_ios_rounded, size: 16, color: _primary),
             ],
           ),
         ),
+      ),
+    );
+  }
+
+  Widget _buildLanjutBelajarCard() {
+    return Obx(() {
+      final d = controller.lanjutBelajar.value;
+      if (d == null) return const SizedBox.shrink();
+      return Container(
+        decoration: BoxDecoration(
+          color: NetlabsTheme.primary,
+          borderRadius: BorderRadius.circular(NetlabsTheme.radiusXl), 
+          boxShadow: NetlabsTheme.shadowLg,
+        ),
+        padding: const EdgeInsets.all(18),
+        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+          Row(children: [
+            Container(padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4), decoration: BoxDecoration(color: Colors.white.withAlpha(40), borderRadius: BorderRadius.circular(99)), child: const Text('Lanjut Belajar', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: Colors.white))),
+            const Spacer(), const Icon(Icons.play_circle_fill_rounded, color: Colors.white, size: 28),
+          ]),
+          const SizedBox(height: 12),
+          Text(d['judul'] ?? 'Materi', style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w700, color: Colors.white, height: 1.3), maxLines: 2, overflow: TextOverflow.ellipsis),
+          const SizedBox(height: 10),
+          ClipRRect(borderRadius: BorderRadius.circular(99), child: LinearProgressIndicator(value: (d['progress'] as num?)?.toDouble() ?? 0, backgroundColor: Colors.white.withAlpha(50), valueColor: const AlwaysStoppedAnimation<Color>(Colors.white), minHeight: 6)),
+          const SizedBox(height: 6),
+          Text('${(((d['progress'] as num?)?.toDouble() ?? 0) * 100).toStringAsFixed(0)}% selesai', style: const TextStyle(fontSize: 12, color: Colors.white70)),
+        ]),
       );
     });
   }
 
-  // ===== SECTION 5: PERTEMUAN AKTIF (BERWARNA TEMA) =====
-  Widget _buildPertemuanAktif() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            const Text(
-              'Pertemuan Aktif',
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: _dark),
-            ),
-            TextButton(
-              onPressed: () => controller.bukaMateri(),
-              child: const Text('Lihat Semua', style: TextStyle(fontSize: 13, color: _primary, fontWeight: FontWeight.w600)),
-            ),
-          ],
+  SliverToBoxAdapter _buildSliverQuickActions() {
+    return SliverToBoxAdapter(
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 20),
+        child: Row(children: [
+          Expanded(child: _quickAction(Icons.blur_on_rounded, 'Tanya AI Tutor', NetlabsTheme.accent, () => controller.bukaChatbot())),
+          const SizedBox(width: 10),
+          Expanded(child: _quickAction(Icons.menu_book_rounded, 'Semua Materi', NetlabsTheme.primary, () => controller.bukaMateri())),
+        ]),
+      ),
+    );
+  }
+
+  Widget _quickAction(IconData icon, String label, Color color, VoidCallback onTap) {
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: onTap, borderRadius: BorderRadius.circular(NetlabsTheme.radiusMd),
+        child: Container(
+          padding: const EdgeInsets.symmetric(vertical: 14),
+          decoration: BoxDecoration(color: color.withAlpha(18), borderRadius: BorderRadius.circular(NetlabsTheme.radiusMd)),
+          child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [Icon(icon, size: 20, color: color), const SizedBox(width: 8), Text(label, style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: color))]),
         ),
-        const SizedBox(height: 12),
-        Obx(() {
-          if (controller.pertemuanAktif.isEmpty) {
-            return _buildEmptyState('Belum ada pertemuan yang sedang berjalan', Icons.book_outlined);
-          }
-          return SizedBox(
-            height: 150,
-            child: ListView.separated(
-              scrollDirection: Axis.horizontal,
-              itemCount: controller.pertemuanAktif.length,
-              separatorBuilder: (_, __) => const SizedBox(width: 14),
-              itemBuilder: (context, index) {
-                final p = controller.pertemuanAktif[index];
-                return _buildPertemuanCard(p);
-              },
+      ),
+    );
+  }
+
+  Widget _buildLoading() {
+    return CustomScrollView(
+      physics: const NeverScrollableScrollPhysics(),
+      slivers: [
+        _buildSliverHeader(),
+        _buildSliverStatCards(),
+        SliverToBoxAdapter(
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(20, 12, 20, 12),
+            child: Container(
+              height: 140,
+              decoration: BoxDecoration(color: NetlabsTheme.border, borderRadius: BorderRadius.circular(NetlabsTheme.radiusXl)),
             ),
-          );
-        }),
+          ),
+        ),
+        _buildSliverQuickActions(),
+        _buildSliverSectionTitle('Modul Tersedia', null, null),
+        SliverToBoxAdapter(
+          child: SizedBox(
+            height: 145,
+            child: ListView.separated(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              scrollDirection: Axis.horizontal,
+              physics: const NeverScrollableScrollPhysics(),
+              itemCount: 3,
+              separatorBuilder: (context, index) => const SizedBox(width: 12),
+              itemBuilder: (context, index) => const SizedBox(width: 160, child: BentoCardSkeleton()),
+            ),
+          ),
+        ),
       ],
     );
   }
 
-  Widget _buildPertemuanCard(Map<String, dynamic> p) {
-    double progress = (p['progress'] as num?)?.toDouble() ?? 0.0;
-    int nomor = (p['nomor'] as num?)?.toInt() ?? 0;
-    String judul = p['judul'] ?? '';
-    String topikInfo = p['topik'] ?? '-';
-
-    return GestureDetector(
-      onTap: () => controller.bukaPertemuan(p),
-      child: Container(
-        width: 230,
-        padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          color: const Color(0xFF0F766E),
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: _primary.withAlpha(40)),
-          boxShadow: [
-            BoxShadow(color: Colors.grey.withAlpha(15), blurRadius: 8, offset: const Offset(0, 4)),
-          ],
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-                      decoration: BoxDecoration(
-                        color: _primary,
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      child: Text(
-                        'Pertemuan $nomor',
-                        style: const TextStyle(fontSize: 10, color: Colors.white, fontWeight: FontWeight.bold),
-                      ),
-                    ),
-                    const Spacer(),
-                    Icon(Icons.layers_rounded, size: 12, color: Colors.grey.shade500),
-                    const SizedBox(width: 3),
-                    Text(topikInfo, style: TextStyle(fontSize: 10, color: Colors.grey.shade600)),
-                  ],
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  judul,
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                  style: const TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: _dark),
-                ),
-              ],
-            ),
-            Column(
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text('Progress', style: TextStyle(fontSize: 10, color: Colors.grey.shade600)),
-                    Text('${(progress * 100).toInt()}%', style: const TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: _primary)),
-                  ],
-                ),
-                const SizedBox(height: 5),
-                LinearProgressIndicator(
-                  value: progress,
-                  backgroundColor: Colors.grey.withAlpha(30),
-                  color: _primary,
-                  minHeight: 5,
-                  borderRadius: BorderRadius.circular(10),
-                ),
-              ],
-            ),
-          ],
-        ),
-      ),
+  Widget _buildError() {
+    return Center(
+      child: Column(mainAxisSize: MainAxisSize.min, children: [
+        const Icon(Icons.cloud_off_rounded, size: 48, color: NetlabsTheme.textMuted), const SizedBox(height: 12),
+        Text(controller.errorMessage.value, style: const TextStyle(color: NetlabsTheme.textSecondary), textAlign: TextAlign.center),
+        const SizedBox(height: 16),
+        ElevatedButton(onPressed: () => controller.loadDashboard(), child: const Text('Coba Lagi')),
+      ]),
     );
   }
 
-  // ===== SECTION 6: KUIS BELUM DIKERJAKAN =====
-  Widget _buildKuisPending() {
-    return Obx(() {
-      if (controller.kuisBelumDikerjakan.isEmpty) return const SizedBox.shrink();
-      return Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              const Icon(Icons.assignment_late_rounded, size: 18, color: Colors.orange),
-              const SizedBox(width: 6),
-              const Text(
-                'Kuis Siap Dikerjakan',
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: _dark),
-              ),
-              const Spacer(),
-              Text(
-                '${controller.kuisBelumDikerjakan.length}',
-                style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.white, backgroundColor: Colors.orange),
-              ),
-            ],
-          ),
-          const SizedBox(height: 12),
-          ...controller.kuisBelumDikerjakan.map((p) => _buildKuisCard(p)),
-        ],
-      );
-    });
-  }
-
-  Widget _buildKuisCard(Map<String, dynamic> p) {
-    int nomor = (p['nomor'] as num?)?.toInt() ?? 0;
-    String judul = p['judul'] ?? '';
-    int pertemuanId = (p['id'] as num?)?.toInt() ?? 0;
-
-    return Container(
-      margin: const EdgeInsets.only(bottom: 10),
-      padding: const EdgeInsets.all(14),
-      decoration: BoxDecoration(
-        color: Colors.orange.withAlpha(8),
-        borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: Colors.orange.withAlpha(50)),
-      ),
-      child: Row(
-        children: [
-          Container(
-            width: 40,
-            height: 40,
-            decoration: BoxDecoration(
-              color: Colors.orange.withAlpha(20),
-              borderRadius: BorderRadius.circular(10),
-            ),
-            child: const Icon(Icons.quiz_rounded, color: Colors.orange, size: 22),
-          ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text('Pertemuan $nomor', style: const TextStyle(fontSize: 10, color: Colors.orange, fontWeight: FontWeight.bold)),
-                Text(
-                  judul,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: _dark),
-                ),
-              ],
-            ),
-          ),
-          ElevatedButton(
-            onPressed: () => controller.bukaQuiz(pertemuanId),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.orange,
-              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-            ),
-            child: const Text('Kerjakan', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.white)),
-          ),
-        ],
-      ),
-    );
-  }
-
-
-  // ===== HELPER WIDGETS =====
-  Widget _buildEmptyState(String text, IconData icon) {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(24),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: Colors.grey.withAlpha(30)),
-      ),
-      child: Column(
-        children: [
-          Icon(icon, size: 36, color: Colors.grey.shade400),
-          const SizedBox(height: 8),
-          Text(text, style: TextStyle(fontSize: 13, color: Colors.grey.shade500), textAlign: TextAlign.center),
-        ],
-      ),
-    );
-  }
-
-  String _getInitials(String name) {
+  String _initials(String name) {
     if (name.isEmpty) return '?';
-    final parts = name.trim().split(' ');
-    if (parts.length >= 2) {
-      return '${parts[0][0]}${parts[1][0]}'.toUpperCase();
-    }
-    return name[0].toUpperCase();
+    final p = name.trim().split(' ');
+    return p.length >= 2 ? '${p[0][0]}${p[1][0]}'.toUpperCase() : name[0].toUpperCase();
   }
+}
 
-  // ===== LOGOUT CONFIRMATION =====
-  void _showLogoutConfirmation() {
-    Get.bottomSheet(
-      Container(
-        padding: const EdgeInsets.all(20),
-        decoration: const BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+class _BentoCard extends StatelessWidget {
+  final PertemuanCard card;
+  final VoidCallback onTap;
+  final VoidCallback? onQuizTap;
+  const _BentoCard({required this.card, required this.onTap, this.onQuizTap});
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        decoration: BoxDecoration(
+          color: NetlabsTheme.card,
+          borderRadius: BorderRadius.circular(NetlabsTheme.radiusXl),
+          boxShadow: NetlabsTheme.shadowSm,
+          border: Border.all(color: NetlabsTheme.border.withAlpha(120)),
         ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const Text('Keluar Akun', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.red)),
-            const SizedBox(height: 10),
-            const Text('Apakah kamu yakin ingin keluar dari aplikasi Netlabs?', textAlign: TextAlign.center),
-            const SizedBox(height: 20),
-            Row(
-              children: [
-                Expanded(
-                  child: OutlinedButton(
-                    onPressed: () => Get.back(),
-                    child: const Text('Batal'),
-                  ),
+        padding: const EdgeInsets.all(16),
+        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+          Row(children: [
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+              decoration: BoxDecoration(color: NetlabsTheme.primaryLight.withAlpha(30), borderRadius: BorderRadius.circular(6)),
+              child: Text('Bab ${card.nomor}', style: const TextStyle(fontSize: 10, fontWeight: FontWeight.w700, color: NetlabsTheme.primary)),
+            ),
+            const SizedBox(width: 8),
+            Expanded(
+              child: Align(
+                alignment: Alignment.centerRight,
+                child: _AiDotBadge(status: card.aiStatus),
+              ),
+            ),
+          ]),
+          const SizedBox(height: 10),
+          Text(card.judul, style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: NetlabsTheme.textPrimary, height: 1.3), maxLines: 2, overflow: TextOverflow.ellipsis),
+          const SizedBox(height: 12),
+          ClipRRect(
+            borderRadius: BorderRadius.circular(99),
+            child: LinearProgressIndicator(
+              value: card.progress,
+              backgroundColor: NetlabsTheme.border,
+              valueColor: AlwaysStoppedAnimation<Color>(card.progress >= 1 ? NetlabsTheme.success : NetlabsTheme.primaryLight),
+              minHeight: 5,
+            ),
+          ),
+          const SizedBox(height: 6),
+          Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+            Text('${(card.progress * 100).toStringAsFixed(0)}%', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w600, color: card.progress >= 1 ? NetlabsTheme.success : NetlabsTheme.textMuted)),
+            if (onQuizTap != null)
+              GestureDetector(
+                onTap: onQuizTap,
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                  decoration: BoxDecoration(color: NetlabsTheme.warning.withAlpha(25), borderRadius: BorderRadius.circular(6)),
+                  child: const Text('Kuis', style: TextStyle(fontSize: 10, fontWeight: FontWeight.w700, color: NetlabsTheme.warning)),
                 ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: ElevatedButton(
-                    onPressed: () {
-                      Get.back();
-                      controller.logout();
-                    },
-                    style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
-                    child: const Text('Ya, Keluar', style: TextStyle(color: Colors.white)),
-                  ),
-                ),
-              ],
-            )
-          ],
-        ),
+              ),
+          ]),
+        ]),
       ),
     );
   }
 }
+
+class _AiDotBadge extends StatelessWidget {
+  final AiStatus status;
+  const _AiDotBadge({required this.status});
+
+  @override
+  Widget build(BuildContext context) {
+    if (status == AiStatus.pending || status == AiStatus.processing) {
+      return const PulsatingDotWidget();
+    }
+
+    if (status == AiStatus.success) {
+      return Container(
+        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
+        decoration: BoxDecoration(
+          color: NetlabsTheme.success.withAlpha(25), 
+          borderRadius: BorderRadius.circular(6), 
+          border: Border.all(color: NetlabsTheme.success.withAlpha(50), width: 0.5)
+        ),
+        child: const Row(mainAxisSize: MainAxisSize.min, children: [
+          Icon(Icons.check_circle_rounded, size: 11, color: NetlabsTheme.success),
+          SizedBox(width: 4),
+          Flexible(child: Text('AI Siap', style: TextStyle(fontSize: 9, fontWeight: FontWeight.w700, color: NetlabsTheme.success), maxLines: 1, overflow: TextOverflow.ellipsis)),
+        ]),
+      );
+    }
+
+    // Default for Failed
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
+      decoration: BoxDecoration(color: NetlabsTheme.danger.withAlpha(20), borderRadius: BorderRadius.circular(6)),
+      child: const Row(mainAxisSize: MainAxisSize.min, children: [
+        Icon(Icons.error_outline_rounded, size: 11, color: NetlabsTheme.danger),
+        SizedBox(width: 4),
+        Flexible(child: Text('AI Error', style: TextStyle(fontSize: 9, fontWeight: FontWeight.w700, color: NetlabsTheme.danger), maxLines: 1, overflow: TextOverflow.ellipsis)),
+      ]),
+    );
+  }
+}
+
+class PulsatingDotWidget extends StatefulWidget {
+  const PulsatingDotWidget({super.key});
+  @override
+  State<PulsatingDotWidget> createState() => _PulsatingDotWidgetState();
+}
+
+class _PulsatingDotWidgetState extends State<PulsatingDotWidget> with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+  late Animation<double> _scaleAnimation;
+  late Animation<double> _opacityAnimation;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(vsync: this, duration: const Duration(milliseconds: 1000))..repeat(reverse: true);
+    _scaleAnimation = Tween<double>(begin: 0.6, end: 1.0).animate(CurvedAnimation(parent: _controller, curve: Curves.easeInOut));
+    _opacityAnimation = Tween<double>(begin: 0.5, end: 1.0).animate(CurvedAnimation(parent: _controller, curve: Curves.easeInOut));
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
+      decoration: BoxDecoration(
+        color: NetlabsTheme.textSecondary.withAlpha(15),
+        borderRadius: BorderRadius.circular(6),
+        border: Border.all(color: NetlabsTheme.textSecondary.withAlpha(30), width: 0.5),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          AnimatedBuilder(
+            animation: _controller,
+            builder: (context, child) {
+              return Opacity(
+                opacity: _opacityAnimation.value,
+                child: Container(
+                  width: 6, height: 6,
+                  decoration: const BoxDecoration(color: NetlabsTheme.textSecondary, shape: BoxShape.circle),
+                ),
+              );
+            },
+          ),
+          const SizedBox(width: 4),
+          const Flexible(
+            child: Text(
+              'Mengindeks materi...',
+              style: TextStyle(
+                fontSize: 9, 
+                fontWeight: FontWeight.w600, 
+                color: NetlabsTheme.textSecondary
+              ),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class BentoCardSkeleton extends StatefulWidget {
+  const BentoCardSkeleton({super.key});
+  @override
+  State<BentoCardSkeleton> createState() => _BentoCardSkeletonState();
+}
+
+class _BentoCardSkeletonState extends State<BentoCardSkeleton> with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+  late Animation<double> _animation;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(vsync: this, duration: const Duration(milliseconds: 1500))..repeat();
+    _animation = Tween<double>(begin: -1, end: 2).animate(CurvedAnimation(parent: _controller, curve: Curves.easeInOutSine));
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedBuilder(
+      animation: _animation,
+      builder: (context, child) {
+        final offset = _animation.value;
+        final shimmerGradient = LinearGradient(
+          begin: Alignment(offset - 1, 0),
+          end: Alignment(offset + 1, 0),
+          colors: const [
+            Color(0xFFF1F5F9), // Slate 100
+            Color(0xFFFFFFFF), // White
+            Color(0xFFF1F5F9), // Slate 100
+          ],
+          stops: const [0.0, 0.5, 1.0],
+        );
+
+        return Container(
+          decoration: BoxDecoration(
+            color: NetlabsTheme.card,
+            borderRadius: BorderRadius.circular(NetlabsTheme.radiusXl),
+            boxShadow: NetlabsTheme.shadowSm,
+            border: Border.all(color: NetlabsTheme.border.withAlpha(120)),
+          ),
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Container(
+                    width: 40, height: 16,
+                    decoration: BoxDecoration(gradient: shimmerGradient, borderRadius: BorderRadius.circular(6)),
+                  ),
+                  Container(
+                    width: 80, height: 16,
+                    decoration: BoxDecoration(gradient: shimmerGradient, borderRadius: BorderRadius.circular(6)),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 12),
+              Container(width: double.infinity, height: 14, decoration: BoxDecoration(gradient: shimmerGradient, borderRadius: BorderRadius.circular(4))),
+              const SizedBox(height: 4),
+              Container(width: 80, height: 14, decoration: BoxDecoration(gradient: shimmerGradient, borderRadius: BorderRadius.circular(4))),
+              const SizedBox(height: 16),
+              Container(width: double.infinity, height: 6, decoration: BoxDecoration(gradient: shimmerGradient, borderRadius: BorderRadius.circular(99))),
+              const SizedBox(height: 8),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Container(width: 30, height: 12, decoration: BoxDecoration(gradient: shimmerGradient, borderRadius: BorderRadius.circular(4))),
+                ],
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+}
+
