@@ -5,6 +5,7 @@ namespace App\Filament\Resources;
 use App\Models\TopikMateri;
 use Filament\Forms;
 use Filament\Schemas\Schema;
+use Filament\Schemas\Components\Section;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
@@ -23,7 +24,7 @@ class TopikMateriResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\Section::make('Konten Materi Pembelajaran')
+                Section::make('Konten Materi Pembelajaran')
                     ->schema([
                         Forms\Components\Select::make('pertemuan_id')
                             ->label('Hubungkan ke Pertemuan Bab')

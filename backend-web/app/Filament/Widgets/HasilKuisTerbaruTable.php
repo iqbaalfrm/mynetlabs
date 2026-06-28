@@ -13,8 +13,6 @@ class HasilKuisTerbaruTable extends BaseWidget
     protected static ?string $heading = 'Aktivitas Ujian/Kuis Terbaru';
 
     protected static ?int $sort = 3;
-    
-    protected int | string | array $columnSpan = 'full';
 
     public function table(Table $table): Table
     {

@@ -5,6 +5,7 @@ namespace App\Filament\Resources;
 use App\Models\Pertemuan;
 use Filament\Forms;
 use Filament\Schemas\Schema;
+use Filament\Schemas\Components\Section;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
@@ -25,7 +26,7 @@ class PertemuanResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\Section::make('Form Input Modul Praktikum Network')
+                Section::make('Form Input Modul Praktikum Network')
                     ->description('Isi data pertemuan bab jaringan di bawah ini.')
                     ->schema([
                         Forms\Components\TextInput::make('nomor_urut')

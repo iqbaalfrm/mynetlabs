@@ -5,7 +5,7 @@ namespace App\Filament\Pages;
 use Filament\Pages\Page;
 use Filament\Schemas\Schema;
 use Filament\Forms\Components\TextInput;
-use Filament\Forms\Components\Section;
+use Filament\Schemas\Components\Section;
 use Filament\Notifications\Notification;
 use Filament\Actions\Action;
 use Filament\Schemas\Components\Form;
@@ -51,7 +51,7 @@ class Pengaturan extends Page
         return $schema
             ->statePath('data')
             ->components([
-                Forms\Components\Section::make('Profil Guru & Ganti Password')
+                Section::make('Profil Guru & Ganti Password')
                     ->description('Perbarui nama, username login, serta password Anda.')
                     ->schema([
                         TextInput::make('nama')
@@ -67,7 +67,7 @@ class Pengaturan extends Page
                             ->placeholder('Kosongkan jika tidak ingin ganti'),
                     ])->columns(3),
 
-                Forms\Components\Section::make('Konfigurasi KKM & AI')
+                Section::make('Konfigurasi KKM & AI')
                     ->description('Atur batasan KKM kelulusan kuis dan API Key penyedia AI.')
                     ->schema([
                         TextInput::make('kkm')
