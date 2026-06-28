@@ -99,14 +99,13 @@ class AdminPanelProvider extends PanelProvider
             )
             ->renderHook(
                 PanelsRenderHook::FOOTER,
-                fn (): string => '<div class="w-full py-6 mt-12 border-t border-slate-200/60 flex flex-col sm:flex-row justify-between items-center text-xs text-slate-400 gap-3">
+                fn (): string => '<div class="w-full py-8 mt-16 flex flex-col sm:flex-row justify-between items-center text-xs text-slate-400 gap-3">
                     <div>
                         &copy; ' . date('Y') . ' NetLabs. Hak Cipta Dilindungi.
                     </div>
                     <div class="flex gap-6">
                         <a href="#" class="hover:text-indigo-600 transition duration-200">Kebijakan Privasi</a>
                         <a href="#" class="hover:text-indigo-600 transition duration-200">Syarat & Ketentuan</a>
-                        <a href="#" class="hover:text-indigo-600 transition duration-200">Bantuan</a>
                     </div>
                 </div>',
             )
