@@ -30,6 +30,8 @@ class Pengaturan extends Page
 
     protected static ?string $title = 'Pengaturan Akun & AI';
 
+    protected ?string $subheading = 'Kelola preferensi profil pengajar, ambang batas kelulusan KKM, dan API Key kecerdasan buatan.';
+
     public ?array $data = [];
 
     public function mount(): void
@@ -51,8 +53,8 @@ class Pengaturan extends Page
         return $schema
             ->statePath('data')
             ->components([
-                Section::make('Profil Guru & Ganti Password')
-                    ->description('Perbarui nama, username login, serta password Anda.')
+                Section::make('Profil Pengajar')
+                    ->description('Perbarui nama lengkap dan username login Anda.')
                     ->schema([
                         TextInput::make('nama')
                             ->label('Nama Lengkap')
@@ -60,15 +62,10 @@ class Pengaturan extends Page
                         TextInput::make('username')
                             ->label('Username / NIP')
                             ->required(),
-                        TextInput::make('new_password')
-                            ->label('Password Baru (Opsional)')
-                            ->password()
-                            ->nullable()
-                            ->placeholder('Kosongkan jika tidak ingin ganti'),
-                    ])->columns(3),
+                    ])->columns(2),
 
                 Section::make('Konfigurasi KKM & AI')
-                    ->description('Atur batasan KKM kelulusan kuis dan API Key penyedia AI.')
+                    ->description('Atur batasan KKM kelulusan kuis dan API Key penyedia asisten pintar.')
                     ->schema([
                         TextInput::make('kkm')
                             ->label('KKM Kuis')
@@ -84,6 +81,18 @@ class Pengaturan extends Page
                             ->password()
                             ->nullable(),
                     ])->columns(3),
+
+                Section::make('Area Kritis (Danger Zone)')
+                    ->description('Tindakan sensitif untuk memperbarui sistem keamanan akun Anda.')
+                    ->schema([
+                        TextInput::make('new_password')
+                            ->label('Password Baru')
+                            ->password()
+                            ->nullable()
+                            ->placeholder('Masukkan sandi baru jika ingin mengganti sandi lama'),
+                    ])
+                    ->extraAttributes(['class' => 'danger-zone-section'])
+                    ->columns(1),
             ]);
     }
 

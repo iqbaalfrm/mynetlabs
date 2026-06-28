@@ -37,19 +37,63 @@ class AdminPanelProvider extends PanelProvider
             ->renderHook(
                 PanelsRenderHook::HEAD_END,
                 fn (): string => '<style>
-                    /* Modifikasi radius komponen agar lebih lembut (rounded-2xl) */
-                    .fi-ta-header, .fi-ta-content, .fi-wi, .fi-fo-component, .fi-btn, .fi-input {
-                        border-radius: 1rem !important;
+                    /* 1. Global Reset & Body */
+                    body {
+                        background-color: #f8fafc !important; /* bg-slate-50 */
                     }
-                    /* Hapus border abu-abu yang terlalu tebal pada tabel, ganti lebih tipis */
-                    .fi-ta-table, .fi-ta-record-checkbox {
-                        border-color: #f1f5f9 !important; /* border-slate-100 */
+
+                    /* 2. Flat Cards / Sections (SaaS Minimalist) */
+                    .fi-section {
+                        background-color: #ffffff !important;
+                        border: 1px solid #e2e8f0 !important; /* border-slate-200 */
+                        box-shadow: none !important;
+                        border-radius: 0.75rem !important; /* rounded-xl */
                     }
+                    .fi-section-header {
+                        border-bottom: 1px solid #f1f5f9 !important;
+                        padding-bottom: 0.75rem !important;
+                        margin-bottom: 1rem !important;
+                    }
+
+                    /* 3. Input Form Customization (bg-slate-50, soft borders) */
+                    .fi-input-wrp {
+                        background-color: #f8fafc !important; /* bg-slate-50 */
+                        border: 1px solid #e2e8f0 !important; /* border-slate-200 */
+                        box-shadow: none !important;
+                        border-radius: 0.5rem !important; /* rounded-lg */
+                        transition: all 0.2s ease-in-out !important;
+                    }
+                    .fi-input-wrp:focus-within {
+                        background-color: #ffffff !important;
+                        border-color: #4f46e5 !important; /* primary indigo */
+                        box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.15) !important;
+                    }
+                    .fi-input-wrp input {
+                        background-color: transparent !important;
+                    }
+
+                    /* 4. Danger Zone Section Custom Styling */
+                    .danger-zone-section {
+                        border: 1px solid #fca5a5 !important; /* border-red-300 */
+                        background-color: #fffbfa !important; /* bg-red-50/10 */
+                    }
+                    .danger-zone-section .fi-section-header-title {
+                        color: #dc2626 !important; /* text-red-600 */
+                    }
+                    .danger-zone-section .fi-section-header-description {
+                        color: #7f1d1d !important; /* text-red-900 */
+                    }
+
+                    /* 5. Clean Tables & Borders */
                     .fi-ta-table {
                         background-color: #ffffff !important;
+                        border-collapse: collapse !important;
                     }
                     .fi-ta-table th, .fi-ta-table td {
                         border-bottom: 1px solid #f1f5f9 !important;
+                    }
+                    .fi-ta-header, .fi-ta-content, .fi-wi, .fi-btn {
+                        border-radius: 0.75rem !important;
                     }
                 </style>',
             )
