@@ -60,8 +60,7 @@ class AdminPanelProvider extends PanelProvider
             ])
             ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\Filament\Widgets')
             ->widgets([
-                AccountWidget::class,
-                FilamentInfoWidget::class,
+                // Widget default dinonaktifkan agar custom dashboard widget naik ke atas
             ])
             ->middleware([
                 EncryptCookies::class,
