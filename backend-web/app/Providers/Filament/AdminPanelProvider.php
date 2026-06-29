@@ -34,6 +34,7 @@ class AdminPanelProvider extends PanelProvider
                 'gray' => Color::Slate,
             ])
             ->font('Inter')
+            ->readOnlyRelationManagersOnResourceViewPages(false)
             ->renderHook(
                 PanelsRenderHook::HEAD_END,
                 fn (): string => '<style>

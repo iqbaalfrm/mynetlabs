@@ -136,6 +136,11 @@ class ModulPdfRelationManager extends RelationManager
             ]);
     }
 
+    public function isReadOnly(): bool
+    {
+        return false;
+    }
+
     public function canCreate(): bool
     {
         return true;
