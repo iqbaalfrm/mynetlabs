@@ -233,6 +233,7 @@ def deploy_to_vps():
             "User=www-data\n"
             f"WorkingDirectory={AI_PROJECT_PATH}\n"
             f"Environment=PATH={AI_PROJECT_PATH}/venv/bin:/usr/bin\n"
+            f"Environment=HF_HOME={AI_PROJECT_PATH}/hf_cache\n"
             f"ExecStart={AI_PROJECT_PATH}/venv/bin/gunicorn -w 1 -b 0.0.0.0:5050 --timeout 120 app:app\n"
             "Restart=always\n"
             "RestartSec=5\n\n"

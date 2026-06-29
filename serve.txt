@@ -1,5 +1,55 @@
+# 1. Stop service AI
+systemctl stop netlabs-ai
 
-   INFO  Server running on [http://127.0.0.1:8000].  
+# 2. Pull kode terbaru
+cd /var/www/mynetlabs && git pull origin main
 
-  Press Ctrl+C to stop the server
+# 3. Hapus data ChromaDB lama (sudah tidak dipakai)
+rm -rf /var/www/mynetlabs/backend-ai/chroma_data
 
+# 4. Install dependencies baru
+cd /var/www/mynetlabs/backend-ai
+venv/bin/pip install --upgrade pip
+venv/bin/pip install -r requirements.txt
+
+# 5. Tulis .env baru
+cat > /var/www/mynetlabs/backend-ai/.env << 'EOF'
+GEMINI_API_KEY=your_gemini_api_key_here
+QDRANT_PERSIST_DIR=./qdrant_data
+QDRANT_COLLECTION_NAME=basis_pengetahuan
+FLASK_PORT=5050
+FLASK_DEBUG=false
+EOF
+
+# 6. Tulis systemd service baru (1 worker)
+cat > /etc/systemd/system/netlabs-ai.service << 'EOF'
+[Unit]
+Description=NetLabs AI Backend (Flask + Qdrant + Sentence Transformers + Gemini)
+After=network.target
+
+[Service]
+User=www-data
+WorkingDirectory=/var/www/mynetlabs/backend-ai
+Environment=PATH=/var/www/mynetlabs/backend-ai/venv/bin:/usr/bin
+ExecStart=/var/www/mynetlabs/backend-ai/venv/bin/gunicorn -w 1 -b 0.0.0.0:5050 --timeout 120 app:app
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target
+EOF
+
+# 7. Set ownership
+chown -R www-data:www-data /var/www/mynetlabs/backend-ai
+
+# 8. Reload & restart service
+systemctl daemon-reload
+systemctl enable netlabs-ai
+systemctl restart netlabs-ai
+
+# 9. Tunggu ~30 detik (model Sentence Transformers butuh loading)
+sleep 30
+
+# 10. Verifikasi
+systemctl is-active netlabs-ai
+curl -s http://localhost:5050/

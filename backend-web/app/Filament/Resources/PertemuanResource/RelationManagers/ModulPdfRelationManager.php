@@ -77,6 +77,9 @@ class ModulPdfRelationManager extends RelationManager
                     ->requiresConfirmation()
                     ->action(function ($record) {
                         try {
+                            // Set status ke processing terlebih dahulu agar UI terupdate
+                            $record->update(['status_indexing' => 'processing']);
+
                             $filePath = storage_path('app/public/' . $record->file_name);
                             $response = \Illuminate\Support\Facades\Http::timeout(300)->post('http://127.0.0.1:5050/index-pdf', [
                                 'pertemuan_id' => $record->pertemuan_id,
@@ -106,16 +109,34 @@ class ModulPdfRelationManager extends RelationManager
                         }
                     }),
                 Actions\EditAction::make(),
-                Actions\DeleteAction::make(),
+                Actions\DeleteAction::make()
+                    ->before(function ($record) {
+                        // Hapus dokumen di database AI sebelum record dihapus di Laravel
+                        try {
+                            \Illuminate\Support\Facades\Http::timeout(10)->delete("http://127.0.0.1:5050/delete-pertemuan/{$record->pertemuan_id}");
+                        } catch (\Exception $e) {
+                            // Log error tapi izinkan hapus tetap berlanjut di web admin
+                            \Illuminate\Support\Facades\Log::warning("Gagal menghapus index AI untuk pertemuan_id={$record->pertemuan_id}: " . $e->getMessage());
+                        }
+                    }),
             ])
             ->bulkActions([
                 Actions\BulkActionGroup::make([
-                    Actions\DeleteBulkAction::make(),
+                    Actions\DeleteBulkAction::make()
+                        ->before(function (\Illuminate\Support\Collection $records) {
+                            foreach ($records as $record) {
+                                try {
+                                    \Illuminate\Support\Facades\Http::timeout(10)->delete("http://127.0.0.1:5050/delete-pertemuan/{$record->pertemuan_id}");
+                                } catch (\Exception $e) {
+                                    \Illuminate\Support\Facades\Log::warning("Gagal menghapus index AI secara massal untuk pertemuan_id={$record->pertemuan_id}: " . $e->getMessage());
+                                }
+                            }
+                        }),
                 ]),
             ]);
     }
 
-    public static function canCreate(): bool
+    public function canCreate(): bool
     {
         return true;
     }
