@@ -4,8 +4,8 @@ namespace App\Filament\Resources;
 
 use App\Models\Pertemuan;
 use Filament\Forms;
-use Filament\Forms\Form;
-use Filament\Forms\Components\Section;
+use Filament\Schemas\Schema;
+use Filament\Schemas\Components\Section;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
@@ -22,7 +22,7 @@ class PertemuanResource extends Resource
 
     protected static ?int $navigationSort = 3;
 
-    public static function form(Form $form): Form
+    public static function form(Schema $form): Schema
     {
         return $form
             ->schema([
