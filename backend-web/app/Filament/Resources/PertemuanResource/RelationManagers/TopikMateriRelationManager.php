@@ -62,7 +62,7 @@ class TopikMateriRelationManager extends RelationManager
             ]);
     }
 
-    public static function canCreate(): bool
+    public function canCreate(): bool
     {
         return true;
     }
