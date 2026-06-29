@@ -79,24 +79,28 @@ class HomeView extends GetView<HomeController> {
       child: Padding(
         padding: const EdgeInsets.fromLTRB(20, 12, 20, 8),
         child: Row(children: [
-          Expanded(child: _statTile(Icons.check_circle_rounded, 'Selesai', '${controller.totalTopikSelesai.value}/${controller.totalTopik.value}', NetlabsTheme.success)),
+          Expanded(child: _statTile(Icons.check_circle_outline_rounded, 'Selesai', '${controller.totalTopikSelesai.value}/${controller.totalTopik.value}')),
           const SizedBox(width: 10),
-          Expanded(child: _statTile(Icons.quiz_rounded, 'Nilai', '${controller.rataRataNilai.value.toStringAsFixed(0)}', NetlabsTheme.accent)),
+          Expanded(child: _statTile(Icons.assignment_turned_in_outlined, 'Nilai', '${controller.rataRataNilai.value.toStringAsFixed(0)}')),
           const SizedBox(width: 10),
-          Expanded(child: _statTile(Icons.auto_awesome_rounded, 'AI Chat', '${controller.totalChatAI.value}', NetlabsTheme.warning)),
+          Expanded(child: _statTile(Icons.chat_bubble_outline_rounded, 'AI Chat', '${controller.totalChatAI.value}')),
         ]),
       ),
     );
   }
 
-  Widget _statTile(IconData icon, String label, String value, Color color) {
+  Widget _statTile(IconData icon, String label, String value) {
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 12),
-      decoration: BoxDecoration(color: color.withAlpha(18), borderRadius: BorderRadius.circular(NetlabsTheme.radiusMd)),
+      decoration: BoxDecoration(
+        color: const Color(0xFFF8FAFC), // Neutral light slate
+        border: Border.all(color: const Color(0xFFE2E8F0)),
+        borderRadius: BorderRadius.circular(12),
+      ),
       child: Column(children: [
-        Icon(icon, size: 22, color: color), const SizedBox(height: 6),
-        Text(value, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w700, color: NetlabsTheme.textPrimary)),
-        Text(label, style: const TextStyle(fontSize: 11, color: NetlabsTheme.textSecondary)),
+        Icon(icon, size: 20, color: const Color(0xFF64748B)), const SizedBox(height: 6), // Muted icon
+        Text(value, style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w700, color: Color(0xFF1E293B))),
+        Text(label, style: const TextStyle(fontSize: 10, color: Color(0xFF64748B))),
       ]),
     );
   }
@@ -104,15 +108,15 @@ class HomeView extends GetView<HomeController> {
   SliverToBoxAdapter _buildSliverSectionTitle(String title, String? action, VoidCallback? onAction) {
     return SliverToBoxAdapter(
       child: Padding(
-        padding: const EdgeInsets.fromLTRB(20, 24, 20, 12),
+        padding: const EdgeInsets.fromLTRB(20, 20, 20, 10),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text(title, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w800, color: NetlabsTheme.dark)),
+            Text(title, style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w800, color: Color(0xFF1E293B))),
             if (action != null)
               GestureDetector(
                 onTap: onAction,
-                child: Text(action, style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: NetlabsTheme.primary)),
+                child: Text(action, style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: NetlabsTheme.primary)),
               ),
           ],
         ),
@@ -123,7 +127,7 @@ class HomeView extends GetView<HomeController> {
   SliverToBoxAdapter _buildSliverLanjutBelajar() {
     return SliverToBoxAdapter(
       child: Padding(
-        padding: const EdgeInsets.fromLTRB(20, 12, 20, 12),
+        padding: const EdgeInsets.fromLTRB(20, 8, 20, 8),
         child: _buildLanjutBelajarCard(),
       ),
     );
@@ -164,33 +168,33 @@ class HomeView extends GetView<HomeController> {
         padding: const EdgeInsets.symmetric(horizontal: 20),
         child: Container(
           decoration: BoxDecoration(
-            color: NetlabsTheme.primaryLight.withAlpha(15),
-            borderRadius: BorderRadius.circular(NetlabsTheme.radiusLg),
-            border: Border.all(color: NetlabsTheme.primaryLight.withAlpha(40)),
+            color: const Color(0xFFF8FAFC),
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(color: const Color(0xFFE2E8F0)),
           ),
-          padding: const EdgeInsets.all(16),
+          padding: const EdgeInsets.all(14),
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Container(
-                padding: const EdgeInsets.all(10),
+                padding: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
-                  color: Colors.white,
+                  color: const Color(0xFFEEF2FF),
                   shape: BoxShape.circle,
-                  boxShadow: NetlabsTheme.shadowSm,
+                  border: Border.all(color: const Color(0xFFE2E8F0)),
                 ),
-                child: const Icon(Icons.tips_and_updates_rounded, color: NetlabsTheme.primary, size: 24),
+                child: const Icon(Icons.lightbulb_outline_rounded, color: NetlabsTheme.primary, size: 20),
               ),
               const SizedBox(width: 12),
               const Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('Fakta AI Hari Ini', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w800, color: NetlabsTheme.primaryDark)),
-                    SizedBox(height: 6),
+                    Text('Fakta AI Hari Ini', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w800, color: Color(0xFF1E293B))),
+                    SizedBox(height: 4),
                     Text(
                       'Router bertugas menghubungkan dua atau lebih jaringan yang berbeda subnet. Tanpa router, komputer di Lab A tidak bisa nge-ping komputer di Lab B lho!',
-                      style: TextStyle(fontSize: 12, color: NetlabsTheme.textSecondary, height: 1.4),
+                      style: TextStyle(fontSize: 11, color: Color(0xFF64748B), height: 1.4),
                     ),
                   ],
                 ),
@@ -208,22 +212,34 @@ class HomeView extends GetView<HomeController> {
       if (d == null) return const SizedBox.shrink();
       return Container(
         decoration: BoxDecoration(
-          color: NetlabsTheme.primary,
-          borderRadius: BorderRadius.circular(NetlabsTheme.radiusXl), 
-          boxShadow: NetlabsTheme.shadowLg,
+          color: const Color(0xFF0F172A), // Dark Navy Slate (Elegant)
+          borderRadius: BorderRadius.circular(16), 
         ),
-        padding: const EdgeInsets.all(18),
+        padding: const EdgeInsets.all(16),
         child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
           Row(children: [
-            Container(padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4), decoration: BoxDecoration(color: Colors.white.withAlpha(40), borderRadius: BorderRadius.circular(99)), child: const Text('Lanjut Belajar', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: Colors.white))),
-            const Spacer(), const Icon(Icons.play_circle_fill_rounded, color: Colors.white, size: 28),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3), 
+              decoration: BoxDecoration(color: Colors.white10, borderRadius: BorderRadius.circular(20)), 
+              child: const Text('Lanjut Belajar', style: TextStyle(fontSize: 10, fontWeight: FontWeight.w700, color: Colors.white70))
+            ),
+            const Spacer(), 
+            const Icon(Icons.arrow_right_alt_rounded, color: Colors.white, size: 20),
           ]),
-          const SizedBox(height: 12),
-          Text(d['judul'] ?? 'Materi', style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w700, color: Colors.white, height: 1.3), maxLines: 2, overflow: TextOverflow.ellipsis),
           const SizedBox(height: 10),
-          ClipRRect(borderRadius: BorderRadius.circular(99), child: LinearProgressIndicator(value: (d['progress'] as num?)?.toDouble() ?? 0, backgroundColor: Colors.white.withAlpha(50), valueColor: const AlwaysStoppedAnimation<Color>(Colors.white), minHeight: 6)),
+          Text(d['judul'] ?? 'Materi', style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w700, color: Colors.white, height: 1.3), maxLines: 2, overflow: TextOverflow.ellipsis),
+          const SizedBox(height: 12),
+          ClipRRect(
+            borderRadius: BorderRadius.circular(99), 
+            child: LinearProgressIndicator(
+              value: (d['progress'] as num?)?.toDouble() ?? 0, 
+              backgroundColor: Colors.white12, 
+              valueColor: const AlwaysStoppedAnimation<Color>(Colors.white), 
+              minHeight: 4
+            )
+          ),
           const SizedBox(height: 6),
-          Text('${(((d['progress'] as num?)?.toDouble() ?? 0) * 100).toStringAsFixed(0)}% selesai', style: const TextStyle(fontSize: 12, color: Colors.white70)),
+          Text('${(((d['progress'] as num?)?.toDouble() ?? 0) * 100).toStringAsFixed(0)}% selesai', style: const TextStyle(fontSize: 11, color: Colors.white38)),
         ]),
       );
     });
@@ -234,23 +250,35 @@ class HomeView extends GetView<HomeController> {
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 20),
         child: Row(children: [
-          Expanded(child: _quickAction(Icons.blur_on_rounded, 'Tanya AI Tutor', NetlabsTheme.accent, () => controller.bukaChatbot())),
+          Expanded(child: _quickAction(Icons.chat_bubble_outline_rounded, 'Tanya AI Tutor', () => controller.bukaChatbot())),
           const SizedBox(width: 10),
-          Expanded(child: _quickAction(Icons.menu_book_rounded, 'Semua Materi', NetlabsTheme.primary, () => controller.bukaMateri())),
+          Expanded(child: _quickAction(Icons.book_outlined, 'Semua Materi', () => controller.bukaMateri())),
         ]),
       ),
     );
   }
 
-  Widget _quickAction(IconData icon, String label, Color color, VoidCallback onTap) {
+  Widget _quickAction(IconData icon, String label, VoidCallback onTap) {
     return Material(
       color: Colors.transparent,
       child: InkWell(
-        onTap: onTap, borderRadius: BorderRadius.circular(NetlabsTheme.radiusMd),
+        onTap: onTap, 
+        borderRadius: BorderRadius.circular(12),
         child: Container(
-          padding: const EdgeInsets.symmetric(vertical: 14),
-          decoration: BoxDecoration(color: color.withAlpha(18), borderRadius: BorderRadius.circular(NetlabsTheme.radiusMd)),
-          child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [Icon(icon, size: 20, color: color), const SizedBox(width: 8), Text(label, style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: color))]),
+          padding: const EdgeInsets.symmetric(vertical: 12),
+          decoration: BoxDecoration(
+            color: Colors.white, 
+            border: Border.all(color: const Color(0xFFE2E8F0)),
+            borderRadius: BorderRadius.circular(12)
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center, 
+            children: [
+              Icon(icon, size: 16, color: const Color(0xFF64748B)), 
+              const SizedBox(width: 8), 
+              Text(label, style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: Color(0xFF475569)))
+            ]
+          ),
         ),
       ),
     );
