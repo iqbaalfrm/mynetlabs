@@ -10,7 +10,10 @@ class EditPertemuan extends EditRecord
 {
     protected static string $resource = PertemuanResource::class;
 
-    protected ?string $maxContentWidth = 'full';
+    public function getMaxContentWidth(): string
+    {
+        return 'full';
+    }
 
     protected function getHeaderActions(): array
     {
