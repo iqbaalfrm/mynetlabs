@@ -63,10 +63,10 @@ class ChatbotView extends GetView<ChatbotController> {
           itemCount: controller.chips.length,
           separatorBuilder: (_, __) => const SizedBox(width: 8),
           itemBuilder: (_, i) => ActionChip(
-            label: Text(controller.chips[i], style: const TextStyle(fontSize: 12, color: NetlabsTheme.primary)),
-            backgroundColor: NetlabsTheme.card,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(99)),
-            side: const BorderSide(color: NetlabsTheme.border),
+            label: Text(controller.chips[i], style: const TextStyle(fontSize: 12, color: Color(0xFF64748B))), // Cool Slate Grey
+            backgroundColor: const Color(0xFFF8FAFC),
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+            side: const BorderSide(color: Color(0xFFE2E8F0)),
             onPressed: () => controller.sendMessage(controller.chips[i]),
           ),
         ),
@@ -135,17 +135,18 @@ class _ChatBubble extends StatelessWidget {
                   padding: const EdgeInsets.all(14),
                   constraints: BoxConstraints(maxWidth: Get.width * 0.72),
                   decoration: BoxDecoration(
-                    color: isSiswa ? NetlabsTheme.primary : const Color(0xFFF1F5F9), // Solid Soft Slate Grey
+                    color: isSiswa ? const Color(0xFFEEF2FF) : const Color(0xFFF8FAFC), // Soft Indigo / Ultra Soft Slate
+                    border: isSiswa ? null : Border.all(color: const Color(0xFFE2E8F0)),
                     borderRadius: BorderRadius.only(
-                      topLeft: const Radius.circular(NetlabsTheme.radiusLg),
-                      topRight: const Radius.circular(NetlabsTheme.radiusLg),
-                      bottomLeft: isSiswa ? const Radius.circular(NetlabsTheme.radiusLg) : const Radius.circular(6),
-                      bottomRight: isSiswa ? const Radius.circular(6) : const Radius.circular(NetlabsTheme.radiusLg),
+                      topLeft: const Radius.circular(16),
+                      topRight: const Radius.circular(16),
+                      bottomLeft: isSiswa ? const Radius.circular(16) : const Radius.circular(4),
+                      bottomRight: isSiswa ? const Radius.circular(4) : const Radius.circular(16),
                     ),
                   ),
                   child: _isCliText(message)
                       ? _buildCliBlock(message)
-                      : Text(message, style: TextStyle(color: isSiswa ? Colors.white : NetlabsTheme.dark, fontSize: 14, height: 1.5)),
+                      : Text(message, style: TextStyle(color: isSiswa ? const Color(0xFF312E81) : const Color(0xFF1E293B), fontSize: 14, height: 1.5)),
                 ),
                 if (!isSiswa && source != null) ...[
                   const SizedBox(height: 4),
@@ -171,10 +172,11 @@ class _ChatBubble extends StatelessWidget {
     return Container(
       width: 32, height: 32, margin: const EdgeInsets.only(bottom: 4),
       decoration: BoxDecoration(
-        color: NetlabsTheme.primary.withAlpha(25), // 10% Opacity Deep Indigo
+        color: const Color(0xFFF1F5F9), // Soft Slate Avatar Background
+        border: Border.all(color: const Color(0xFFE2E8F0)),
         borderRadius: BorderRadius.circular(10), 
       ),
-      child: const Icon(Icons.auto_awesome_rounded, color: NetlabsTheme.primary, size: 18),
+      child: const Icon(Icons.support_agent_rounded, color: Color(0xFF64748B), size: 18), // Tutor Icon
     );
   }
 
@@ -189,21 +191,18 @@ class _ChatBubble extends StatelessWidget {
     final lines = text.split('\n');
     return Container(
       width: double.infinity, padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(color: const Color(0xFF1E293B), borderRadius: BorderRadius.circular(10)),
+      decoration: BoxDecoration(
+        color: const Color(0xFF0F172A), // Dark Slate (Tailwind 900)
+        borderRadius: BorderRadius.circular(8),
+      ),
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        Row(children: [
-          _dot(const Color(0xFFFF5F56)), const SizedBox(width: 6),
-          _dot(const Color(0xFFFFBD2E)), const SizedBox(width: 6),
-          _dot(const Color(0xFF27C93F)),
-          const Spacer(),
-          const Text('CLI - Cisco IOS', style: TextStyle(fontSize: 10, color: Colors.white38, fontFamily: 'monospace')),
-        ]),
-        const SizedBox(height: 10),
+        const Text('CLI - Cisco IOS', style: TextStyle(fontSize: 9, color: Colors.white38, fontFamily: 'monospace', fontWeight: FontWeight.w600)),
+        const Divider(color: Colors.white10, height: 12),
         ...lines.map((line) {
           final isCmd = line.trimLeft().startsWith(RegExp(r'Router|Switch|#|>'));
           return Padding(
             padding: const EdgeInsets.only(bottom: 2),
-            child: Text(line, style: TextStyle(fontSize: 13, fontFamily: 'monospace', height: 1.4, color: isCmd ? const Color(0xFF22D3EE) : const Color(0xFFF8FAFC))), // Cyan/White
+            child: Text(line, style: TextStyle(fontSize: 12, fontFamily: 'monospace', height: 1.4, color: isCmd ? const Color(0xFF38BDF8) : const Color(0xFFF8FAFC))), // Sky Blue / White
           );
         }),
       ]),
