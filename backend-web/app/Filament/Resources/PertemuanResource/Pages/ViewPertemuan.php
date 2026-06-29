@@ -15,7 +15,7 @@ class ViewPertemuan extends ViewRecord
 
     protected static string $resource = PertemuanResource::class;
 
-    protected static ?string $maxContentWidth = 'full';
+    protected ?string $maxContentWidth = 'full';
 
     protected function getHeaderActions(): array
     {
