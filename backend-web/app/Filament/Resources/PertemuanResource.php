@@ -87,12 +87,12 @@ class PertemuanResource extends Resource
             ])
             ->filters([])
             ->actions([
-                Actions\ViewAction::make()
+                \Filament\Tables\Actions\ViewAction::make()
                     ->label('Kelola Materi')
                     ->icon('heroicon-o-book-open')
                     ->color('info'),
-                Tables\Actions\EditAction::make(),
-                Actions\DeleteAction::make(),
+                \Filament\Tables\Actions\EditAction::make(),
+                \Filament\Tables\Actions\DeleteAction::make(),
             ])
             ->bulkActions([
                 Actions\BulkActionGroup::make([
