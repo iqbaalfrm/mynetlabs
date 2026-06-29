@@ -36,6 +36,10 @@ class MateriController extends Controller
 
             $progress = $totalTopik > 0 ? round($topikSelesai / $totalTopik, 2) : 0;
 
+            // Status indexing dari modul_pdf terbaru (untuk AI badge di mobile)
+            $latestModul = $p->modulPdfs()->latest()->first();
+            $statusIndexing = $latestModul?->status_indexing ?? 'pending';
+
             return [
                 'id' => $p->id,
                 'nomor' => $p->nomor_urut,
@@ -46,6 +50,7 @@ class MateriController extends Controller
                 'topik_count' => $totalTopik,
                 'progress' => $progress,
                 'is_completed' => $progress >= 1.0,
+                'status_indexing' => $statusIndexing,
             ];
         });
 
