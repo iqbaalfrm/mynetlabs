@@ -91,6 +91,7 @@ class PertemuanResource extends Resource
                     ->label('Kelola Materi')
                     ->icon('heroicon-o-book-open')
                     ->color('info'),
+                Tables\Actions\EditAction::make(),
                 Actions\DeleteAction::make(),
             ])
             ->bulkActions([
@@ -114,6 +115,7 @@ class PertemuanResource extends Resource
         return [
             'index' => \App\Filament\Resources\PertemuanResource\Pages\ListPertemuans::route('/'),
             'view' => \App\Filament\Resources\PertemuanResource\Pages\ViewPertemuan::route('/{record}'),
+            'edit' => \App\Filament\Resources\PertemuanResource\Pages\EditPertemuan::route('/{record}/edit'),
         ];
     }
 }
