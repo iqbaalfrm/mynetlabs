@@ -16,6 +16,7 @@ return new class extends Migration
             $table->string('nama', 100);
             $table->enum('role', ['guru', 'siswa']);
             $table->string('kelas', 20)->nullable(); // Khusus siswa
+            $table->rememberToken();
             $table->timestamps();
         });
 
