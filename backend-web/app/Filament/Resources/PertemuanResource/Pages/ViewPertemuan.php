@@ -7,9 +7,11 @@ use Filament\Resources\Pages\ViewRecord;
 
 use Filament\Actions;
 
+use Filament\Resources\Pages\Concerns\HasRelationManagers;
+
 class ViewPertemuan extends ViewRecord
 {
-    use ViewRecord\Concerns\HasRelationManagers;
+    use HasRelationManagers;
 
     protected static string $resource = PertemuanResource::class;
 
