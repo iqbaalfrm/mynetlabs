@@ -216,8 +216,8 @@ def deploy_to_vps():
         # 13. Buat file .env untuk backend AI
         env_content = (
             f"GEMINI_API_KEY={GEMINI_API_KEY}\n"
-            f"CHROMA_PERSIST_DIR=./chroma_data\n"
-            f"CHROMA_COLLECTION_NAME=netlabs_modul\n"
+            f"QDRANT_PERSIST_DIR=./qdrant_data\n"
+            f"QDRANT_COLLECTION_NAME=basis_pengetahuan\n"
             f"FLASK_PORT=5050\n"
             f"FLASK_DEBUG=false\n"
         )
@@ -233,7 +233,7 @@ def deploy_to_vps():
             "User=www-data\n"
             f"WorkingDirectory={AI_PROJECT_PATH}\n"
             f"Environment=PATH={AI_PROJECT_PATH}/venv/bin:/usr/bin\n"
-            f"ExecStart={AI_PROJECT_PATH}/venv/bin/gunicorn -w 2 -b 0.0.0.0:5050 --timeout 120 app:app\n"
+            f"ExecStart={AI_PROJECT_PATH}/venv/bin/gunicorn -w 1 -b 0.0.0.0:5050 --timeout 120 app:app\n"
             "Restart=always\n"
             "RestartSec=5\n\n"
             "[Install]\n"

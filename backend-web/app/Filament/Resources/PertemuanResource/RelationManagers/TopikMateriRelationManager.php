@@ -61,4 +61,19 @@ class TopikMateriRelationManager extends RelationManager
                 ]),
             ]);
     }
+
+    public static function canCreate(): bool
+    {
+        return true;
+    }
+
+    public function canEdit(\Illuminate\Database\Eloquent\Model $record): bool
+    {
+        return true;
+    }
+
+    public function canDelete(\Illuminate\Database\Eloquent\Model $record): bool
+    {
+        return true;
+    }
 }

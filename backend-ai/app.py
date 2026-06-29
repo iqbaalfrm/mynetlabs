@@ -1,24 +1,32 @@
 """
 =============================================================================
   NetLabs AI Backend — Core RAG Engine
-  Flask + ChromaDB + Google Gemini (embedding-001 & gemini-1.5-flash)
+  Flask + Qdrant + Sentence Transformers + Google Gemini LLM
 =============================================================================
   Deskripsi:
-    Menyediakan dua endpoint utama untuk Laravel Web Admin:
-      1. POST /index-pdf   → Membaca PDF, chunking, embedding, simpan ke ChromaDB
-      2. POST /chat         → Menjawab pertanyaan siswa berdasarkan konteks pertemuan
+    Menyediakan endpoint utama untuk Laravel Web Admin & Mobile App:
+      1. POST /index-pdf      → Membaca PDF, chunking, embedding, simpan ke Qdrant
+      2. POST /chat            → Menjawab pertanyaan siswa (RAG) via Gemini LLM
+      3. POST /generate-quiz   → Membuat soal kuis otomatis dari materi modul
 
   Teknologi:
     - Flask (REST API)
-    - ChromaDB (Vector Database, persistent storage)
-    - Google GenAI Embedding (embedding-001)
-    - Google Gemini LLM (gemini-1.5-flash)
+    - Qdrant (Vector Database, persistent storage lokal)
+    - Sentence Transformers (paraphrase-multilingual-MiniLM-L12-v2, dimensi 384)
+    - Google Gemini LLM (gemini-1.5-flash) — untuk generate jawaban & soal
     - PyMuPDF / fitz (Ekstraksi teks PDF)
     - LangChain Text Splitter (Chunking)
 
+  Referensi Arsitektur RAG:
+    Mengadopsi pola dari Pertemuan 9 — Chatbot RAG Sederhana,
+    menggunakan Qdrant sebagai Vector DB dan Sentence Transformers
+    sebagai model penyematan (embedding).
+
   Catatan Deployment:
     - Jalankan di Ubuntu Server dengan: python app.py
-    - Atau gunakan Gunicorn: gunicorn -w 2 -b 0.0.0.0:5050 app:app
+    - Atau gunakan Gunicorn: gunicorn -w 1 -b 0.0.0.0:5050 --timeout 120 app:app
+    - PENTING: Gunakan 1 worker (-w 1) karena Qdrant local mode
+      tidak mendukung akses multi-proses secara bersamaan.
 =============================================================================
 """
 
@@ -32,8 +40,17 @@ from flask import Flask, request, jsonify
 from dotenv import load_dotenv
 
 import fitz  # PyMuPDF — pembaca PDF
-import chromadb
-from chromadb.config import Settings as ChromaSettings
+from qdrant_client import QdrantClient
+from qdrant_client.models import (
+    Distance,
+    VectorParams,
+    PointStruct,
+    Filter,
+    FieldCondition,
+    MatchValue,
+    FilterSelector,
+)
+from sentence_transformers import SentenceTransformer
 import google.generativeai as genai
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 
@@ -53,8 +70,8 @@ logger = logging.getLogger("NetLabsAI")
 load_dotenv()
 
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
-CHROMA_PERSIST_DIR = os.getenv("CHROMA_PERSIST_DIR", "./chroma_data")
-CHROMA_COLLECTION_NAME = os.getenv("CHROMA_COLLECTION_NAME", "netlabs_modul")
+QDRANT_PERSIST_DIR = os.getenv("QDRANT_PERSIST_DIR", "./qdrant_data")
+QDRANT_COLLECTION_NAME = os.getenv("QDRANT_COLLECTION_NAME", "basis_pengetahuan")
 FLASK_PORT = int(os.getenv("FLASK_PORT", 5050))
 FLASK_DEBUG = os.getenv("FLASK_DEBUG", "false").lower() == "true"
 
@@ -62,25 +79,40 @@ if not GEMINI_API_KEY:
     logger.error("❌ GEMINI_API_KEY tidak ditemukan di environment variables!")
     raise SystemExit("GEMINI_API_KEY wajib diset. Buat file .env atau export variabel.")
 
-# Konfigurasi Google Generative AI SDK
+# Konfigurasi Google Generative AI SDK (untuk LLM, bukan embedding)
 genai.configure(api_key=GEMINI_API_KEY)
 
 # ─────────────────────────────────────────────────────────────────────────────
-# Inisialisasi ChromaDB Client (Persistent)
+# Inisialisasi Model Penyematan — Sentence Transformers
+# (Sesuai Pertemuan 9: paraphrase-multilingual-MiniLM-L12-v2, dimensi 384)
 # ─────────────────────────────────────────────────────────────────────────────
-logger.info(f"📂 Menginisialisasi ChromaDB di: {os.path.abspath(CHROMA_PERSIST_DIR)}")
-chroma_client = chromadb.PersistentClient(path=CHROMA_PERSIST_DIR)
-
-# Buat atau ambil collection
-collection = chroma_client.get_or_create_collection(
-    name=CHROMA_COLLECTION_NAME,
-    metadata={"hnsw:space": "cosine"},  # Menggunakan cosine similarity
-)
-logger.info(f"✅ ChromaDB collection '{CHROMA_COLLECTION_NAME}' siap. "
-            f"Total dokumen saat ini: {collection.count()}")
+logger.info("🔤 Memuat model penyematan Sentence Transformers...")
+embedding_model = SentenceTransformer('paraphrase-multilingual-MiniLM-L12-v2')
+VECTOR_SIZE = 384  # Dimensi output dari model MiniLM-L12-v2
+logger.info("✅ Model penyematan 'paraphrase-multilingual-MiniLM-L12-v2' berhasil dimuat.")
 
 # ─────────────────────────────────────────────────────────────────────────────
-# Inisialisasi Gemini LLM Model
+# Inisialisasi Qdrant Client (Persistent Storage Lokal)
+# (Sesuai Pertemuan 9: QdrantClient dengan Distance.COSINE)
+# ─────────────────────────────────────────────────────────────────────────────
+logger.info(f"📂 Menginisialisasi Qdrant di: {os.path.abspath(QDRANT_PERSIST_DIR)}")
+qdrant_client = QdrantClient(path=QDRANT_PERSIST_DIR)
+
+# Buat collection jika belum ada (idempotent)
+if not qdrant_client.collection_exists(QDRANT_COLLECTION_NAME):
+    qdrant_client.create_collection(
+        collection_name=QDRANT_COLLECTION_NAME,
+        vectors_config=VectorParams(size=VECTOR_SIZE, distance=Distance.COSINE),
+    )
+    logger.info(f"✅ Qdrant collection '{QDRANT_COLLECTION_NAME}' berhasil dibuat.")
+else:
+    logger.info(f"✅ Qdrant collection '{QDRANT_COLLECTION_NAME}' sudah ada.")
+
+total_docs = qdrant_client.count(collection_name=QDRANT_COLLECTION_NAME).count
+logger.info(f"   Total dokumen saat ini: {total_docs}")
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Inisialisasi Gemini LLM Model (untuk generate jawaban chat & soal kuis)
 # ─────────────────────────────────────────────────────────────────────────────
 gemini_model = genai.GenerativeModel(
     model_name="gemini-1.5-flash",
@@ -156,23 +188,12 @@ def potong_teks_menjadi_chunks(teks: str, chunk_size: int = 1000, chunk_overlap:
 
 
 def buat_embedding(teks: str) -> list[float]:
-    """Membuat embedding vektor dari teks menggunakan Google GenAI embedding-001."""
-    result = genai.embed_content(
-        model="models/gemini-embedding-001",
-        content=teks,
-        task_type="RETRIEVAL_DOCUMENT",
-    )
-    return result['embedding']
-
-
-def buat_embedding_query(teks: str) -> list[float]:
-    """Membuat embedding vektor dari query siswa (task_type=retrieval_query)."""
-    result = genai.embed_content(
-        model="models/gemini-embedding-001",
-        content=teks,
-        task_type="RETRIEVAL_QUERY",
-    )
-    return result['embedding']
+    """
+    Membuat embedding vektor dari teks menggunakan Sentence Transformers.
+    Model: paraphrase-multilingual-MiniLM-L12-v2 (dimensi 384)
+    Sesuai Pertemuan 9 — Chatbot RAG.
+    """
+    return embedding_model.encode(teks).tolist()
 
 
 # ═══════════════════════════════════════════════════════════════════════════════
@@ -183,7 +204,7 @@ def buat_embedding_query(teks: str) -> list[float]:
 def index_pdf():
     """
     Membaca file PDF, memotong teks, membuat embedding, dan menyimpannya
-    ke ChromaDB dengan metadata pertemuan_id.
+    ke Qdrant dengan metadata pertemuan_id.
 
     Request JSON:
     {
@@ -244,55 +265,57 @@ def index_pdf():
             }), 500
 
         # ── Langkah 3: Hapus data lama untuk file ini (jika re-index) ──
-        #    Kita cari dokumen dengan source yang sama untuk menghindari duplikat
+        #    Menggunakan filter Qdrant untuk menghindari duplikat
         nama_file = os.path.basename(file_path)
-        existing = collection.get(
-            where={
-                "$and": [
-                    {"pertemuan_id": {"$eq": pertemuan_id}},
-                    {"source_file": {"$eq": nama_file}},
-                ]
-            }
-        )
-        if existing and existing["ids"]:
-            logger.info(f"🗑️  Menghapus {len(existing['ids'])} dokumen lama "
-                        f"(pertemuan_id={pertemuan_id}, file={nama_file})")
-            collection.delete(ids=existing["ids"])
+        logger.info(f"🗑️  Menghapus dokumen lama (pertemuan_id={pertemuan_id}, file={nama_file})...")
 
-        # ── Langkah 4: Buat embedding dan simpan ke ChromaDB ───────────
-        ids = []
-        embeddings = []
-        documents = []
-        metadatas = []
+        qdrant_client.delete(
+            collection_name=QDRANT_COLLECTION_NAME,
+            points_selector=FilterSelector(
+                filter=Filter(
+                    must=[
+                        FieldCondition(key="pertemuan_id", match=MatchValue(value=pertemuan_id)),
+                        FieldCondition(key="source_file", match=MatchValue(value=nama_file)),
+                    ]
+                )
+            ),
+        )
+
+        # ── Langkah 4: Buat embedding dan simpan ke Qdrant ─────────────
+        points = []
 
         for i, chunk in enumerate(chunks):
-            doc_id = f"pertemuan_{pertemuan_id}_{nama_file}_{i}_{uuid.uuid4().hex[:8]}"
+            doc_id = str(uuid.uuid4())  # Qdrant menggunakan UUID string
             logger.info(f"  🔢 Membuat embedding chunk {i+1}/{len(chunks)} ...")
 
-            embedding = buat_embedding(chunk)
+            vektor = buat_embedding(chunk)
 
-            ids.append(doc_id)
-            embeddings.append(embedding)
-            documents.append(chunk)
-            metadatas.append({
-                "pertemuan_id": pertemuan_id,
-                "source_file": nama_file,
-                "chunk_index": i,
-                "total_chunks": len(chunks),
-                "indexed_at": datetime.now().isoformat(),
-            })
+            points.append(
+                PointStruct(
+                    id=doc_id,
+                    vector=vektor,
+                    payload={
+                        "teks_asli": chunk,
+                        "pertemuan_id": pertemuan_id,
+                        "source_file": nama_file,
+                        "chunk_index": i,
+                        "total_chunks": len(chunks),
+                        "indexed_at": datetime.now().isoformat(),
+                    },
+                )
+            )
 
-        # Batch upsert ke ChromaDB
-        collection.upsert(
-            ids=ids,
-            embeddings=embeddings,
-            documents=documents,
-            metadatas=metadatas,
+        # Batch upsert ke Qdrant
+        qdrant_client.upsert(
+            collection_name=QDRANT_COLLECTION_NAME,
+            points=points,
         )
+
+        total_in_db = qdrant_client.count(collection_name=QDRANT_COLLECTION_NAME).count
 
         logger.info(f"✅ INDEX-PDF selesai | {len(chunks)} chunk berhasil disimpan "
                      f"untuk pertemuan_id={pertemuan_id}")
-        logger.info(f"   Total dokumen di collection: {collection.count()}")
+        logger.info(f"   Total dokumen di collection: {total_in_db}")
 
         return jsonify({
             "success": True,
@@ -302,7 +325,7 @@ def index_pdf():
                 "pertemuan_id": pertemuan_id,
                 "file_name": nama_file,
                 "total_chunks": len(chunks),
-                "total_documents_in_db": collection.count(),
+                "total_documents_in_db": total_in_db,
             }
         }), 200
 
@@ -350,16 +373,16 @@ PESAN_TIDAK_DITEMUKAN = (
     "Silakan tanyakan hal yang berkaitan dengan modul bab ini ya!"
 )
 
-# Threshold minimum relevansi (ChromaDB distance; cosine distance — semakin kecil semakin mirip)
-# Untuk cosine distance: 0 = identik, 2 = berlawanan. Threshold 1.2 cukup longgar.
-RELEVANCE_THRESHOLD = 1.2
+# Threshold minimum relevansi (Qdrant cosine similarity score)
+# Qdrant cosine: 0 = tidak mirip, 1 = identik. Threshold 0.3 cukup longgar.
+RELEVANCE_THRESHOLD = 0.3
 
 
 @app.route("/chat", methods=["POST"])
 def chat():
     """
     Menjawab pertanyaan siswa berdasarkan dokumen modul di pertemuan tertentu.
-    Menggunakan metadata-based filtering pada ChromaDB.
+    Menggunakan Qdrant query_points dengan filter metadata pertemuan_id.
 
     Request JSON:
     {
@@ -400,38 +423,43 @@ def chat():
         logger.info(f"{'='*60}")
 
         # ── Langkah 1: Buat embedding dari pertanyaan siswa ─────────────
-        query_embedding = buat_embedding_query(message)
+        #    (Sesuai Pertemuan 9: model.encode → vektor query)
+        vektor_query = buat_embedding(message)
 
-        # ── Langkah 2: Cari dokumen relevan di ChromaDB ─────────────────
+        # ── Langkah 2: Cari dokumen relevan di Qdrant ───────────────────
         #    Filter berdasarkan pertemuan_id agar hanya modul bab aktif
-        hasil_pencarian = collection.query(
-            query_embeddings=[query_embedding],
-            n_results=4,  # Ambil top 4 chunks terdekat
-            where={"pertemuan_id": {"$eq": pertemuan_id}},
-            include=["documents", "distances", "metadatas"],
-        )
+        #    (Sesuai Pertemuan 9: client.query_points)
+        hasil_pencarian = qdrant_client.query_points(
+            collection_name=QDRANT_COLLECTION_NAME,
+            query=vektor_query,
+            query_filter=Filter(
+                must=[
+                    FieldCondition(key="pertemuan_id", match=MatchValue(value=pertemuan_id)),
+                ]
+            ),
+            limit=4,  # Ambil top 4 chunks terdekat
+        ).points
 
-        dokumen_ditemukan = hasil_pencarian.get("documents", [[]])[0]
-        jarak = hasil_pencarian.get("distances", [[]])[0]
-        metadatas_hasil = hasil_pencarian.get("metadatas", [[]])[0]
-
-        logger.info(f"🔍 Hasil pencarian: {len(dokumen_ditemukan)} dokumen ditemukan")
+        logger.info(f"🔍 Hasil pencarian: {len(hasil_pencarian)} dokumen ditemukan")
 
         # ── Langkah 3: Cek apakah ada dokumen yang relevan ──────────────
-        if not dokumen_ditemukan:
+        if not hasil_pencarian:
             logger.warning(f"⚠️ Tidak ada dokumen untuk pertemuan_id={pertemuan_id}")
             return jsonify({
                 "success": True,
                 "answer": PESAN_TIDAK_DITEMUKAN
             }), 200
 
-        # Filter berdasarkan threshold relevansi
+        # Filter berdasarkan threshold relevansi (cosine similarity score)
         chunks_relevan = []
-        for doc, dist, meta in zip(dokumen_ditemukan, jarak, metadatas_hasil):
-            logger.info(f"  📊 Distance: {dist:.4f} | Source: {meta.get('source_file', '?')} "
-                        f"| Chunk: {meta.get('chunk_index', '?')}")
-            if dist <= RELEVANCE_THRESHOLD:
-                chunks_relevan.append(doc)
+        for point in hasil_pencarian:
+            skor = point.score
+            source = point.payload.get("source_file", "?")
+            chunk_idx = point.payload.get("chunk_index", "?")
+            logger.info(f"  📊 Score: {skor:.4f} | Source: {source} | Chunk: {chunk_idx}")
+
+            if skor >= RELEVANCE_THRESHOLD:
+                chunks_relevan.append(point.payload["teks_asli"])
 
         if not chunks_relevan:
             logger.warning(f"⚠️ Semua dokumen di bawah threshold relevansi "
@@ -443,7 +471,7 @@ def chat():
 
         logger.info(f"✅ {len(chunks_relevan)} chunk lolos filter relevansi")
 
-        # ── Langkah 4: Gabungkan konteks dan kirim ke Gemini ────────────
+        # ── Langkah 4: Gabungkan konteks dan kirim ke Gemini LLM ────────
         konteks_gabungan = "\n\n---\n\n".join(chunks_relevan)
 
         # Susun prompt lengkap
@@ -474,7 +502,7 @@ def chat():
             "metadata": {
                 "pertemuan_id": pertemuan_id,
                 "chunks_used": len(chunks_relevan),
-                "total_chunks_found": len(dokumen_ditemukan),
+                "total_chunks_found": len(hasil_pencarian),
             }
         }), 200
 
@@ -619,16 +647,20 @@ def generate_quiz():
                      f"jumlah_soal={jumlah_soal}")
         logger.info(f"{'='*60}")
 
-        # ── Langkah 1: Ambil seluruh dokumen dari ChromaDB ──────────────
-        hasil = collection.get(
-            where={"pertemuan_id": {"$eq": pertemuan_id}},
-            include=["documents", "metadatas"],
+        # ── Langkah 1: Ambil seluruh dokumen dari Qdrant ────────────────
+        #    Menggunakan scroll dengan filter pertemuan_id
+        hasil_scroll, _ = qdrant_client.scroll(
+            collection_name=QDRANT_COLLECTION_NAME,
+            scroll_filter=Filter(
+                must=[
+                    FieldCondition(key="pertemuan_id", match=MatchValue(value=pertemuan_id)),
+                ]
+            ),
+            limit=1000,
+            with_payload=True,
         )
 
-        dokumen_list = hasil.get("documents", [])
-        metadatas_list = hasil.get("metadatas", [])
-
-        if not dokumen_list:
+        if not hasil_scroll:
             logger.warning(f"⚠️ Tidak ada dokumen untuk pertemuan_id={pertemuan_id}")
             return jsonify({
                 "success": False,
@@ -636,14 +668,13 @@ def generate_quiz():
                            f"Silakan upload dan index modul PDF terlebih dahulu."
             }), 404
 
-        logger.info(f"📚 Ditemukan {len(dokumen_list)} chunk dokumen "
+        logger.info(f"📚 Ditemukan {len(hasil_scroll)} chunk dokumen "
                      f"untuk pertemuan_id={pertemuan_id}")
 
         # ── Langkah 2: Gabungkan semua chunks menjadi konteks ───────────
         #    Urutkan berdasarkan chunk_index agar konteks berurutan
-        paired = list(zip(dokumen_list, metadatas_list))
-        paired.sort(key=lambda x: x[1].get("chunk_index", 0))
-        konteks_gabungan = "\n\n".join([doc for doc, _ in paired])
+        hasil_scroll.sort(key=lambda p: p.payload.get("chunk_index", 0))
+        konteks_gabungan = "\n\n".join([p.payload["teks_asli"] for p in hasil_scroll])
 
         # Batasi konteks agar tidak terlalu panjang (max ~15000 karakter)
         MAX_KONTEKS = 15000
@@ -772,31 +803,35 @@ def generate_quiz():
 @app.route("/", methods=["GET"])
 def health_check():
     """Health check endpoint untuk monitoring."""
+    total = qdrant_client.count(collection_name=QDRANT_COLLECTION_NAME).count
     return jsonify({
         "status": "running",
         "service": "NetLabs AI Backend",
-        "version": "1.0.0",
-        "chroma_collection": CHROMA_COLLECTION_NAME,
-        "total_documents": collection.count(),
+        "version": "2.0.0",
+        "vector_db": "Qdrant",
+        "embedding_model": "paraphrase-multilingual-MiniLM-L12-v2",
+        "qdrant_collection": QDRANT_COLLECTION_NAME,
+        "total_documents": total,
         "timestamp": datetime.now().isoformat(),
     }), 200
 
 
 @app.route("/stats", methods=["GET"])
 def stats():
-    """Statistik collection ChromaDB."""
+    """Statistik collection Qdrant."""
     try:
-        total = collection.count()
+        total = qdrant_client.count(collection_name=QDRANT_COLLECTION_NAME).count
 
         # Hitung dokumen per pertemuan_id (sample dari 1000 dokumen)
         if total > 0:
-            semua_data = collection.get(
+            semua_data, _ = qdrant_client.scroll(
+                collection_name=QDRANT_COLLECTION_NAME,
                 limit=min(total, 1000),
-                include=["metadatas"],
+                with_payload=True,
             )
             pertemuan_map = {}
-            for meta in semua_data.get("metadatas", []):
-                pid = meta.get("pertemuan_id", "unknown")
+            for point in semua_data:
+                pid = point.payload.get("pertemuan_id", "unknown")
                 if pid not in pertemuan_map:
                     pertemuan_map[pid] = 0
                 pertemuan_map[pid] += 1
@@ -821,31 +856,46 @@ def stats():
 def delete_pertemuan(pertemuan_id: int):
     """
     Menghapus seluruh dokumen yang terkait dengan pertemuan_id tertentu
-    dari ChromaDB. Berguna saat guru menghapus atau mengupdate modul.
+    dari Qdrant. Berguna saat guru menghapus atau mengupdate modul.
     """
     try:
         logger.info(f"🗑️ Menghapus semua dokumen untuk pertemuan_id={pertemuan_id}")
 
-        existing = collection.get(
-            where={"pertemuan_id": {"$eq": pertemuan_id}},
-        )
+        # Hitung dulu berapa yang akan dihapus
+        jumlah_sebelum = qdrant_client.count(
+            collection_name=QDRANT_COLLECTION_NAME,
+            count_filter=Filter(
+                must=[
+                    FieldCondition(key="pertemuan_id", match=MatchValue(value=pertemuan_id)),
+                ]
+            ),
+        ).count
 
-        if not existing or not existing["ids"]:
+        if jumlah_sebelum == 0:
             return jsonify({
                 "success": True,
                 "message": f"Tidak ada dokumen untuk pertemuan_id={pertemuan_id}.",
                 "deleted_count": 0,
             }), 200
 
-        jumlah = len(existing["ids"])
-        collection.delete(ids=existing["ids"])
+        # Hapus berdasarkan filter
+        qdrant_client.delete(
+            collection_name=QDRANT_COLLECTION_NAME,
+            points_selector=FilterSelector(
+                filter=Filter(
+                    must=[
+                        FieldCondition(key="pertemuan_id", match=MatchValue(value=pertemuan_id)),
+                    ]
+                )
+            ),
+        )
 
-        logger.info(f"✅ Berhasil menghapus {jumlah} dokumen untuk pertemuan_id={pertemuan_id}")
+        logger.info(f"✅ Berhasil menghapus {jumlah_sebelum} dokumen untuk pertemuan_id={pertemuan_id}")
 
         return jsonify({
             "success": True,
-            "message": f"Berhasil menghapus {jumlah} dokumen untuk pertemuan_id={pertemuan_id}.",
-            "deleted_count": jumlah,
+            "message": f"Berhasil menghapus {jumlah_sebelum} dokumen untuk pertemuan_id={pertemuan_id}.",
+            "deleted_count": jumlah_sebelum,
         }), 200
 
     except Exception as e:
@@ -863,11 +913,12 @@ def delete_pertemuan(pertemuan_id: int):
 if __name__ == "__main__":
     logger.info("=" * 60)
     logger.info("🚀 NetLabs AI Backend dimulai!")
-    logger.info(f"   📡 Port         : {FLASK_PORT}")
-    logger.info(f"   🐛 Debug Mode   : {FLASK_DEBUG}")
-    logger.info(f"   📂 ChromaDB Dir : {os.path.abspath(CHROMA_PERSIST_DIR)}")
-    logger.info(f"   📦 Collection   : {CHROMA_COLLECTION_NAME}")
-    logger.info(f"   📄 Total Docs   : {collection.count()}")
+    logger.info(f"   📡 Port           : {FLASK_PORT}")
+    logger.info(f"   🐛 Debug Mode     : {FLASK_DEBUG}")
+    logger.info(f"   📂 Qdrant Dir     : {os.path.abspath(QDRANT_PERSIST_DIR)}")
+    logger.info(f"   📦 Collection     : {QDRANT_COLLECTION_NAME}")
+    logger.info(f"   🔤 Embedding      : paraphrase-multilingual-MiniLM-L12-v2")
+    logger.info(f"   📄 Total Docs     : {qdrant_client.count(collection_name=QDRANT_COLLECTION_NAME).count}")
     logger.info("=" * 60)
 
     app.run(

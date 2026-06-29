@@ -8,11 +8,14 @@
 Flask==3.1.1
 python-dotenv==1.1.0
 
-# Google Generative AI (Gemini + Embedding)
+# Google Generative AI (Gemini LLM untuk generate jawaban & soal kuis)
 google-generativeai==0.8.5
 
-# ChromaDB — Vector Database
-chromadb==0.6.3
+# Qdrant — Vector Database (pengganti ChromaDB, sesuai Pertemuan 9)
+qdrant-client>=1.9.0
+
+# Sentence Transformers — Model Penyematan Lokal (paraphrase-multilingual-MiniLM-L12-v2)
+sentence-transformers>=3.0.0
 
 # PyMuPDF — Ekstraksi Teks PDF (lebih cepat dari PyPDF2)
 PyMuPDF==1.25.4
