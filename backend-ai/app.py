@@ -118,7 +118,7 @@ logger.info(f"   Total dokumen saat ini: {total_docs}")
 # Inisialisasi Gemini LLM Model (untuk generate jawaban chat & soal kuis)
 # ─────────────────────────────────────────────────────────────────────────────
 gemini_model = genai.GenerativeModel(
-    model_name="gemini-1.5-flash",
+    model_name="gemini-2.5-flash",
     generation_config=genai.GenerationConfig(
         temperature=0.3,      
         top_p=0.85,
@@ -629,7 +629,7 @@ QUIZ_RESPONSE_SCHEMA = {
 
 # Model Gemini khusus untuk quiz generation (dengan structured output)
 gemini_quiz_model = genai.GenerativeModel(
-    model_name="gemini-1.5-flash",
+    model_name="gemini-2.5-flash",
     generation_config=genai.GenerationConfig(
         temperature=0.7,       # Sedikit lebih kreatif untuk variasi soal
         top_p=0.9,
@@ -999,7 +999,7 @@ def transcribe_audio():
             gemini_file = genai.upload_file(tmp_path, mime_type=mime_type)
 
             # Gunakan Gemini untuk transkripsi
-            model = genai.GenerativeModel("gemini-1.5-flash")
+            model = genai.GenerativeModel("gemini-2.5-flash")
             response = model.generate_content([
                 gemini_file,
                 "Transkripsikan audio ini menjadi teks Bahasa Indonesia. "
