@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import '../../theme/netlabs_theme.dart';
 import '../controllers/login_controller.dart';
 
 class LoginView extends GetView<LoginController> {
@@ -8,7 +9,7 @@ class LoginView extends GetView<LoginController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF8FAFC), // Slate 50 background
+      backgroundColor: NetlabsTheme.surface,
       body: SafeArea(
         child: Center(
           child: SingleChildScrollView(
@@ -26,13 +27,13 @@ class LoginView extends GetView<LoginController> {
                     child: Container(
                       padding: const EdgeInsets.all(20),
                       decoration: BoxDecoration(
-                        color: const Color(0xFF0D9488).withOpacity(0.1),
+                        color: NetlabsTheme.primary.withAlpha(25),
                         shape: BoxShape.circle,
                       ),
                       child: const Icon(
                         Icons.router_rounded,
                         size: 60,
-                        color: Color(0xFF0D9488), // Netlabs Blue
+                        color: NetlabsTheme.primary,
                       ),
                     ),
                   ),
@@ -43,7 +44,7 @@ class LoginView extends GetView<LoginController> {
                     style: TextStyle(
                       fontSize: 32,
                       fontWeight: FontWeight.w900,
-                      color: Color(0xFF0F172A), // Dark slate
+                      color: NetlabsTheme.dark,
                       letterSpacing: -0.5,
                     ),
                   ),
@@ -53,7 +54,7 @@ class LoginView extends GetView<LoginController> {
                     textAlign: TextAlign.center,
                     style: TextStyle(
                       fontSize: 13,
-                      color: Color(0xFF64748B), // Slate 500
+                      color: NetlabsTheme.textSecondary,
                       fontWeight: FontWeight.w500,
                     ),
                   ),
@@ -65,8 +66,8 @@ class LoginView extends GetView<LoginController> {
                   Container(
                     padding: const EdgeInsets.all(24),
                     decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(24),
+                      color: NetlabsTheme.card,
+                      borderRadius: BorderRadius.circular(NetlabsTheme.radiusXl),
                       boxShadow: [
                         BoxShadow(
                           color: Colors.black.withOpacity(0.04),
@@ -74,7 +75,7 @@ class LoginView extends GetView<LoginController> {
                           offset: const Offset(0, 8),
                         ),
                       ],
-                      border: Border.all(color: const Color(0xFFE2E8F0)),
+                      border: Border.all(color: NetlabsTheme.border),
                     ),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -84,7 +85,7 @@ class LoginView extends GetView<LoginController> {
                           style: TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.w800,
-                            color: Color(0xFF0F172A),
+                            color: NetlabsTheme.dark,
                           ),
                         ),
                         const SizedBox(height: 6),
@@ -92,7 +93,7 @@ class LoginView extends GetView<LoginController> {
                           "Silakan masuk menggunakan NIS Anda.",
                           style: TextStyle(
                             fontSize: 12,
-                            color: Color(0xFF64748B),
+                            color: NetlabsTheme.textSecondary,
                           ),
                         ),
                         const SizedBox(height: 24),
@@ -104,26 +105,26 @@ class LoginView extends GetView<LoginController> {
                           style: const TextStyle(fontSize: 14),
                           decoration: InputDecoration(
                             labelText: "Nomor Induk Siswa (NIS)",
-                            labelStyle: const TextStyle(color: Color(0xFF64748B), fontSize: 13),
-                            prefixIcon: const Icon(Icons.assignment_ind_outlined, size: 20, color: Color(0xFF64748B)),
+                            labelStyle: const TextStyle(color: NetlabsTheme.textSecondary, fontSize: 13),
+                            prefixIcon: const Icon(Icons.assignment_ind_outlined, size: 20, color: NetlabsTheme.textSecondary),
                             floatingLabelBehavior: FloatingLabelBehavior.auto,
                             filled: true,
-                            fillColor: const Color(0xFFF8FAFC),
+                            fillColor: NetlabsTheme.surface,
                             enabledBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(14),
-                              borderSide: const BorderSide(color: Color(0xFFE2E8F0)),
+                              borderRadius: BorderRadius.circular(NetlabsTheme.radiusSm),
+                              borderSide: const BorderSide(color: NetlabsTheme.border),
                             ),
                             focusedBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(14),
-                              borderSide: const BorderSide(color: Color(0xFF0D9488), width: 1.5),
+                              borderRadius: BorderRadius.circular(NetlabsTheme.radiusSm),
+                              borderSide: const BorderSide(color: NetlabsTheme.primary, width: 1.5),
                             ),
                             errorBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(14),
-                              borderSide: const BorderSide(color: Colors.redAccent),
+                              borderRadius: BorderRadius.circular(NetlabsTheme.radiusSm),
+                              borderSide: const BorderSide(color: NetlabsTheme.danger),
                             ),
                             focusedErrorBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(14),
-                              borderSide: const BorderSide(color: Colors.redAccent, width: 1.5),
+                              borderRadius: BorderRadius.circular(NetlabsTheme.radiusSm),
+                              borderSide: const BorderSide(color: NetlabsTheme.danger, width: 1.5),
                             ),
                             contentPadding: const EdgeInsets.symmetric(vertical: 16),
                           ),
@@ -144,36 +145,36 @@ class LoginView extends GetView<LoginController> {
                             style: const TextStyle(fontSize: 14),
                             decoration: InputDecoration(
                               labelText: "Kata Sandi",
-                              labelStyle: const TextStyle(color: Color(0xFF64748B), fontSize: 13),
-                              prefixIcon: const Icon(Icons.lock_outline_rounded, size: 20, color: Color(0xFF64748B)),
+                              labelStyle: const TextStyle(color: NetlabsTheme.textSecondary, fontSize: 13),
+                              prefixIcon: const Icon(Icons.lock_outline_rounded, size: 20, color: NetlabsTheme.textSecondary),
                               suffixIcon: IconButton(
                                 icon: Icon(
                                   controller.isPasswordObscured.value
                                       ? Icons.visibility_off_outlined
                                       : Icons.visibility_outlined,
                                   size: 20,
-                                  color: const Color(0xFF64748B),
+                                  color: NetlabsTheme.textSecondary,
                                 ),
                                 onPressed: controller.togglePasswordVisibility,
                               ),
                               floatingLabelBehavior: FloatingLabelBehavior.auto,
                               filled: true,
-                              fillColor: const Color(0xFFF8FAFC),
+                              fillColor: NetlabsTheme.surface,
                               enabledBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(14),
-                                borderSide: const BorderSide(color: Color(0xFFE2E8F0)),
+                                borderRadius: BorderRadius.circular(NetlabsTheme.radiusSm),
+                                borderSide: const BorderSide(color: NetlabsTheme.border),
                               ),
                               focusedBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(14),
-                                borderSide: const BorderSide(color: Color(0xFF0D9488), width: 1.5),
+                                borderRadius: BorderRadius.circular(NetlabsTheme.radiusSm),
+                                borderSide: const BorderSide(color: NetlabsTheme.primary, width: 1.5),
                               ),
                               errorBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(14),
-                                borderSide: const BorderSide(color: Colors.redAccent),
+                                borderRadius: BorderRadius.circular(NetlabsTheme.radiusSm),
+                                borderSide: const BorderSide(color: NetlabsTheme.danger),
                               ),
                               focusedErrorBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(14),
-                                borderSide: const BorderSide(color: Colors.redAccent, width: 1.5),
+                                borderRadius: BorderRadius.circular(NetlabsTheme.radiusSm),
+                                borderSide: const BorderSide(color: NetlabsTheme.danger, width: 1.5),
                               ),
                               contentPadding: const EdgeInsets.symmetric(vertical: 16),
                             ),
@@ -197,14 +198,14 @@ class LoginView extends GetView<LoginController> {
                                 ? null
                                 : () => controller.login(),
                             style: ElevatedButton.styleFrom(
-                              backgroundColor: const Color(0xFF0D9488),
+                              backgroundColor: NetlabsTheme.primary,
                               foregroundColor: Colors.white,
                               padding: const EdgeInsets.symmetric(vertical: 16),
                               shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(14),
+                                borderRadius: BorderRadius.circular(NetlabsTheme.radiusSm),
                               ),
                               elevation: 2,
-                              shadowColor: const Color(0xFF0D9488).withOpacity(0.3),
+                              shadowColor: NetlabsTheme.primary.withOpacity(0.3),
                             ),
                             child: controller.isLoading.value
                                 ? const SizedBox(
@@ -235,20 +236,20 @@ class LoginView extends GetView<LoginController> {
                   Container(
                     padding: const EdgeInsets.all(14),
                     decoration: BoxDecoration(
-                      color: const Color(0xFF0D9488).withOpacity(0.06),
-                      borderRadius: BorderRadius.circular(16),
-                      border: Border.all(color: const Color(0xFF0D9488).withOpacity(0.15)),
+                      color: NetlabsTheme.primary.withAlpha(15),
+                      borderRadius: BorderRadius.circular(NetlabsTheme.radiusMd),
+                      border: Border.all(color: NetlabsTheme.primary.withAlpha(40)),
                     ),
                     child: Row(
                       children: [
-                        const Icon(Icons.info_outline_rounded, size: 20, color: Color(0xFF0D9488)),
+                        const Icon(Icons.info_outline_rounded, size: 20, color: NetlabsTheme.primary),
                         const SizedBox(width: 10),
                         Expanded(
                           child: Text(
                             "Lupa kata sandi? Silakan hubungi Guru / Wali Kelas Anda di sekolah untuk mereset sandi Anda.",
                             style: TextStyle(
                               fontSize: 11,
-                              color: const Color(0xFF0F766E).withOpacity(0.8),
+                              color: NetlabsTheme.primaryDark.withOpacity(0.8),
                               height: 1.4,
                               fontWeight: FontWeight.w500,
                             ),

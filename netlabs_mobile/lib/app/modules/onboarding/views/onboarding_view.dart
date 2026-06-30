@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import '../../../routes/app_pages.dart';
+import '../../theme/netlabs_theme.dart';
 
 class OnboardingView extends StatefulWidget {
   const OnboardingView({super.key});
@@ -18,19 +19,19 @@ class _OnboardingViewState extends State<OnboardingView> {
       'icon': Icons.router_rounded,
       'title': 'Selamat Datang di Netlabs',
       'desc': 'Platform LMS praktikum Jaringan Komputer. Belajar subnetting, routing, VLAN, dan lainnya jadi lebih mudah & interaktif.',
-      'color': const Color(0xFF0D9488),
+      'color': NetlabsTheme.primary,
     },
     {
       'icon': Icons.menu_book_rounded,
       'title': 'Materi & Kuis Interaktif',
       'desc': 'Pelajari modul per pertemuan, tandai topik yang selesai, lalu kerjakan kuis. Dapatkan rekomendasi AI otomatis!',
-      'color': const Color(0xFF0F766E),
+      'color': NetlabsTheme.primaryDark,
     },
     {
       'icon': Icons.auto_awesome_rounded,
       'title': 'AI Tutor Siap Membantu',
       'desc': 'Bingung dengan materi? Tanya langsung ke AI Tutor 24/7. Dapatkan penjelasan tentang VLSM, CIDR, DHCP, dan lainnya.',
-      'color': const Color(0xFF14B8A6),
+      'color': NetlabsTheme.accent,
     },
   ];
 
@@ -60,7 +61,7 @@ class _OnboardingViewState extends State<OnboardingView> {
                 padding: const EdgeInsets.all(16),
                 child: TextButton(
                   onPressed: _finish,
-                  child: Text(_currentPage == _slides.length - 1 ? '' : 'Lewati', style: const TextStyle(color: Colors.grey, fontWeight: FontWeight.w600)),
+                  child: Text(_currentPage == _slides.length - 1 ? '' : 'Lewati', style: const TextStyle(color: NetlabsTheme.textSecondary, fontWeight: FontWeight.w600)),
                 ),
               ),
             ),
@@ -82,7 +83,7 @@ class _OnboardingViewState extends State<OnboardingView> {
                           child: Icon(s['icon'] as IconData, size: 70, color: s['color'] as Color),
                         ),
                         const SizedBox(height: 40),
-                        Text(s['title'] as String, textAlign: TextAlign.center, style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Color(0xFF0F766E))),
+                        Text(s['title'] as String, textAlign: TextAlign.center, style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: NetlabsTheme.primaryDark)),
                         const SizedBox(height: 16),
                         Text(s['desc'] as String, textAlign: TextAlign.center, style: TextStyle(fontSize: 15, color: Colors.grey.shade600, height: 1.6)),
                       ],
@@ -97,7 +98,7 @@ class _OnboardingViewState extends State<OnboardingView> {
                 duration: const Duration(milliseconds: 300),
                 margin: const EdgeInsets.only(right: 8),
                 height: 8, width: _currentPage == i ? 24 : 8,
-                decoration: BoxDecoration(color: _currentPage == i ? const Color(0xFF0D9488) : Colors.grey.shade300, borderRadius: BorderRadius.circular(4)),
+                decoration: BoxDecoration(color: _currentPage == i ? NetlabsTheme.primary : Colors.grey.shade300, borderRadius: BorderRadius.circular(4)),
               )),
             ),
             const SizedBox(height: 40),
@@ -107,7 +108,7 @@ class _OnboardingViewState extends State<OnboardingView> {
                 width: double.infinity, height: 52,
                 child: ElevatedButton(
                   onPressed: _nextPage,
-                  style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFF0D9488), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)), elevation: 0),
+                  style: ElevatedButton.styleFrom(backgroundColor: NetlabsTheme.primary, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)), elevation: 0),
                   child: Text(_currentPage == _slides.length - 1 ? 'Mulai Belajar' : 'Lanjut', style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white)),
                 ),
               ),

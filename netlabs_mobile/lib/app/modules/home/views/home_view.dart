@@ -46,8 +46,8 @@ class HomeView extends GetView<HomeController> {
           Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
             Obx(() => Text(controller.greeting.value, style: const TextStyle(fontSize: 14, color: NetlabsTheme.textSecondary))),
             const SizedBox(height: 2),
-            Obx(() => Text(controller.studentName.value, style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w800, color: NetlabsTheme.dark))),
-            Obx(() => Text('${controller.studentClass.value}', style: const TextStyle(fontSize: 13, color: NetlabsTheme.primaryLight))),
+            Obx(() => Text(controller.studentName.value, style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: NetlabsTheme.dark))),
+            Obx(() => Text('${controller.studentClass.value}', style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w500, color: NetlabsTheme.primary))),
           ]),
           Obx(() {
             final hasPhoto = controller.fotoProfilUrl.value != null;
@@ -59,7 +59,7 @@ class HomeView extends GetView<HomeController> {
                   boxShadow: NetlabsTheme.shadowSm,
                 ),
                 child: CircleAvatar(
-                  radius: 22, // 44 diameter
+                  radius: 22,
                   backgroundColor: NetlabsTheme.primary,
                   backgroundImage: hasPhoto ? NetworkImage(controller.fotoProfilUrl.value!) : null,
                   child: hasPhoto 
@@ -90,17 +90,24 @@ class HomeView extends GetView<HomeController> {
   }
 
   Widget _statTile(IconData icon, String label, String value) {
+    final Color accent;
+    switch (label) {
+      case 'Selesai': accent = NetlabsTheme.primary; break;
+      case 'Nilai':   accent = NetlabsTheme.success; break;
+      case 'AI Chat': accent = NetlabsTheme.warning; break;
+      default:        accent = NetlabsTheme.textMuted;
+    }
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 12),
       decoration: BoxDecoration(
-        color: const Color(0xFFF8FAFC), // Neutral light slate
-        border: Border.all(color: const Color(0xFFE2E8F0)),
+        color: Colors.white,
         borderRadius: BorderRadius.circular(12),
+        boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.06), blurRadius: 12, offset: const Offset(0, 4))],
       ),
       child: Column(children: [
-        Icon(icon, size: 20, color: const Color(0xFF64748B)), const SizedBox(height: 6), // Muted icon
-        Text(value, style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w700, color: Color(0xFF1E293B))),
-        Text(label, style: const TextStyle(fontSize: 10, color: Color(0xFF64748B))),
+        Icon(icon, size: 20, color: accent), const SizedBox(height: 6),
+        Text(value, style: TextStyle(fontSize: 15, fontWeight: FontWeight.w700, color: accent)),
+        Text(label, style: const TextStyle(fontSize: 10, color: NetlabsTheme.textMuted)),
       ]),
     );
   }
@@ -112,7 +119,7 @@ class HomeView extends GetView<HomeController> {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text(title, style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w800, color: Color(0xFF1E293B))),
+            Text(title, style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w800, color: NetlabsTheme.dark)),
             if (action != null)
               GestureDetector(
                 onTap: onAction,
@@ -136,7 +143,7 @@ class HomeView extends GetView<HomeController> {
   SliverToBoxAdapter _buildSliverHorizontalModules() {
     return SliverToBoxAdapter(
       child: SizedBox(
-        height: 145, // Fixed height for horizontal swiper
+        height: 145,
         child: Obx(() {
           if (controller.bentoCards.isEmpty) return const SizedBox.shrink();
           return ListView.separated(
@@ -148,7 +155,7 @@ class HomeView extends GetView<HomeController> {
             itemBuilder: (context, index) {
               final card = controller.bentoCards[index];
               return SizedBox(
-                width: 160, // Fixed width for each card so they can be swiped
+                width: 160,
                 child: _BentoCard(
                   card: card, 
                   onTap: () => controller.bukaPertemuan(card), 
@@ -168,9 +175,12 @@ class HomeView extends GetView<HomeController> {
         padding: const EdgeInsets.symmetric(horizontal: 20),
         child: Container(
           decoration: BoxDecoration(
-            color: const Color(0xFFF8FAFC),
+            gradient: LinearGradient(
+              colors: [NetlabsTheme.primary.withAlpha(20), NetlabsTheme.surface],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
             borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: const Color(0xFFE2E8F0)),
           ),
           padding: const EdgeInsets.all(14),
           child: Row(
@@ -179,22 +189,22 @@ class HomeView extends GetView<HomeController> {
               Container(
                 padding: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
-                  color: const Color(0xFFEEF2FF),
+                  color: NetlabsTheme.primary.withAlpha(20),
                   shape: BoxShape.circle,
-                  border: Border.all(color: const Color(0xFFE2E8F0)),
+                  border: Border.all(color: NetlabsTheme.border),
                 ),
-                child: const Icon(Icons.lightbulb_outline_rounded, color: NetlabsTheme.primary, size: 20),
+                child: const Icon(Icons.lightbulb_outline_rounded, color: NetlabsTheme.warning, size: 20),
               ),
               const SizedBox(width: 12),
               const Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('Fakta AI Hari Ini', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w800, color: Color(0xFF1E293B))),
+                    Text('Fakta AI Hari Ini', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: NetlabsTheme.dark)),
                     SizedBox(height: 4),
                     Text(
                       'Router bertugas menghubungkan dua atau lebih jaringan yang berbeda subnet. Tanpa router, komputer di Lab A tidak bisa nge-ping komputer di Lab B lho!',
-                      style: TextStyle(fontSize: 11, color: Color(0xFF64748B), height: 1.4),
+                      style: TextStyle(fontSize: 11, color: NetlabsTheme.textMuted, height: 1.4),
                     ),
                   ],
                 ),
@@ -212,16 +222,20 @@ class HomeView extends GetView<HomeController> {
       if (d == null) return const SizedBox.shrink();
       return Container(
         decoration: BoxDecoration(
-          color: const Color(0xFF0F172A), // Dark Navy Slate (Elegant)
-          borderRadius: BorderRadius.circular(16), 
+          gradient: LinearGradient(
+            colors: [NetlabsTheme.primary, NetlabsTheme.primary.withOpacity(0.7)],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
+          borderRadius: BorderRadius.circular(20),
         ),
         padding: const EdgeInsets.all(16),
         child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
           Row(children: [
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3), 
-              decoration: BoxDecoration(color: Colors.white10, borderRadius: BorderRadius.circular(20)), 
-              child: const Text('Lanjut Belajar', style: TextStyle(fontSize: 10, fontWeight: FontWeight.w700, color: Colors.white70))
+              decoration: BoxDecoration(color: Colors.white.withOpacity(0.2), borderRadius: BorderRadius.circular(20)), 
+              child: const Text('Lanjut Belajar', style: TextStyle(fontSize: 10, fontWeight: FontWeight.w700, color: Colors.white))
             ),
             const Spacer(), 
             const Icon(Icons.arrow_right_alt_rounded, color: Colors.white, size: 20),
@@ -233,13 +247,13 @@ class HomeView extends GetView<HomeController> {
             borderRadius: BorderRadius.circular(99), 
             child: LinearProgressIndicator(
               value: (d['progress'] as num?)?.toDouble() ?? 0, 
-              backgroundColor: Colors.white12, 
+              backgroundColor: Colors.white.withOpacity(0.4), 
               valueColor: const AlwaysStoppedAnimation<Color>(Colors.white), 
               minHeight: 4
             )
           ),
           const SizedBox(height: 6),
-          Text('${(((d['progress'] as num?)?.toDouble() ?? 0) * 100).toStringAsFixed(0)}% selesai', style: const TextStyle(fontSize: 11, color: Colors.white38)),
+          Text('${(((d['progress'] as num?)?.toDouble() ?? 0) * 100).toStringAsFixed(0)}% selesai', style: const TextStyle(fontSize: 11, color: Colors.white70)),
         ]),
       );
     });
@@ -250,15 +264,15 @@ class HomeView extends GetView<HomeController> {
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 20),
         child: Row(children: [
-          Expanded(child: _quickAction(Icons.chat_bubble_outline_rounded, 'Tanya AI Tutor', () => controller.bukaChatbot())),
+          Expanded(child: _quickAction(Icons.chat_bubble_outline_rounded, 'Tanya AI Tutor', () => controller.bukaChatbot(), isAiTutor: true)),
           const SizedBox(width: 10),
-          Expanded(child: _quickAction(Icons.book_outlined, 'Semua Materi', () => controller.bukaMateri())),
+          Expanded(child: _quickAction(Icons.book_outlined, 'Semua Materi', () => controller.bukaMateri(), isAiTutor: false)),
         ]),
       ),
     );
   }
 
-  Widget _quickAction(IconData icon, String label, VoidCallback onTap) {
+  Widget _quickAction(IconData icon, String label, VoidCallback onTap, {required bool isAiTutor}) {
     return Material(
       color: Colors.transparent,
       child: InkWell(
@@ -267,16 +281,16 @@ class HomeView extends GetView<HomeController> {
         child: Container(
           padding: const EdgeInsets.symmetric(vertical: 12),
           decoration: BoxDecoration(
-            color: Colors.white, 
-            border: Border.all(color: const Color(0xFFE2E8F0)),
-            borderRadius: BorderRadius.circular(12)
+            color: isAiTutor ? NetlabsTheme.primary : Colors.white,
+            border: isAiTutor ? null : Border.all(color: NetlabsTheme.primary),
+            borderRadius: BorderRadius.circular(12),
           ),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center, 
             children: [
-              Icon(icon, size: 16, color: const Color(0xFF64748B)), 
+              Icon(icon, size: 16, color: isAiTutor ? Colors.white : NetlabsTheme.primary), 
               const SizedBox(width: 8), 
-              Text(label, style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: Color(0xFF475569)))
+              Text(label, style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: isAiTutor ? Colors.white : NetlabsTheme.primary))
             ]
           ),
         ),
@@ -348,17 +362,16 @@ class _BentoCard extends StatelessWidget {
       onTap: onTap,
       child: Container(
         decoration: BoxDecoration(
-          color: NetlabsTheme.card,
+          color: Colors.white,
           borderRadius: BorderRadius.circular(NetlabsTheme.radiusXl),
-          boxShadow: NetlabsTheme.shadowSm,
-          border: Border.all(color: NetlabsTheme.border.withAlpha(120)),
+          boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.06), blurRadius: 12, offset: const Offset(0, 4))],
         ),
         padding: const EdgeInsets.all(16),
         child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
           Row(children: [
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-              decoration: BoxDecoration(color: NetlabsTheme.primaryLight.withAlpha(30), borderRadius: BorderRadius.circular(6)),
+              decoration: BoxDecoration(color: NetlabsTheme.primary.withAlpha(20), borderRadius: BorderRadius.circular(6)),
               child: Text('Bab ${card.nomor}', style: const TextStyle(fontSize: 10, fontWeight: FontWeight.w700, color: NetlabsTheme.primary)),
             ),
             const SizedBox(width: 8),
@@ -377,7 +390,7 @@ class _BentoCard extends StatelessWidget {
             child: LinearProgressIndicator(
               value: card.progress,
               backgroundColor: NetlabsTheme.border,
-              valueColor: AlwaysStoppedAnimation<Color>(card.progress >= 1 ? NetlabsTheme.success : NetlabsTheme.primaryLight),
+              valueColor: AlwaysStoppedAnimation<Color>(card.progress >= 1 ? NetlabsTheme.success : NetlabsTheme.primary),
               minHeight: 5,
             ),
           ),
@@ -540,9 +553,9 @@ class _BentoCardSkeletonState extends State<BentoCardSkeleton> with SingleTicker
           begin: Alignment(offset - 1, 0),
           end: Alignment(offset + 1, 0),
           colors: const [
-            Color(0xFFF1F5F9), // Slate 100
-            Color(0xFFFFFFFF), // White
-            Color(0xFFF1F5F9), // Slate 100
+            Color(0xFFF1F5F9),
+            Color(0xFFFFFFFF),
+            Color(0xFFF1F5F9),
           ],
           stops: const [0.0, 0.5, 1.0],
         );
@@ -591,4 +604,3 @@ class _BentoCardSkeletonState extends State<BentoCardSkeleton> with SingleTicker
     );
   }
 }
-

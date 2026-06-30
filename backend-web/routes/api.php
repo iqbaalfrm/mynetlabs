@@ -33,6 +33,7 @@ Route::middleware('auth:sanctum')->group(function () {
     // Chat AI Tutor
     Route::get('/chat/riwayat', [ChatController::class, 'riwayat']);
     Route::post('/chat', [ChatController::class, 'kirimPesan']);
+    Route::post('/chat/audio', [ChatController::class, 'kirimPesanAudio']);
 
     // Statistik Siswa
     Route::get('/siswa/statistik', [SiswaController::class, 'statistik']);

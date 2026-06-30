@@ -1,6 +1,8 @@
+import 'package:dio/dio.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import '../../../data/providers/api_provider.dart';
+import '../../../data/services/auth_service.dart';
 import '../../../routes/app_pages.dart';
 
 enum AiStatus { pending, processing, success, failed }
@@ -15,7 +17,7 @@ class PertemuanCard {
 }
 
 class HomeController extends GetxController {
-  final storage = GetStorage();
+  final _auth = Get.find<AuthService>();
   final ApiProvider _api = Get.find<ApiProvider>();
   var studentName = ''.obs, studentClass = ''.obs, greeting = 'Selamat Belajar'.obs;
   var fotoProfilUrl = RxnString();
@@ -30,9 +32,9 @@ class HomeController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-    if (storage.read('token') == null) { Get.offAllNamed(Routes.LOGIN); return; }
-    studentName.value = storage.read('nama') ?? 'Siswa';
-    studentClass.value = storage.read('kelas') ?? '-';
+    if (!_auth.isLoggedIn) { Get.offAllNamed(Routes.LOGIN); return; }
+    studentName.value = GetStorage().read('nama') ?? 'Siswa';
+    studentClass.value = GetStorage().read('kelas') ?? '-';
     updateGreeting();
     loadDashboard();
   }
@@ -47,12 +49,29 @@ class HomeController extends GetxController {
     try {
       await Future.wait([loadStatistik(), loadPertemuan()]);
       _buildBentoCards();
-    } catch (_) {
+    } catch (e) {
       isError.value = true;
-      errorMessage.value = 'Gagal memuat. Tarik ke bawah untuk muat ulang.';
-      _buildDummyBentoCards();
+      _setErrorMessage(e);
     } finally {
       isLoading.value = false;
+    }
+  }
+
+  void _setErrorMessage(dynamic e) {
+    if (e is DioException) {
+      switch (e.type) {
+        case DioExceptionType.connectionTimeout:
+        case DioExceptionType.receiveTimeout:
+          errorMessage.value = 'Koneksi timeout. Periksa jaringan Anda.';
+          break;
+        case DioExceptionType.connectionError:
+          errorMessage.value = 'Tidak dapat terhubung ke server. Periksa koneksi internet.';
+          break;
+        default:
+          errorMessage.value = 'Gagal memuat. Tarik ke bawah untuk muat ulang.';
+      }
+    } else {
+      errorMessage.value = 'Gagal memuat. Tarik ke bawah untuk muat ulang.';
     }
   }
 
@@ -92,9 +111,6 @@ class HomeController extends GetxController {
   }
 
   void _buildBentoCards() {
-    if (semuaPertemuan.isEmpty) { _buildDummyBentoCards(); return; }
-    
-    // Tampilkan maksimal 4 modul saja di Dashboard
     bentoCards.value = semuaPertemuan.take(4).map((p) {
       AiStatus st;
       switch (p['status_indexing'] ?? 'pending') {
@@ -112,19 +128,6 @@ class HomeController extends GetxController {
     }).toList();
   }
 
-  void _buildDummyBentoCards() {
-    bentoCards.value = [
-      PertemuanCard(id: 1, nomor: 1, judul: 'Pengenalan Jaringan Komputer', progress: 1.0, aiStatus: AiStatus.success, adaKuis: true),
-      PertemuanCard(id: 2, nomor: 2, judul: 'Model OSI Layer & TCP/IP', progress: 0.75, aiStatus: AiStatus.success),
-      PertemuanCard(id: 3, nomor: 3, judul: 'IP Address & Subnetting', progress: 0.4, aiStatus: AiStatus.processing),
-      PertemuanCard(id: 4, nomor: 4, judul: 'Routing Statis & Dinamis', progress: 0.0, aiStatus: AiStatus.pending),
-    ];
-    totalPertemuan.value = 12; totalPertemuanSelesai.value = 1;
-    totalTopik.value = 30; totalTopikSelesai.value = 4;
-    rataRataNilai.value = 78.5; totalChatAI.value = 5;
-    progressSemester.value = 4 / 30;
-  }
-
   void bukaPertemuan(PertemuanCard card) => Get.toNamed('/detail-materi', arguments: {'id': card.id, 'nomor': card.nomor, 'judul': card.judul});
   void bukaMateri() => Get.toNamed('/materi');
   void bukaChatbot() => Get.toNamed('/chatbot');
@@ -132,7 +135,7 @@ class HomeController extends GetxController {
 
   Future<void> logout() async {
     try { await _api.logout(); } catch (_) {}
-    storage.remove('token'); storage.remove('nama'); storage.remove('kelas'); storage.remove('role');
+    await _auth.clearSession();
     Get.offAllNamed(Routes.LOGIN);
   }
 }

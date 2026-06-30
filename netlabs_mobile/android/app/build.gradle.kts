@@ -6,7 +6,7 @@ plugins {
 
 android {
     namespace = "com.netlabs.app.netlabs_mobile"
-    compileSdk = flutter.compileSdkVersion
+    compileSdk = 36
     ndkVersion = flutter.ndkVersion
 
     compileOptions {

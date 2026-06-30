@@ -127,7 +127,9 @@ class DetailMateriView extends GetView<DetailMateriController> {
         },
         child: FloatingActionButton.extended(
           onPressed: () {
-            Get.toNamed(Routes.CHATBOT);
+            Get.toNamed(Routes.CHATBOT, arguments: {
+              'pertemuan_id': controller.pertemuanId,
+            });
           },
           backgroundColor: NetlabsTheme.primary,
           elevation: 4,

@@ -2,17 +2,15 @@
 
 namespace App\Models;
 
-use Filament\Models\Contracts\HasName;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-use Laravel\Sanctum\HasApiTokens; // Pastikan ini di-import
+use Laravel\Sanctum\HasApiTokens;
 
-class User extends Authenticatable implements HasName
+class User extends Authenticatable
 {
     use HasApiTokens, HasFactory, Notifiable;
 
-    // Definisikan kolom yang boleh diisi massal
     protected $fillable = [
         'username',
         'password',
@@ -25,26 +23,15 @@ class User extends Authenticatable implements HasName
 
     protected $appends = ['foto_profil_url'];
 
-    // Sembunyikan password saat data user di-return dalam bentuk JSON
     protected $hidden = [
         'password',
         'remember_token',
     ];
 
-    // Pastikan Laravel tahu password di-hash secara otomatis
     protected $casts = [
         'password' => 'hashed',
     ];
 
-    /**
-     * Beritahu Filament untuk menggunakan kolom 'username' (NIP/NIS) saat login.
-     */
-    public function getFilamentName(): string
-    {
-        return $this->nama;
-    }
-
-    // Tambahkan properti ini agar login auth mencocokkan field username, bukan email
     public function getAuthIdentifierName()
     {
         return 'username';
@@ -78,5 +65,10 @@ class User extends Authenticatable implements HasName
     public function hasilKuis()
     {
         return $this->hasMany(HasilKuis::class, 'siswa_id');
+    }
+
+    public function progressSiswa()
+    {
+        return $this->hasMany(ProgressSiswa::class, 'siswa_id');
     }
 }

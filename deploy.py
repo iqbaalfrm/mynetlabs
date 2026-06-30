@@ -175,7 +175,7 @@ def deploy_to_vps():
             "    }\n"
             "    location ~ \\.php$ {\n"
             "        include snippets/fastcgi-php.conf;\n"
-            "        fastcgi_pass unix:/var/run/php/php{php_ver}-fpm.sock;\n"
+            f"        fastcgi_pass unix:/var/run/php/php{php_ver}-fpm.sock;\n"
             "        fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;\n"
             "        include fastcgi_params;\n"
             "    }\n"

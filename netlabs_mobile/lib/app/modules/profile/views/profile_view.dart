@@ -143,6 +143,64 @@ class ProfileView extends GetView<ProfileController> {
               ),
               
               // ==========================================
+              // DETAIL PROFIL SECTION
+              // ==========================================
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      "Detail Profil",
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w800,
+                        color: NetlabsTheme.dark,
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    Container(
+                      width: double.infinity,
+                      decoration: BoxDecoration(
+                        color: NetlabsTheme.card,
+                        borderRadius: BorderRadius.circular(16),
+                        border: Border.all(color: NetlabsTheme.border, width: 0.5),
+                        boxShadow: NetlabsTheme.shadowSm,
+                      ),
+                      child: Column(
+                        children: [
+                          Obx(() => _buildProfileDetailRow(
+                            Icons.badge_rounded,
+                            "Nama Lengkap",
+                            controller.nama.value.isEmpty ? '-' : controller.nama.value,
+                          )),
+                          _buildDivider(),
+                          Obx(() => _buildProfileDetailRow(
+                            Icons.numbers_rounded,
+                            "NIS",
+                            controller.nis.value.isEmpty ? '-' : controller.nis.value,
+                          )),
+                          _buildDivider(),
+                          Obx(() => _buildProfileDetailRow(
+                            Icons.class_rounded,
+                            "Kelas",
+                            controller.kelas.value.isEmpty ? '-' : controller.kelas.value,
+                          )),
+                          _buildDivider(),
+                          Obx(() => _buildProfileDetailRow(
+                            Icons.school_rounded,
+                            "Sekolah",
+                            controller.sekolah.value.isEmpty ? '-' : controller.sekolah.value,
+                          )),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 24),
+                  ],
+                ),
+              ),
+
+              // ==========================================
               // STATISTICS SECTION
               // ==========================================
               Padding(
@@ -168,7 +226,7 @@ class ProfileView extends GetView<ProfileController> {
                           "${controller.totalPertemuanSelesai.value}/${controller.totalPertemuan.value}",
                           "Modul Praktikum",
                           Icons.menu_book_rounded,
-                          const Color(0xFF0D9488), // Blue
+                          NetlabsTheme.primary, // Blue
                         )),
                         const SizedBox(width: 12),
                         Obx(() => _buildStatBox(
@@ -371,6 +429,55 @@ class ProfileView extends GetView<ProfileController> {
         ],
       ),
     );
+  }
+
+  // Profile Detail Row
+  Widget _buildProfileDetailRow(IconData icon, String label, String value) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+      child: Row(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              color: NetlabsTheme.primary.withOpacity(0.08),
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: Icon(icon, color: NetlabsTheme.primary, size: 18),
+          ),
+          const SizedBox(width: 14),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  label,
+                  style: const TextStyle(
+                    fontSize: 11,
+                    fontWeight: FontWeight.w600,
+                    color: NetlabsTheme.textMuted,
+                  ),
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  value,
+                  style: const TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w700,
+                    color: NetlabsTheme.dark,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // Divider for profile detail
+  Widget _buildDivider() {
+    return const Divider(height: 1, indent: 56, endIndent: 16, color: Color(0xFFF0F0F5));
   }
 
   // Action Tile

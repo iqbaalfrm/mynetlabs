@@ -1,13 +1,13 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:get_storage/get_storage.dart';
 import '../../../data/providers/api_provider.dart';
+import '../../../data/services/auth_service.dart';
 import '../../../routes/app_pages.dart';
 
 class LoginController extends GetxController {
   final loginFormKey = GlobalKey<FormState>();
-  final storage = GetStorage();
+  final _auth = Get.find<AuthService>();
   final ApiProvider _api = Get.find<ApiProvider>();
 
   late TextEditingController nisController;
@@ -22,7 +22,7 @@ class LoginController extends GetxController {
     nisController = TextEditingController();
     passwordController = TextEditingController();
 
-    if (storage.read('token') != null) {
+    if (_auth.isLoggedIn) {
       Future.delayed(Duration.zero, () => Get.offAllNamed(Routes.HOME));
     }
   }
@@ -49,13 +49,15 @@ class LoginController extends GetxController {
         );
 
         final data = response.data;
-        final token = data['token'] as String;
         final user = data['user'] as Map<String, dynamic>;
 
-        await storage.write('token', token);
-        await storage.write('nama', user['nama'] ?? '');
-        await storage.write('kelas', user['kelas'] ?? '');
-        await storage.write('role', user['role'] ?? 'siswa');
+        _auth.saveLoginData({
+          'token': data['token'] as String,
+          'nis': user['nis'] ?? '',
+          'nama': user['nama'] ?? '',
+          'kelas': user['kelas'] ?? '',
+          'role': user['role'] ?? 'siswa',
+        });
 
         isLoading.value = false;
 

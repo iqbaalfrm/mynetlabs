@@ -1,1 +1,6 @@
-﻿`n# File debug & log deploy`n*.txt`n__pycache__/`ndiag*.py`nfix_*.py
+# File debug & log deploy
+*.txt
+__pycache__/
+diag*.py
+fix_*.py
+backend-web-update.tar.gz

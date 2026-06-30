@@ -2,18 +2,20 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'app/data/providers/api_provider.dart';
+import 'app/data/services/auth_service.dart';
 import 'app/modules/theme/netlabs_theme.dart';
 import 'app/routes/app_pages.dart';
 
 void main() async {
   await GetStorage.init();
   Get.put<ApiProvider>(ApiProvider(), permanent: true);
+  Get.put<AuthService>(AuthService(), permanent: true);
 
-  final storage = GetStorage();
+  final auth = Get.find<AuthService>();
   String initialRoute;
-  if (storage.read('token') != null) {
+  if (auth.isLoggedIn) {
     initialRoute = Routes.HOME;
-  } else if (storage.read('onboarding_done') == true) {
+  } else if (GetStorage().read('onboarding_done') == true) {
     initialRoute = Routes.LOGIN;
   } else {
     initialRoute = Routes.ONBOARDING;

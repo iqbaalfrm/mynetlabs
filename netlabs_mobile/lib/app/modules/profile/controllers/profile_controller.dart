@@ -2,9 +2,10 @@ import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:image_picker/image_picker.dart';
 import '../../../data/providers/api_provider.dart';
+import '../../../data/services/auth_service.dart';
 
 class ProfileController extends GetxController {
-  final storage = GetStorage();
+  final _auth = Get.find<AuthService>();
   final ApiProvider _api = Get.find<ApiProvider>();
 
   var nis = ''.obs;
@@ -23,9 +24,9 @@ class ProfileController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-    nis.value = storage.read('nis') ?? '-';
-    nama.value = storage.read('nama') ?? 'Siswa';
-    kelas.value = storage.read('kelas') ?? '-';
+    nis.value = GetStorage().read('nis') ?? '-';
+    nama.value = GetStorage().read('nama') ?? 'Siswa';
+    kelas.value = GetStorage().read('kelas') ?? '-';
     loadStatistik();
   }
 
@@ -57,10 +58,7 @@ class ProfileController extends GetxController {
     try {
       await _api.logout();
     } catch (_) {}
-    storage.remove('token');
-    storage.remove('nama');
-    storage.remove('kelas');
-    storage.remove('role');
+    await _auth.clearSession();
     Get.offAllNamed('/login');
   }
 

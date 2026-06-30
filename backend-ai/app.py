@@ -8,6 +8,7 @@
       1. POST /index-pdf      → Membaca PDF, chunking, embedding, simpan ke Qdrant
       2. POST /chat            → Menjawab pertanyaan siswa (RAG) via Gemini LLM
       3. POST /generate-quiz   → Membuat soal kuis otomatis dari materi modul
+      4. POST /transcribe      → Speech-to-Text audio siswa via Gemini
 
   Teknologi:
     - Flask (REST API)
@@ -34,6 +35,8 @@ import os
 import re
 import uuid
 import logging
+import tempfile
+import base64
 from datetime import datetime
 
 from flask import Flask, request, jsonify
@@ -382,11 +385,12 @@ RELEVANCE_THRESHOLD = 0.3
 def chat():
     """
     Menjawab pertanyaan siswa berdasarkan dokumen modul di pertemuan tertentu.
-    Menggunakan Qdrant query_points dengan filter metadata pertemuan_id.
+    Menggunakan Qdrant query_points dengan filter metadata pertemuan_id (jika diberikan).
+    Jika pertemuan_id tidak diberikan (None/0), pencarian dilakukan lintas semua modul.
 
     Request JSON:
     {
-        "pertemuan_id": 2,
+        "pertemuan_id": 2, // Opsional
         "message": "Bagaimana cara menghitung IP Broadcast?"
     }
     """
@@ -397,25 +401,23 @@ def chat():
         pertemuan_id = data.get("pertemuan_id")
         message = data.get("message", "").strip()
 
-        if not pertemuan_id:
-            return jsonify({
-                "success": False,
-                "answer": "Parameter 'pertemuan_id' wajib diisi."
-            }), 400
-
         if not message:
             return jsonify({
                 "success": False,
                 "answer": "Parameter 'message' (pertanyaan) wajib diisi."
             }), 400
 
-        try:
-            pertemuan_id = int(pertemuan_id)
-        except (ValueError, TypeError):
-            return jsonify({
-                "success": False,
-                "answer": "Parameter 'pertemuan_id' harus berupa angka."
-            }), 400
+        # Validasi pertemuan_id jika ada
+        if pertemuan_id is not None and pertemuan_id != "" and pertemuan_id != 0:
+            try:
+                pertemuan_id = int(pertemuan_id)
+            except (ValueError, TypeError):
+                return jsonify({
+                    "success": False,
+                    "answer": "Parameter 'pertemuan_id' harus berupa angka."
+                }), 400
+        else:
+            pertemuan_id = None
 
         logger.info(f"{'='*60}")
         logger.info(f"💬 CHAT dimulai | pertemuan_id={pertemuan_id}")
@@ -423,31 +425,54 @@ def chat():
         logger.info(f"{'='*60}")
 
         # ── Langkah 1: Buat embedding dari pertanyaan siswa ─────────────
-        #    (Sesuai Pertemuan 9: model.encode → vektor query)
         vektor_query = buat_embedding(message)
 
         # ── Langkah 2: Cari dokumen relevan di Qdrant ───────────────────
-        #    Filter berdasarkan pertemuan_id agar hanya modul bab aktif
-        #    (Sesuai Pertemuan 9: client.query_points)
-        hasil_pencarian = qdrant_client.query_points(
-            collection_name=QDRANT_COLLECTION_NAME,
-            query=vektor_query,
-            query_filter=Filter(
+        # Filter berdasarkan pertemuan_id hanya jika pertemuan_id valid
+        query_filter = None
+        if pertemuan_id is not None:
+            query_filter = Filter(
                 must=[
                     FieldCondition(key="pertemuan_id", match=MatchValue(value=pertemuan_id)),
                 ]
-            ),
+            )
+
+        hasil_pencarian = qdrant_client.query_points(
+            collection_name=QDRANT_COLLECTION_NAME,
+            query=vektor_query,
+            query_filter=query_filter,
             limit=4,  # Ambil top 4 chunks terdekat
         ).points
 
         logger.info(f"🔍 Hasil pencarian: {len(hasil_pencarian)} dokumen ditemukan")
 
         # ── Langkah 3: Cek apakah ada dokumen yang relevan ──────────────
+        # Jika tidak ada dokumen sama sekali di Qdrant, gunakan fallback pengetahuan umum Gemini
         if not hasil_pencarian:
-            logger.warning(f"⚠️ Tidak ada dokumen untuk pertemuan_id={pertemuan_id}")
+            logger.warning(f"⚠️ Tidak ada dokumen ditemukan. Menggunakan pengetahuan umum Gemini.")
+            prompt_umum = (
+                "Kamu adalah NetLabs AI Tutor, asisten cerdas pembelajaran Jaringan Komputer SMK.\n"
+                "Karena belum ada dokumen materi khusus yang diunggah, jawablah pertanyaan siswa berikut "
+                "menggunakan pengetahuan umum Jaringan Komputer yang akurat, terstruktur, dan mudah dipahami "
+                "oleh siswa SMK:\n\n"
+                f"Pertanyaan: {message}"
+            )
+            response = gemini_model.generate_content(prompt_umum)
+            jawaban = response.text.strip() if response.text else ""
+            if not jawaban:
+                jawaban = PESAN_TIDAK_DITEMUKAN
+            else:
+                jawaban += "\n\n*(Catatan: Jawaban ini berdasarkan pengetahuan umum AI Tutor)*"
+
             return jsonify({
                 "success": True,
-                "answer": PESAN_TIDAK_DITEMUKAN
+                "answer": jawaban,
+                "metadata": {
+                    "pertemuan_id": pertemuan_id,
+                    "chunks_used": 0,
+                    "total_chunks_found": 0,
+                    "fallback_general_knowledge": True
+                }
             }), 200
 
         # Filter berdasarkan threshold relevansi (cosine similarity score)
@@ -461,25 +486,41 @@ def chat():
             if skor >= RELEVANCE_THRESHOLD:
                 chunks_relevan.append(point.payload["teks_asli"])
 
+        # Jika ada dokumen di database tapi tidak ada yang relevan dengan pertanyaan
         if not chunks_relevan:
-            logger.warning(f"⚠️ Semua dokumen di bawah threshold relevansi "
-                           f"(threshold={RELEVANCE_THRESHOLD})")
+            logger.warning(f"⚠️ Semua dokumen di bawah threshold relevansi (threshold={RELEVANCE_THRESHOLD}). Menggunakan pengetahuan umum Gemini.")
+            prompt_umum = (
+                "Kamu adalah NetLabs AI Tutor, asisten cerdas pembelajaran Jaringan Komputer SMK.\n"
+                "Jawablah pertanyaan siswa berikut menggunakan pengetahuan umum Jaringan Komputer yang akurat, "
+                "terstruktur, dan mudah dipahami oleh siswa SMK:\n\n"
+                f"Pertanyaan: {message}"
+            )
+            response = gemini_model.generate_content(prompt_umum)
+            jawaban = response.text.strip() if response.text else ""
+            if not jawaban:
+                jawaban = PESAN_TIDAK_DITEMUKAN
+            else:
+                jawaban += "\n\n*(Catatan: Jawaban ini berdasarkan pengetahuan umum AI Tutor)*"
+
             return jsonify({
                 "success": True,
-                "answer": PESAN_TIDAK_DITEMUKAN
+                "answer": jawaban,
+                "metadata": {
+                    "pertemuan_id": pertemuan_id,
+                    "chunks_used": 0,
+                    "total_chunks_found": len(hasil_pencarian),
+                    "fallback_general_knowledge": True
+                }
             }), 200
 
         logger.info(f"✅ {len(chunks_relevan)} chunk lolos filter relevansi")
 
         # ── Langkah 4: Gabungkan konteks dan kirim ke Gemini LLM ────────
         konteks_gabungan = "\n\n---\n\n".join(chunks_relevan)
-
-        # Susun prompt lengkap
         prompt_lengkap = SYSTEM_PROMPT.format(konteks=konteks_gabungan)
 
         logger.info(f"🤖 Mengirim ke Gemini... (konteks: {len(konteks_gabungan)} karakter)")
 
-        # Kirim ke Gemini menggunakan chat-style
         response = gemini_model.generate_content(
             contents=[
                 {"role": "user", "parts": [{"text": prompt_lengkap + "\n\nPertanyaan siswa: " + message}]},
@@ -503,6 +544,7 @@ def chat():
                 "pertemuan_id": pertemuan_id,
                 "chunks_used": len(chunks_relevan),
                 "total_chunks_found": len(hasil_pencarian),
+                "fallback_general_knowledge": False
             }
         }), 200
 
@@ -903,6 +945,87 @@ def delete_pertemuan(pertemuan_id: int):
         return jsonify({
             "success": False,
             "message": str(e)
+        }), 500
+
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# ENDPOINT 5: POST /transcribe — Speech-to-Text via Gemini
+# ═══════════════════════════════════════════════════════════════════════════════
+
+@app.route("/transcribe", methods=["POST"])
+def transcribe_audio():
+    """
+    Mentranskripsi file audio menjadi teks menggunakan Google Gemini.
+    Input : multipart/form-data dengan field 'audio' (wav/mp3/m4a/ogg/webm/aac)
+    Output: { "success": true, "text": "hasil transkripsi..." }
+    """
+    try:
+        # Validasi file audio
+        if "audio" not in request.files:
+            return jsonify({
+                "success": False,
+                "message": "Field 'audio' wajib dikirim.",
+            }), 400
+
+        audio_file = request.files["audio"]
+        if audio_file.filename == "":
+            return jsonify({
+                "success": False,
+                "message": "File audio kosong.",
+            }), 400
+
+        # Mapping ekstensi ke MIME type
+        mime_map = {
+            ".wav": "audio/wav",
+            ".mp3": "audio/mp3",
+            ".m4a": "audio/mp4",
+            ".ogg": "audio/ogg",
+            ".webm": "audio/webm",
+            ".aac": "audio/aac",
+        }
+
+        ext = os.path.splitext(audio_file.filename)[1].lower()
+        mime_type = mime_map.get(ext, "audio/wav")
+
+        logger.info(f"🎙️ Transkripsi audio: {audio_file.filename} ({mime_type})")
+
+        # Simpan sementara ke file temporer
+        with tempfile.NamedTemporaryFile(delete=False, suffix=ext) as tmp:
+            audio_file.save(tmp)
+            tmp_path = tmp.name
+
+        try:
+            # Upload file ke Gemini
+            gemini_file = genai.upload_file(tmp_path, mime_type=mime_type)
+
+            # Gunakan Gemini untuk transkripsi
+            model = genai.GenerativeModel("gemini-1.5-flash")
+            response = model.generate_content([
+                gemini_file,
+                "Transkripsikan audio ini menjadi teks Bahasa Indonesia. "
+                "Berikan HANYA teks hasil transkripsi tanpa penjelasan tambahan. "
+                "Jika audio tidak jelas atau kosong, tulis '[audio tidak jelas]'."
+            ])
+
+            teks = response.text.strip() if response.text else "[audio tidak jelas]"
+
+            logger.info(f"✅ Transkripsi berhasil: {teks[:100]}...")
+
+            return jsonify({
+                "success": True,
+                "text": teks,
+            }), 200
+
+        finally:
+            # Hapus file temporer
+            if os.path.exists(tmp_path):
+                os.unlink(tmp_path)
+
+    except Exception as e:
+        logger.exception(f"❌ Error transkripsi audio: {e}")
+        return jsonify({
+            "success": False,
+            "message": f"Gagal mentranskripsi audio: {str(e)}",
         }), 500
 
 

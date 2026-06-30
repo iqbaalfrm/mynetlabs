@@ -13,6 +13,9 @@ class TopikMateri extends Model
         'pertemuan_id',
         'judul',
         'isi_materi',
+        'deskripsi',
+        'urutan',
+        'file_materi',
     ];
 
     // Relasi balik: Satu topik materi dimiliki oleh satu pertemuan

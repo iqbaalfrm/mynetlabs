@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:get/get.dart' hide Response, FormData, MultipartFile;
 import 'package:get_storage/get_storage.dart';
+import '../../routes/app_pages.dart';
 
 /// Kelas penyedia HTTP tunggal (Dio) untuk seluruh aplikasi Netlabs.
 /// - Base URL diambil dari konstanta [baseUrl].
@@ -11,6 +12,9 @@ class ApiProvider extends GetxController {
 
   late Dio _dio;
   final storage = GetStorage();
+
+  /// Flag mencegah redirect login berulang saat 401.
+  bool _isRedirecting = false;
 
   @override
   void onInit() {
@@ -33,12 +37,38 @@ class ApiProvider extends GetxController {
         }
         return handler.next(options);
       },
-      onError: (e, handler) {
-        // Logging sederhana untuk debugging selama pengembangan
+      onError: (e, handler) async {
+        if (e.response?.statusCode == 401 && !_isRedirecting) {
+          _isRedirecting = true;
+          _handleUnauthorized();
+        }
         print('API ERROR [${e.response?.statusCode}]: ${e.message}');
+        // Retry once for transient network errors
+        if (_shouldRetry(e)) {
+          try {
+            final retryResponse = await _dio.fetch(e.requestOptions);
+            return handler.resolve(retryResponse);
+          } catch (_) {
+            // Retry failed, fall through
+          }
+        }
         return handler.next(e);
       },
     ));
+  }
+
+  bool _shouldRetry(DioException e) {
+    return e.type == DioExceptionType.connectionTimeout ||
+        e.type == DioExceptionType.receiveTimeout ||
+        e.type == DioExceptionType.connectionError ||
+        (e.response?.statusCode != null && e.response!.statusCode! >= 500);
+  }
+
+  void _handleUnauthorized() {
+    storage.remove('token');
+    storage.remove('user');
+    Get.offAllNamed(Routes.LOGIN);
+    _isRedirecting = false;
   }
 
   Dio get dio => _dio;
@@ -118,6 +148,19 @@ class ApiProvider extends GetxController {
       'pertemuan_id': pertemuanId,
       'pesan': pesan,
     });
+  }
+
+  Future<Response> kirimChatAudio(String filePath, {int? pertemuanId}) async {
+    final fileName = filePath.split('/').last;
+    final formData = FormData.fromMap({
+      'pertemuan_id': pertemuanId,
+      'audio': await MultipartFile.fromFile(filePath, filename: fileName),
+    });
+    return await _dio.post(
+      '/chat/audio',
+      data: formData,
+      options: Options(headers: {'Content-Type': 'multipart/form-data'}),
+    );
   }
 
   // ============ STATISTIK SISWA ============

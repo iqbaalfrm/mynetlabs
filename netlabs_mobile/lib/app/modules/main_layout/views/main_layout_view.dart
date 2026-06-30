@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:netlabs_mobile/app/modules/chatbot/views/chatbot_view.dart';
 import 'package:netlabs_mobile/app/modules/materi/views/materi_view.dart';
 import 'package:netlabs_mobile/app/modules/profile/views/profile_view.dart';
+import '../../theme/netlabs_theme.dart';
 import '../controllers/main_layout_controller.dart';
 import '../../home/views/home_view.dart';
 
@@ -28,9 +29,11 @@ class MainLayoutView extends GetView<MainLayoutController> {
           currentIndex: controller.currentIndex.value,
           onTap: controller.changePage,
           type: BottomNavigationBarType.fixed,
-          selectedItemColor: const Color(0xFF0D9488),
+          selectedItemColor: NetlabsTheme.primary,
           unselectedItemColor: Colors.grey,
           showUnselectedLabels: true,
+          backgroundColor: Colors.white,
+          elevation: 8,
           items: const [
             BottomNavigationBarItem(
               icon: Icon(Icons.dashboard_rounded),
