@@ -341,7 +341,7 @@
           @foreach($kontenMenu as $item)
             @if(Route::has($item['route']))
             <li class="nav-item">
-              <a class="nav-link {{ request()->routeIs($item['route'].'*') ? 'active' : '' }}" href="{{ route($item['route']) }}">
+              <a class="nav-link {{ request()->routeIs('admin.materi.*') ? 'active' : '' }}" href="{{ route($item['route']) }}">
                 <i class="{{ $item['icon'] }} menu-icon"></i>
                 <span class="menu-title">{{ $item['label'] }}</span>
               </a>
