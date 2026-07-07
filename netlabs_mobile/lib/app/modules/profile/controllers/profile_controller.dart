@@ -3,6 +3,7 @@ import 'package:get_storage/get_storage.dart';
 import 'package:image_picker/image_picker.dart';
 import '../../../data/providers/api_provider.dart';
 import '../../../data/services/auth_service.dart';
+import '../../../routes/app_pages.dart';
 
 class ProfileController extends GetxController {
   final _auth = Get.find<AuthService>();
@@ -11,7 +12,7 @@ class ProfileController extends GetxController {
   var nis = ''.obs;
   var nama = ''.obs;
   var kelas = ''.obs;
-  var sekolah = 'SMK Bhakti Praja Dukuhwaru'.obs;
+  var sekolah = 'SMK Astrindo Tegal'.obs;
   var fotoProfilUrl = RxnString();
   var isUploading = false.obs;
 
@@ -61,6 +62,8 @@ class ProfileController extends GetxController {
     await _auth.clearSession();
     Get.offAllNamed('/login');
   }
+
+  void gantiPassword() => Get.toNamed(Routes.CHANGE_PASSWORD);
 
   Future<void> gantiFotoProfil() async {
     try {

@@ -1,0 +1,70 @@
+<![CDATA[@extends('layouts.master')
+
+@section('title', 'Tambah Pertemuan - NetLabs Admin')
+
+@section('content')
+<div class="nl-page-header">
+  <div class="d-flex align-items-center gap-3">
+    <a href="{{ route('admin.materi.index') }}" class="btn btn-outline-secondary btn-sm">
+      <i class="ti-back-left"></i>
+    </a>
+    <div>
+      <h3>Tambah Pertemuan</h3>
+      <p>Buat pertemuan baru untuk materi pembelajaran.</p>
+    </div>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-md-8 grid-margin mx-auto">
+    <div class="card">
+      <div class="card-body">
+        <form action="{{ route('admin.materi.store') }}" method="POST">
+          @csrf
+          <div class="row g-3">
+            <div class="col-md-6">
+              <label class="form-label">Nomor Urut <span class="text-danger">*</span></label>
+              <input type="number" name="nomor_urut" class="form-control @error('nomor_urut') is-invalid @enderror" value="{{ old('nomor_urut') }}" required>
+              @error('nomor_urut')<div class="invalid-feedback">{{ $message }}</div>@enderror
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Semester <span class="text-danger">*</span></label>
+              <select name="semester" class="form-select @error('semester') is-invalid @enderror" required>
+                <option value="">-- Pilih Semester --</option>
+                <option value="1" {{ old('semester') == '1' ? 'selected' : '' }}>Semester 1</option>
+                <option value="2" {{ old('semester') == '2' ? 'selected' : '' }}>Semester 2</option>
+              </select>
+              @error('semester')<div class="invalid-feedback">{{ $message }}</div>@enderror
+            </div>
+            <div class="col-12">
+              <label class="form-label">Judul <span class="text-danger">*</span></label>
+              <input type="text" name="judul" class="form-control @error('judul') is-invalid @enderror" value="{{ old('judul') }}" required placeholder="Contoh: Pengenalan Jaringan Komputer">
+              @error('judul')<div class="invalid-feedback">{{ $message }}</div>@enderror
+            </div>
+            <div class="col-12">
+              <label class="form-label">Deskripsi</label>
+              <textarea name="deskripsi" class="form-control @error('deskripsi') is-invalid @enderror" rows="3" placeholder="Deskripsi singkat pertemuan...">{{ old('deskripsi') }}</textarea>
+              @error('deskripsi')<div class="invalid-feedback">{{ $message }}</div>@enderror
+            </div>
+            <div class="col-12">
+              <label class="form-label">Warna Tema</label>
+              <div class="d-flex align-items-center gap-2">
+                <input type="color" name="warna_tema" class="form-control form-control-color @error('warna_tema') is-invalid @enderror" value="{{ old('warna_tema', '#4F6AF5') }}" style="width:60px;height:40px;">
+                <span class="text-muted" style="font-size:13px;">Pilih warna untuk kartu pertemuan</span>
+              </div>
+              @error('warna_tema')<div class="invalid-feedback">{{ $message }}</div>@enderror
+            </div>
+          </div>
+          <div class="d-flex gap-2 mt-4">
+            <button type="submit" class="btn btn-primary">
+              <i class="ti-check me-1"></i> Simpan
+            </button>
+            <a href="{{ route('admin.materi.index') }}" class="btn btn-light">Batal</a>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+@endsection
+]]>

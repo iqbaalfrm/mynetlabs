@@ -6,6 +6,11 @@ use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\MateriController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\PengaturanController;
+use App\Http\Controllers\Admin\KelasController;
+use App\Http\Controllers\Admin\TopikController;
+use App\Http\Controllers\Admin\PdfController;
+use App\Http\Controllers\Admin\QuizController;
+use App\Http\Controllers\Admin\ChatController;
 
 // Admin Auth Routes
 Route::prefix('admin')->name('admin.')->group(function () {
@@ -39,14 +44,19 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::delete('/quiz/{id}', [QuizController::class, 'destroy'])->name('quiz.destroy');
         Route::post('/materi/{pertemuan_id}/quiz/generate', [QuizController::class, 'generateByAI'])->name('quiz.generate');
 
-        // Kelas (placeholder)
-        Route::get('/kelas', fn() => view('admin.kelas.index'))->name('kelas.index');
+        // Kelas CRUD
+        Route::get('/kelas', [KelasController::class, 'index'])->name('kelas.index');
+        Route::post('/kelas', [KelasController::class, 'store'])->name('kelas.store');
+        Route::put('/kelas/{id}', [KelasController::class, 'update'])->name('kelas.update');
+        Route::delete('/kelas/{id}', [KelasController::class, 'destroy'])->name('kelas.destroy');
 
         // Users
         Route::resource('users', UserController::class);
 
-        // Chat AI (placeholder)
-        Route::get('/chat', fn() => view('admin.chat.index'))->name('chat.index');
+        // Chat AI Monitoring
+        Route::get('/chat', [ChatController::class, 'index'])->name('chat.index');
+        Route::delete('/chat/{id}', [ChatController::class, 'destroy'])->name('chat.destroy');
+        Route::delete('/chat/siswa/{siswaId}', [ChatController::class, 'destroyBySiswa'])->name('chat.destroyBySiswa');
 
         // Pengaturan
         Route::get('/pengaturan', [PengaturanController::class, 'index'])->name('pengaturan.index');

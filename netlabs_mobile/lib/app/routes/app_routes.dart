@@ -11,6 +11,7 @@ abstract class Routes {
   static const CHATBOT = _Paths.CHATBOT;
   static const PROFILE = _Paths.PROFILE;
   static const DETAIL_MATERI = _Paths.DETAIL_MATERI;
+  static const CHANGE_PASSWORD = _Paths.CHANGE_PASSWORD;
   static const QUIZ = _Paths.QUIZ;
 }
 
@@ -24,5 +25,6 @@ abstract class _Paths {
   static const CHATBOT = '/chatbot';
   static const PROFILE = '/profile';
   static const DETAIL_MATERI = '/detail-materi';
+  static const CHANGE_PASSWORD = '/change-password';
   static const QUIZ = '/quiz';
 }

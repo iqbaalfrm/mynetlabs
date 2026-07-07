@@ -4,3 +4,4 @@ __pycache__/
 diag*.py
 fix_*.py
 backend-web-update.tar.gz
+scratch/

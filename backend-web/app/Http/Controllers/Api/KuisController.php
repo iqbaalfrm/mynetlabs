@@ -78,14 +78,21 @@ class KuisController extends Controller
         }
 
         $pertemuanId = $request->pertemuan_id;
-        $totalSoal = SoalKuis::where('pertemuan_id', $pertemuanId)->count();
 
+        // Batch load semua soal untuk hindari N+1 query di loop
+        $soalIds = collect($request->jawaban)->pluck('soal_id')->unique();
+        $soalMap = SoalKuis::whereIn('id', $soalIds)
+            ->where('pertemuan_id', $pertemuanId)
+            ->get()
+            ->keyBy('id');
+
+        $totalSoal = SoalKuis::where('pertemuan_id', $pertemuanId)->count();
         $jumlahBenar = 0;
         $pembahasan = [];
 
         foreach ($request->jawaban as $j) {
-            $soal = SoalKuis::find($j['soal_id']);
-            if (!$soal || $soal->pertemuan_id != $pertemuanId) {
+            $soal = $soalMap->get($j['soal_id']);
+            if (!$soal) {
                 continue;
             }
 

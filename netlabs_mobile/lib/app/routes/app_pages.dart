@@ -13,6 +13,8 @@ import '../modules/onboarding/bindings/onboarding_binding.dart';
 import '../modules/onboarding/views/onboarding_view.dart';
 import '../modules/profile/bindings/profile_binding.dart';
 import '../modules/profile/views/profile_view.dart';
+import '../modules/change_password/bindings/change_password_binding.dart';
+import '../modules/change_password/views/change_password_view.dart';
 import '../modules/quiz/bindings/quiz_binding.dart';
 import '../modules/quiz/views/quiz_view.dart';
 import '../modules/main_layout/views/main_layout_view.dart';
@@ -59,6 +61,11 @@ class AppPages {
       name: _Paths.DETAIL_MATERI,
       page: () => const DetailMateriView(),
       binding: DetailMateriBinding(),
+    ),
+    GetPage(
+      name: _Paths.CHANGE_PASSWORD,
+      page: () => const ChangePasswordView(),
+      binding: ChangePasswordBinding(),
     ),
     GetPage(
       name: _Paths.QUIZ,

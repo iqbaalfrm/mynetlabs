@@ -1,0 +1,159 @@
+{
+  "judul": "Modul 8: Routing Dinamis OSPF",
+  "subjudul": "Memahami dan Mengimplementasikan Konsep Link-State OSPF, Algoritma Dijkstra, Pembagian Area, dan Adjacency Neighbor",
+  "tujuan": [
+    "Setelah menyelesaikan modul ini, peserta didik mampu menganalisis konsep dasar OSPF (Open Shortest Path First) sebagai protokol routing link-state, termasuk keuntungan dan cara kerjanya secara fundamental.",
+    "Peserta didik mampu memahami dan menjelaskan secara rinci fungsi serta implementasi Algoritma Dijkstra (Shortest Path First/SPF) dalam menentukan jalur terbaik pada jaringan yang menggunakan OSPF.",
+    "Peserta didik mampu mengidentifikasi dan mengimplementasikan konsep pembagian area dalam OSPF, khususnya peran sentral Area 0 (Backbone Area) sebagai fondasi arsitektur multi-area OSPF.",
+    "Peserta didik mampu menjelaskan proses pembentukan Adjacency Neighbor antara router OSPF, termasuk peran paket Hello, Dead Interval, dan mekanisme DR/BDR election pada jaringan broadcast.",
+    "Peserta didik mampu mengonfigurasi OSPF pada perangkat router Cisco menggunakan Command Line Interface (CLI), termasuk penggunaan wildcard mask dan penentuan area, serta melakukan verifikasi dan troubleshooting dasar."
+  ],
+  "kompetensi_dasar": [
+    "KD 3.10 Menganalisis routing dinamis OSPF pada jaringan komputer.",
+    "KD 4.10 Mengonfigurasikan routing dinamis OSPF pada perangkat jaringan."
+  ],
+  "alat_bahan": [
+    "PC/Laptop dengan spesifikasi minimal Intel Core i3, RAM 4GB, SSD 250GB.",
+    "Software Simulator Cisco Packet Tracer versi terbaru (disarankan versi 8.2 atau yang lebih baru).",
+    "Modul Praktikum OSPF atau akses internet untuk referensi tambahan.",
+    "Tabel pengalamatan IP yang telah disiapkan."
+  ],
+  "prasyarat": "Peserta didik diharapkan telah memiliki pemahaman dasar tentang jaringan komputer, termasuk konsep TCP/IP, pengalamatan IP (IPv4), subnetting, cara kerja perangkat router dan switch, serta dasar-dasar konfigurasi Command Line Interface (CLI) pada router Cisco, termasuk konfigurasi routing statis.",
+  "teori_1": "OSPF (Open Shortest Path First) adalah protokol routing dinamis berbasis link-state yang dikembangkan oleh IETF (Internet Engineering Task Force) dan dipublikasikan sebagai RFC 2328. Berbeda dengan protokol distance-vector seperti RIP, OSPF memperkenalkan pendekatan yang lebih maju dalam membangun tabel routing dengan memahami topologi jaringan secara menyeluruh. Hal ini dicapai melalui pertukaran informasi \"link-state advertisement\" (LSA) antar router, yang kemudian disimpan dalam sebuah database topologi, dikenal sebagai Link-State Database (LSDB). Setiap router di area OSPF yang sama memiliki salinan identik dari LSDB ini, memberikan pandangan holistik tentang semua router dan tautan antar mereka.<br/><br/>Konsep link-state memungkinkan OSPF untuk membangun \"peta\" jaringan yang akurat dan mencegah loop routing secara inheren, sebuah masalah umum pada protokol distance-vector. Setelah LSDB terbentuk dan stabil, setiap router secara independen menjalankan algoritma SPF (Shortest Path First) yang dikenal juga sebagai algoritma Dijkstra. Algoritma ini menghitung jalur terpendek ke setiap tujuan dalam jaringan berdasarkan \"cost\" (biaya) yang diasosiasikan dengan setiap tautan, menghasilkan sebuah pohon jalur terpendek (SPF tree) yang berakar pada router tersebut. Jalur-jalur terbaik dari pohon SPF inilah yang kemudian dimasukkan ke dalam tabel routing router.<br/><br/>Salah satu fitur paling krusial dari OSPF adalah kemampuannya untuk membagi jaringan menjadi beberapa \"area\". Pembagian area ini bertujuan untuk mengurangi ukuran LSDB dan frekuensi pertukaran LSA dalam area tersebut, sehingga meminimalkan penggunaan CPU dan memori router. Area 0, atau yang dikenal sebagai backbone area, adalah area pusat yang wajib ada dalam setiap implementasi multi-area OSPF, bertindak sebagai penghubung bagi semua area non-backbone lainnya. Pemahaman mendalam tentang konsep-konsep ini sangat vital bagi setiap Network Engineer untuk merancang dan mengimplementasikan jaringan yang skalabel dan efisien.",
+  "teori_2_text": "Sebagai protokol routing Interior Gateway Protocol (IGP) yang populer, OSPF memiliki karakteristik unik yang membedakannya dari protokol lain. OSPF menggunakan metrik berbasis \"cost\" untuk menentukan jalur terbaik. Cost ini secara default dihitung berdasarkan bandwidth interface: semakin tinggi bandwidth, semakin rendah cost-nya, dan jalur tersebut akan lebih diprioritaskan. Administrator jaringan juga dapat memanipulasi nilai cost ini secara manual untuk mengoptimalkan jalur routing sesuai kebutuhan bisnis atau untuk tujuan load balancing.<br/><br/>Selain itu, OSPF beroperasi menggunakan protokolnya sendiri di atas IP (Protocol 89) dan bukan TCP atau UDP, meskipun proses adjacency neighbor dimulai dengan paket Hello yang dienkapsulasi dalam IP. OSPF juga menggunakan Administrative Distance (AD) sebesar 110, yang menempatkannya sebagai pilihan routing yang lebih dipercaya dibandingkan RIP (AD 120) namun kurang dipercaya dibandingkan routing statis (AD 1) atau EIGRP (AD 90). Proses pembentukan hubungan \"adjacency neighbor\" sangat penting dalam OSPF, di mana router-router yang terhubung langsung bertukar paket Hello untuk menemukan satu sama lain dan membentuk hubungan yang memungkinkan pertukaran LSA.",
+  "teori_2_table": [
+    [
+      "Fitur Karakteristik",
+      "Deskripsi OSPF"
+    ],
+    [
+      "Tipe Protokol",
+      "Link-State, Interior Gateway Protocol (IGP)"
+    ],
+    [
+      "Algoritma Routing",
+      "Algoritma Dijkstra (Shortest Path First/SPF)"
+    ],
+    [
+      "Metrik",
+      "Cost (biaya), yang secara default dihitung berdasarkan bandwidth interface. Makin tinggi bandwidth, makin rendah cost."
+    ],
+    [
+      "Administrative Distance",
+      "110"
+    ],
+    [
+      "Transport Protocol",
+      "IP Protocol 89 (langsung di atas IP), menggunakan multicast address 224.0.0.5 (All OSPF Routers) dan 224.0.0.6 (All DR/BDR) untuk pertukaran Hello dan LSA."
+    ],
+    [
+      "Pembagian Jaringan",
+      "Mendukung struktur hirarkis dengan Area (Area 0 sebagai Backbone, Area lain sebagai Standard Area)."
+    ]
+  ],
+  "teori_2_extra": "Dalam OSPF, setiap router wajib memiliki sebuah Router ID (RID) yang unik dalam autonomous system (AS). RID ini adalah sebuah nilai 32-bit yang biasanya direpresentasikan dalam format alamat IP (misalnya, 192.168.1.1) dan digunakan untuk mengidentifikasi router dalam proses OSPF serta dalam pertukaran LSA. RID dipilih secara otomatis dari IP address loopback interface (jika ada) atau IP address fisik interface tertinggi yang aktif. Jika tidak ada interface loopback, maka akan dipilih IP tertinggi dari interface fisik yang aktif. Penting untuk memastikan Router ID unik untuk menghindari konflik dan kegagalan pembentukan adjacency. Hello protocol berfungsi sebagai mekanisme keepalive untuk mendeteksi keberadaan neighbor dan memelihara hubungan adjacency.",
+  "topologi_desc": "Topologi jaringan yang akan digunakan dalam praktikum ini terdiri dari tiga buah router Cisco (Router A, Router B, Router C), dua buah switch (Switch A, Switch B), dan empat buah host (PC-A1, PC-A2, PC-B1, PC-B2). Router A dan Router B akan terhubung satu sama lain menggunakan interface Serial0/0/0 dengan kabel Serial DCE/DTE, membentuk segmen jaringan point-to-point 10.0.0.0/30. Router A juga akan terhubung ke Switch A melalui interface GigabitEthernet0/0 dengan kabel Straight-Through, sementara Switch A akan menghubungkan PC-A1 dan PC-A2 pada segmen LAN 192.168.10.0/24.<br/><br/>Router B akan terhubung ke Router C menggunakan interface GigabitEthernet0/1 dengan kabel Straight-Through, membentuk segmen LAN 192.168.20.0/24. Router C akan terhubung ke Switch B melalui interface GigabitEthernet0/0 dengan kabel Straight-Through, dan Switch B akan menghubungkan PC-B1 serta PC-B2 pada segmen LAN 192.168.30.0/24. Semua interface GigabitEthernet akan beroperasi sebagai interface Layer 3, sedangkan interface pada switch hanya akan berfungsi sebagai Layer 2. Semua koneksi antar router dan switch akan menggunakan kabel Straight-Through kecuali koneksi serial antara Router A dan Router B. Seluruh router akan dikonfigurasi untuk berpartisipasi dalam OSPF Area 0 (backbone area) untuk memastikan semua jaringan dapat dijangkau.",
+  "addressing_table": [
+    [
+      "Perangkat",
+      "Interface",
+      "IP Address",
+      "Subnet Mask",
+      "Default Gateway"
+    ],
+    [
+      "Router A",
+      "GigabitEthernet0/0",
+      "192.168.10.1",
+      "255.255.255.0",
+      "-"
+    ],
+    [
+      "Router A",
+      "Serial0/0/0",
+      "10.0.0.1",
+      "255.255.255.252",
+      "-"
+    ],
+    [
+      "Router B",
+      "GigabitEthernet0/1",
+      "192.168.20.1",
+      "255.255.255.0",
+      "-"
+    ],
+    [
+      "Router B",
+      "Serial0/0/0",
+      "10.0.0.2",
+      "255.255.255.252",
+      "-"
+    ],
+    [
+      "Router C",
+      "GigabitEthernet0/0",
+      "192.168.30.1",
+      "255.255.255.0",
+      "-"
+    ],
+    [
+      "PC-A1",
+      "FastEthernet0",
+      "192.168.10.10",
+      "255.255.255.0",
+      "192.168.10.1"
+    ],
+    [
+      "PC-B1",
+      "FastEthernet0",
+      "192.168.30.10",
+      "255.255.255.0",
+      "192.168.30.1"
+    ]
+  ],
+  "skenario_desc": "Anda adalah seorang Network Engineer di PT. Maju Bersama, sebuah perusahaan yang sedang berkembang pesat dengan tiga kantor cabang utama. Kantor-kantor ini perlu saling terhubung untuk berbagi sumber daya dan informasi secara efisien. Saat ini, koneksi antar cabang masih menggunakan routing statis yang mulai tidak efisien dan sulit dikelola seiring dengan bertambahnya jumlah subnet dan perangkat. Manajemen meminta Anda untuk mengimplementasikan solusi routing dinamis yang skalabel, otomatis, dan efisien untuk menghubungkan ketiga cabang tersebut.<br/><br/>Setelah melalui pertimbangan teknis, OSPF (Open Shortest Path First) dipilih sebagai protokol routing dinamis karena sifatnya yang link-state, cepat dalam konvergensi, serta kemampuannya dalam mendukung jaringan berukuran besar melalui pembagian area. Tujuan utama praktikum ini adalah memastikan bahwa semua host di setiap cabang dapat berkomunikasi satu sama lain, dan seluruh router memiliki informasi routing yang lengkap dan akurat melalui OSPF. Anda akan mengonfigurasi OSPF pada seluruh router, memastikan pembentukan adjacency neighbor yang sukses, dan memverifikasi penyebaran rute antar jaringan.",
+  "langkah_kerja": [
+    "<b>Persiapan Perangkat dan Topologi:</b><br/>Buat topologi sesuai deskripsi di Cisco Packet Tracer. Hubungkan Router A (R1) G0/0 ke Switch A, S0/0/0 ke Router B (R2) S0/0/0. Hubungkan R2 G0/1 ke Router C (R3) G0/0. Hubungkan Switch A ke PC-A1, PC-A2. Hubungkan Switch B ke PC-B1, PC-B2. Pastikan jenis kabel sesuai (Serial DCE/DTE antara R1-R2, Straight-Through lainnya).",
+    "<b>Konfigurasi Alamat IP pada Router A (R1):</b><br/>Masuk ke mode konfigurasi global R1. Konfigurasi IP address dan subnet mask pada interface GigabitEthernet0/0 dan Serial0/0/0 sesuai tabel pengalamatan. Aktifkan interface dan set clock rate pada S0/0/0 sebagai DCE. Verifikasi dengan `show ip interface brief`.",
+    "<b>Konfigurasi Alamat IP pada Router B (R2):</b><br/>Masuk ke mode konfigurasi global R2. Konfigurasi IP address dan subnet mask pada interface GigabitEthernet0/1 dan Serial0/0/0 sesuai tabel pengalamatan. Aktifkan interface S0/0/0 (DTE, tidak perlu clock rate). Verifikasi dengan `show ip interface brief`.",
+    "<b>Konfigurasi Alamat IP pada Router C (R3):</b><br/>Masuk ke mode konfigurasi global R3. Konfigurasi IP address dan subnet mask pada interface GigabitEthernet0/0 sesuai tabel pengalamatan. Aktifkan interface. Verifikasi dengan `show ip interface brief`.",
+    "<b>Konfigurasi Alamat IP pada Host PC:</b><br/>Konfigurasi IP address, subnet mask, dan default gateway pada semua PC (PC-A1, PC-A2, PC-B1, PC-B2) sesuai tabel pengalamatan. Default gateway setiap PC harus mengarah ke IP interface router yang terhubung langsung.",
+    "<b>Konfigurasi OSPF pada Router A (R1):</b><br/>Aktifkan proses OSPF dengan `router ospf 1` (proses ID bisa bebas, di sini kita pakai 1). Daftarkan network yang terhubung langsung ke R1 beserta wildcard mask-nya dan tentukan areanya sebagai Area 0. Contoh: `network 192.168.10.0 0.0.0.255 area 0` dan `network 10.0.0.0 0.0.0.3 area 0`.",
+    "<b>Konfigurasi OSPF pada Router B (R2):</b><br/>Aktifkan proses OSPF dengan `router ospf 1`. Daftarkan network yang terhubung langsung ke R2 beserta wildcard mask-nya dan tentukan areanya sebagai Area 0. Contoh: `network 192.168.20.0 0.0.0.255 area 0` dan `network 10.0.0.0 0.0.0.3 area 0`. Perhatikan notifikasi OSPF adjacency neighbor yang terbentuk.",
+    "<b>Konfigurasi OSPF pada Router C (R3):</b><br/>Aktifkan proses OSPF dengan `router ospf 1`. Daftarkan network yang terhubung langsung ke R3 beserta wildcard mask-nya dan tentukan areanya sebagai Area 0. Contoh: `network 192.168.30.0 0.0.0.255 area 0` dan `network 192.168.20.0 0.0.0.255 area 0`. Perhatikan notifikasi OSPF adjacency neighbor yang terbentuk.",
+    "<b>Verifikasi OSPF dan Routing Table:</b><br/>Gunakan perintah `show ip ospf neighbor` pada setiap router untuk memverifikasi pembentukan adjacency. Gunakan `show ip route` untuk memeriksa apakah semua rute (khususnya rute OSPF dengan kode \"O\") telah terpasang di tabel routing masing-masing router. Pastikan semua jaringan yang ada di topologi telah dikenali oleh semua router."
+  ],
+  "commands": "# --- Konfigurasi Router A (R1) ---\nRouter>en\nRouter#conf t\nEnter configuration commands, one per line. End with CNTL/Z.\nRouter(config)#hostname R1\nR1(config)#int g0/0\nR1(config-if)#ip address 192.168.10.1 255.255.255.0\nR1(config-if)#no shutdown\nR1(config-if)#exit\nR1(config)#int s0/0/0\nR1(config-if)#ip address 10.0.0.1 255.255.255.252\nR1(config-if)#clock rate 128000 # R1 sebagai DCE, wajib set clock rate\nR1(config-if)#no shutdown\nR1(config-if)#exit\nR1(config)#router ospf 1 # Mengaktifkan proses OSPF dengan ID 1\nR1(config-router)#network 192.168.10.0 0.0.0.255 area 0 # Mendaftarkan network LAN R1 ke OSPF Area 0\nR1(config-router)#network 10.0.0.0 0.0.0.3 area 0 # Mendaftarkan network serial R1 ke OSPF Area 0\nR1(config-router)#end\nR1#wr # Menyimpan konfigurasi\nBuilding configuration...\n[OK]\nR1#show ip interface brief # Verifikasi konfigurasi IP interface\nInterface              IP-Address      OK? Method Status                Protocol\nGigabitEthernet0/0     192.168.10.1    YES manual up                    up\nGigabitEthernet0/1     unassigned      YES unset  administratively down down\nSerial0/0/0            10.0.0.1        YES manual up                    up\nR1#show ip ospf neighbor # Verifikasi status neighbor OSPF\n\n# --- Konfigurasi Router B (R2) ---\nRouter>en\nRouter#conf t\nRouter(config)#hostname R2\nR2(config)#int g0/1\nR2(config-if)#ip address 192.168.20.1 255.255.255.0\nR2(config-if)#no shutdown\nR2(config-if)#exit\nR2(config)#int s0/0/0\nR2(config-if)#ip address 10.0.0.2 255.255.255.252\nR2(config-if)#no shutdown # R2 sebagai DTE, tidak perlu clock rate\nR2(config-if)#exit\nR2(config)#router ospf 1\nR2(config-router)#network 192.168.20.0 0.0.0.255 area 0\nR2(config-router)#network 10.0.0.0 0.0.0.3 area 0\nR2(config-router)#end\nR2#wr\nBuilding configuration...\n[OK]\nR2#show ip interface brief\nInterface              IP-Address      OK? Method Status                Protocol\nGigabitEthernet0/0     unassigned      YES unset  administratively down down\nGigabitEthernet0/1     192.168.20.1    YES manual up                    up\nSerial0/0/0            10.0.0.2        YES manual up                    up\nR2#show ip ospf neighbor\n\n# --- Konfigurasi Router C (R3) ---\nRouter>en\nRouter#conf t\nRouter(config)#hostname R3\nR3(config)#int g0/0\nR3(config-if)#ip address 192.168.30.1 255.255.255.0\nR3(config-if)#no shutdown\nR3(config-if)#exit\nR3(config)#router ospf 1\nR3(config-router)#network 192.168.30.0 0.0.0.255 area 0\nR3(config-router)#network 192.168.20.0 0.0.0.255 area 0 # Mendaftarkan network yang terhubung ke R2\nR3(config-router)#end\nR3#wr\nBuilding configuration...\n[OK]\nR3#show ip interface brief\nInterface              IP-Address      OK? Method Status                Protocol\nGigabitEthernet0/0     192.168.30.1    YES manual up                    up\nGigabitEthernet0/1     unassigned      YES unset  administratively down down\nSerial0/0/0            unassigned      YES unset  administratively down down\nR3#show ip ospf neighbor\n\n# --- Konfigurasi Host PC-A1 ---\n# (Pada PC-A1 di Desktop > IP Configuration)\n# IP Address: 192.168.10.10\n# Subnet Mask: 255.255.255.0\n# Default Gateway: 192.168.10.1\n\n# --- Konfigurasi Host PC-B1 ---\n# (Pada PC-B1 di Desktop > IP Configuration)\n# IP Address: 192.168.30.10\n# Subnet Mask: 255.255.255.0\n# Default Gateway: 192.168.30.1\n\n# Ulangi untuk PC-A2 dan PC-B2 dengan IP yang sesuai dalam subnet yang sama (misal PC-A2: 192.168.10.11, PC-B2: 192.168.30.11).",
+  "uji_coba_text": "Setelah semua konfigurasi OSPF diterapkan pada router dan IP address pada host, langkah selanjutnya adalah melakukan pengujian konektivitas untuk memastikan bahwa OSPF berfungsi dengan benar dan semua jaringan dapat dijangkau. Pengujian akan dilakukan dari berbagai titik dalam topologi, terutama dari PC ke PC di jaringan yang berbeda. Gunakan utilitas `ping` untuk memverifikasi konektivitas end-to-end. Perintah `traceroute` dapat digunakan untuk melihat jalur yang diambil oleh paket data, memberikan insight tentang router mana saja yang dilewati.<br/><br/>Di sisi router, gunakan perintah `show ip route` untuk memastikan rute-rute OSPF (ditandai 'O') telah terdaftar dalam tabel routing. Selanjutnya, perintah `show ip ospf neighbor` akan menunjukkan status hubungan adjacency dengan router tetangga, dan `show ip ospf interface` akan menampilkan detail konfigurasi OSPF per interface. Analisis respon `ping`: `Reply from` menunjukkan konektivitas berhasil, sementara `Request timed out` atau `Destination host unreachable` mengindikasikan masalah. Periksa juga `TTL` pada hasil ping; jika menurun secara konsisten, itu menunjukkan paket melewati beberapa hop.",
+  "uji_coba_cmd": "# --- Pengujian dari PC-A1 ke PC-B1 ---\nPC-A1> ping 192.168.30.10\n\nPinging 192.168.30.10 with 32 bytes of data:\n\nReply from 192.168.30.10: bytes=32 time=10ms TTL=125\nReply from 192.168.30.10: bytes=32 time=9ms TTL=125\nReply from 192.168.30.10: bytes=32 time=10ms TTL=125\nReply from 192.168.30.10: bytes=32 time=11ms TTL=125\n\nPing statistics for 192.168.30.10:\n    Packets: Sent = 4, Received = 4, Lost = 0 (0% loss),\nApproximate round trip times in milli-seconds:\n    Minimum = 9ms, Maximum = 11ms, Average = 10ms\n\n# --- Verifikasi Routing Table pada R1 ---\nR1#show ip route\nCodes: L - local, C - connected, S - static, R - RIP, M - mobile, B - BGP\n       D - EIGRP, EX - EIGRP external, O - OSPF, IA - OSPF inter area\n       N1 - OSPF NSSA external type 1, N2 - OSPF NSSA external type 2\n       E1 - OSPF external type 1, E2 - OSPF external type 2\n       i - IS-IS, su - summary, L1 - IS-IS level-1, L2 - IS-IS level-2\n       ia - IS-IS inter area, * - candidate default, U - per-user static route\n       o - ODR, P - periodic downloaded static route\n\nGateway of last resort is not set\n\n      10.0.0.0/30 is subnetted, 1 subnets\nC        10.0.0.0 is directly connected, Serial0/0/0\n      192.168.10.0/24 is directly connected, GigabitEthernet0/0\nC        192.168.10.0 is directly connected, GigabitEthernet0/0\nO        192.168.20.0/24 [110/65] via 10.0.0.2, 00:00:25, Serial0/0/0\nO        192.168.30.0/24 [110/66] via 10.0.0.2, 00:00:25, Serial0/0/0\n\n# --- Verifikasi OSPF Neighbors pada R2 ---\nR2#show ip ospf neighbor\n\nNeighbor ID     Pri   State           Dead Time   Address         Interface\n10.0.0.1          1   FULL/DR         00:00:33    10.0.0.1        Serial0/0/0\n192.168.30.1      1   FULL/DR         00:00:36    192.168.20.1    GigabitEthernet0/1",
+  "troubleshooting_table": [
+    [
+      "Gejala Masalah",
+      "Kemungkinan Penyebab",
+      "Tindakan Korektif"
+    ],
+    [
+      "OSPF Neighbor tidak terbentuk (status INIT/EXSTART/DOWN)",
+      "- Mismatched OSPF Hello/Dead Interval.\n- Mismatched Area ID.\n- Network type mismatch (misal: point-to-point vs broadcast).\n- Alamat IP atau Subnet Mask salah pada interface.\n- Firewall/ACL memblokir paket OSPF.",
+      "- Periksa `show ip ospf interface <interface>` untuk Hello/Dead Interval dan Network Type. Sesuaikan.\n- Pastikan `network <address> <wildcard> area <id>` sudah benar di semua router.\n- Verifikasi IP address dan subnet mask pada interface dengan `show ip interface brief`.\n- Periksa konfigurasi Access Control List (ACL) jika ada."
+    ],
+    [
+      "Rute OSPF tidak muncul di tabel routing",
+      "- Network statement OSPF salah/kurang.\n- Interface tidak aktif atau tidak termasuk dalam OSPF.\n- Adjacency Neighbor tidak FULL.\n- Isu Router ID duplikat.",
+      "- Periksa `show run | section router ospf` dan pastikan semua network yang terhubung langsung sudah didaftarkan dengan wildcard mask dan area yang benar.\n- Pastikan `no shutdown` pada interface dan statusnya \"up/up\".\n- Verifikasi status neighbor dengan `show ip ospf neighbor`. Adjacency harus FULL.\n- Konfigurasi Router ID unik secara manual (`router-id X.X.X.X`) pada setiap router dan restart proses OSPF."
+    ],
+    [
+      "Konektivitas antar PC gagal (ping/traceroute)",
+      "- Default Gateway pada PC salah.\n- Router tidak memiliki rute ke tujuan.\n- OSPF tidak konvergen sepenuhnya atau ada masalah topologi.\n- Konfigurasi interface router salah.",
+      "- Verifikasi IP address dan Default Gateway pada setiap PC.\n- Periksa `show ip route` pada setiap router untuk memastikan rute OSPF sudah ada dan benar.\n- Verifikasi `show ip ospf neighbor` untuk melihat status adjacency dan `show ip ospf database` untuk LSDB.\n- Periksa kembali konfigurasi IP pada interface router (`show ip interface brief`) dan pastikan tidak ada kesalahan ketik."
+    ]
+  ],
+  "tugas_mandiri": "Sebagai seorang Network Engineer yang kompeten, Anda diminta untuk mengembangkan topologi praktikum ini. Tambahkan sebuah Router D (R4) yang terhubung ke Router C (R3) melalui interface GigabitEthernet0/2. R4 akan menjadi gateway untuk subnet baru 192.168.40.0/24 dengan dua host tambahan (PC-D1 dan PC-D2). Selain itu, R4 juga harus terhubung ke Internet menggunakan sebuah jalur statis ke ISP (misalkan ke IP 203.0.113.1 melalui interface Loopback0).<br/><br/>Tugas Anda meliputi:<br/>1.  Tambahkan R4 dan konfigurasikan IP address pada interface G0/2 (untuk terhubung ke R3), serta pada interface Loopback0 (sebagai simulasi koneksi ke ISP).\n2.  Konfigurasikan OSPF pada R4 agar dapat berkomunikasi dengan R3, dan pastikan jaringan 192.168.40.0/24 serta subnet interkoneksi R3-R4 juga masuk dalam Area 0.\n3.  Konfigurasikan sebuah rute statis default pada R4 yang mengarah ke ISP (simulasikan dengan next-hop Loopback0 203.0.113.1).\n4.  Lakukan redistribusi rute statis default ini ke dalam OSPF agar semua router di jaringan dapat memiliki akses ke \"Internet\" melalui R4.\n5.  Konfigurasikan interface LAN pada R3 (G0/0) sebagai OSPF Passive Interface untuk mencegah pengiriman paket Hello yang tidak perlu ke segmen LAN.\n6.  Verifikasi konektivitas end-to-end dari PC-A1 ke PC-D1, dan dari PC-A1 ke \"Internet\" (IP Loopback0 R4). Laporkan semua langkah konfigurasi, output verifikasi, dan hasil pengujian dalam laporan praktikum Anda.",
+  "evaluasi_questions": [
+    "Jelaskan perbedaan mendasar antara protokol routing Distance Vector (seperti RIP) dan Link-State (seperti OSPF) dari segi cara mereka membangun tabel routing dan menjaga konsistensi informasi topologi. Berikan contoh keunggulan OSPF dalam konteks ini.",
+    "Bagaimana Algoritma Dijkstra berperan dalam proses routing OSPF, dan apa output akhirnya setelah algoritma ini dijalankan oleh sebuah router? Jelaskan tahapan umum algoritma tersebut.",
+    "Mengapa pembagian area, khususnya keberadaan Area 0 (Backbone Area), sangat penting dalam desain jaringan OSPF berskala besar? Jelaskan manfaatnya dari segi skalabilitas, efisiensi sumber daya router (CPU/memori), dan stabilitas jaringan.",
+    "Apa fungsi utama dari Wildcard Mask dalam perintah konfigurasi OSPF `network`? Berikan dua contoh penggunaan Wildcard Mask yang berbeda (misalnya, untuk satu host dan untuk satu subnet) dan jelaskan perbedaannya.",
+    "Dalam konteks OSPF, jelaskan secara detail proses pembentukan Adjacency Neighbor. Sebutkan minimal tiga faktor umum yang dapat menyebabkan kegagalan pembentukan Adjacency Neighbor dan bagaimana cara menanganinya berdasarkan pengalaman Anda sebagai Network Engineer."
+  ]
+}

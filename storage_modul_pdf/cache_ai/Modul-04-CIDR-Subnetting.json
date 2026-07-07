@@ -1,0 +1,152 @@
+{
+  "judul": "Modul 4: Subnetting Dasar (CIDR)",
+  "subjudul": "Perhitungan Subnetting Menggunakan Notasi CIDR dari Prefix /24 hingga /30, Penentuan Network, Broadcast, dan Host Range pada Jaringan IPv4",
+  "tujuan": [
+    "Memahami secara komprehensif konsep dasar subnetting IPv4 beserta latar belakang dan urgensinya dalam efisiensi alokasi alamat jaringan.",
+    "Menguasai metode perhitungan subnetting menggunakan notasi Classless Inter-Domain Routing (CIDR) untuk berbagai prefix, khususnya dari /24 hingga /30.",
+    "Mampu mengidentifikasi dan menentukan Network Address, Broadcast Address, serta rentang Alamat Host yang dapat digunakan (Usable Host Range) dari sebuah Network ID dan Subnet Mask yang diberikan.",
+    "Menerapkan hasil perhitungan subnetting untuk mengonfigurasi alamat IP, Subnet Mask, dan Default Gateway pada perangkat jaringan seperti router dan host dalam simulasi Cisco Packet Tracer.",
+    "Menganalisis dan memverifikasi konektivitas antar perangkat dalam subnet yang berbeda serta mengidentifikasi potensi masalah pengalamatan IP melalui studi kasus dan troubleshooting."
+  ],
+  "kompetensi_dasar": [
+    "KD 3.3 Menganalisis kebutuhan subnetting dan merancang pembagian alamat IPv4 menggunakan CIDR.",
+    "KD 4.3 Mengonfigurasikan alamat IP pada perangkat jaringan dengan implementasi subnetting IPv4."
+  ],
+  "alat_bahan": [
+    "Personal Computer (PC) atau Laptop dengan spesifikasi minimal Intel Core i3, RAM 4GB, dan penyimpanan 250GB.",
+    "Software Simulator Jaringan Cisco Packet Tracer versi terbaru (disarankan versi 8.2 atau lebih tinggi).",
+    "Modul Praktikum dan Akses Internet untuk referensi tambahan.",
+    "Kalkulator ilmiah atau aplikasi kalkulator IP Subnetting."
+  ],
+  "prasyarat": "Peserta didik diharapkan telah memiliki pemahaman dasar tentang konsep jaringan komputer, model referensi OSI/TCP-IP, pengenalan alamat IPv4, serta sistem bilangan biner dan desimal. Pengetahuan awal tentang fungsi dasar router dan switch juga sangat dianjurkan.",
+  "teori_1": "Dalam dunia jaringan komputer, pengelolaan alamat IP merupakan fondasi utama bagi komunikasi data. Seiring pertumbuhan internet dan perangkat yang terhubung, kebutuhan akan efisiensi penggunaan alamat IP menjadi krusial. Konsep <b>Subnetting</b> hadir sebagai solusi untuk mengatasi keterbatasan alamat IPv4 dan meningkatkan efisiensi serta keamanan jaringan. Secara historis, awalnya IP Address dibagi berdasarkan kelas (Class A, B, C) yang seringkali menyebabkan pemborosan alamat. Misalnya, sebuah organisasi yang membutuhkan 200 host harus menggunakan Class B yang menyediakan lebih dari 65.000 alamat, menyisakan banyak alamat tidak terpakai.<br/><br/>Pada pertengahan tahun 1990-an, diperkenalkanlah <b>Classless Inter-Domain Routing (CIDR)</b> sebagai mekanisme yang lebih fleksibel untuk mengalokasikan alamat IP dan merutekan paket data. CIDR menghilangkan konsep kelas IP tradisional dan memungkinkan pembagian alamat jaringan menjadi blok-blok dengan ukuran yang lebih bervariasi, ditunjukkan dengan notasi prefix (misalnya /24, /27, /30). Notasi ini merepresentasikan jumlah bit network yang aktif dari total 32 bit alamat IPv4.<br/><br/>Secara fundamental, subnetting adalah proses membagi sebuah network besar menjadi beberapa subnet (sub-network) yang lebih kecil. Tujuan utamanya adalah untuk: 1) <i>Mengurangi ukuran broadcast domain</i>, yang berarti mengurangi lalu lintas yang tidak perlu dan meningkatkan performa jaringan; 2) <i>Meningkatkan keamanan</i> dengan mengisolasi segmen-segmen jaringan; dan 3) <i>Menghemat penggunaan alamat IPv4</i> dengan mengalokasikan jumlah host yang sesuai per segmen. Memahami subnetting CIDR sangat penting bagi setiap praktisi jaringan untuk mendesain topologi jaringan yang optimal dan terukur.",
+  "teori_2_text": "Notasi CIDR (/prefix) adalah representasi jumlah bit yang digunakan untuk Network ID dalam sebuah alamat IPv4. Semakin besar angka prefix, semakin sedikit bit yang tersisa untuk Host ID, sehingga jumlah host yang dapat ditampung dalam subnet tersebut akan semakin kecil. Sebaliknya, Subnet Mask merupakan representasi 32-bit biner yang membantu perangkat jaringan membedakan antara bagian Network ID dan Host ID dari sebuah alamat IP. Bit '1' pada Subnet Mask menunjukkan bagian Network ID, sedangkan bit '0' menunjukkan bagian Host ID. Tabel berikut merangkum karakteristik penting dari beberapa notasi CIDR yang umum digunakan, khususnya dalam rentang yang sering dijumpai pada implementasi jaringan lokal maupun koneksi point-to-point.",
+  "teori_2_table": [
+    [
+      "CIDR Prefix",
+      "Subnet Mask (Desimal)",
+      "Jumlah Bit Host",
+      "Total Alamat IP",
+      "Alamat Host Usable"
+    ],
+    [
+      "/24",
+      "255.255.255.0",
+      "8",
+      "256",
+      "254"
+    ],
+    [
+      "/26",
+      "255.255.255.192",
+      "6",
+      "64",
+      "62"
+    ],
+    [
+      "/28",
+      "255.255.255.240",
+      "4",
+      "16",
+      "14"
+    ],
+    [
+      "/29",
+      "255.255.255.248",
+      "3",
+      "8",
+      "6"
+    ],
+    [
+      "/30",
+      "255.255.255.252",
+      "2",
+      "4",
+      "2"
+    ]
+  ],
+  "teori_2_extra": "Penting untuk diingat bahwa setiap subnet akan selalu memiliki dua alamat IP yang tidak dapat digunakan sebagai alamat host, yaitu Network Address (alamat pertama dalam subnet yang semua bit host-nya bernilai nol) dan Broadcast Address (alamat terakhir dalam subnet yang semua bit host-nya bernilai satu). Network Address digunakan untuk mengidentifikasi subnet secara keseluruhan, sementara Broadcast Address digunakan untuk mengirim pesan ke semua perangkat dalam subnet tersebut. Oleh karena itu, jumlah host yang 'usable' atau dapat dialokasikan ke perangkat akhir selalu dua kurangnya dari total alamat IP yang tersedia dalam subnet.",
+  "topologi_desc": "Topologi jaringan yang akan dibangun terdiri dari satu buah Router Cisco 1941, satu buah Switch Cisco 2960, dan dua buah End Device (PC0 dan PC1). Router R1 akan berfungsi sebagai gateway dan penghubung antar subnet (meskipun pada praktikum ini kita fokus pada satu subnet). Switch SW1 akan menghubungkan R1 dengan PC0 dan PC1. Koneksi fisik dilakukan sebagai berikut: Router R1 pada interface GigabitEthernet0/0 akan terhubung ke Switch SW1 pada interface FastEthernet0/1. PC0 akan terhubung ke Switch SW1 pada interface FastEthernet0/2. PC1 akan terhubung ke Switch SW1 pada interface FastEthernet0/3. Semua koneksi menggunakan kabel Straight-Through Ethernet.",
+  "addressing_table": [
+    [
+      "Perangkat",
+      "Interface",
+      "IP Address",
+      "Subnet Mask",
+      "Default Gateway"
+    ],
+    [
+      "PC0",
+      "FastEthernet0",
+      "192.168.10.10",
+      "255.255.255.224",
+      "192.168.10.1"
+    ],
+    [
+      "PC1",
+      "FastEthernet0",
+      "192.168.10.11",
+      "255.255.255.224",
+      "192.168.10.1"
+    ],
+    [
+      "Router1 (R1)",
+      "GigabitEthernet0/0",
+      "192.168.10.1",
+      "255.255.255.224",
+      "N/A"
+    ],
+    [
+      "Switch1 (SW1)",
+      "VLAN 1 (Management)",
+      "192.168.10.2",
+      "255.255.255.224",
+      "192.168.10.1"
+    ]
+  ],
+  "skenario_desc": "Anda adalah seorang Network Engineer muda yang ditugaskan di sebuah kantor kecil dengan kebutuhan untuk menampung sekitar 25-30 perangkat di satu divisi. Anda diberikan blok alamat IP 192.168.10.0/24. Mengingat kebutuhan efisiensi dan potensi pertumbuhan di masa depan, manajemen meminta agar Anda mengalokasikan subnet yang tepat untuk divisi ini, bukan menggunakan seluruh /24. Oleh karena itu, Anda memutuskan untuk menggunakan subnetting CIDR untuk mendapatkan jumlah host yang optimal.<br/><br/>Dalam skenario ini, Anda akan mengimplementasikan subnet 192.168.10.0 dengan prefix yang sesuai untuk menampung sekitar 25-30 host, kemudian mengonfigurasi perangkat router sebagai gateway dan dua PC sebagai representasi host di divisi tersebut. Anda harus mampu menghitung Network ID, Broadcast ID, dan rentang host yang tersedia dari subnet yang Anda pilih, serta memastikan semua perangkat dapat berkomunikasi satu sama lain dan dengan gateway mereka. Keberhasilan implementasi akan diukur dari kemampuan perangkat untuk melakukan ping dan memverifikasi konfigurasi IP.",
+  "langkah_kerja": [
+    "<b>Langkah 1: Perencanaan Subnetting</b><br/>Dengan Network ID 192.168.10.0/24 dan kebutuhan 25-30 host, tentukan prefix CIDR yang paling efisien. Hitung Network Address, Broadcast Address, dan rentang Host Usable dari subnet yang Anda pilih. (Petunjuk: /27 menyediakan 30 host usable).",
+    "<b>Langkah 2: Membangun Topologi Fisik di Cisco Packet Tracer</b><br/>Tempatkan Router Cisco 1941, Switch Cisco 2960, dan dua End Device (PC0 & PC1) di area kerja. Hubungkan Router R1 (Gig0/0) ke Switch SW1 (Fa0/1) menggunakan kabel Straight-Through. Hubungkan PC0 (Fa0) ke SW1 (Fa0/2) dan PC1 (Fa0) ke SW1 (Fa0/3) menggunakan kabel Straight-Through.",
+    "<b>Langkah 3: Konfigurasi Alamat IP pada PC0 dan PC1</b><br/>Klik pada PC0, pilih tab 'Desktop', lalu 'IP Configuration'. Masukkan IP Address, Subnet Mask, dan Default Gateway sesuai Addressing Table. Ulangi untuk PC1.",
+    "<b>Langkah 4: Konfigurasi Dasar Router R1</b><br/>Klik pada Router R1, pilih tab 'CLI'. Masuk ke mode konfigurasi global (`enable`, `configure terminal`). Berikan hostname (`hostname R1`) dan atur password konsol jika diinginkan (`line console 0`, `password cisco`, `login`).",
+    "<b>Langkah 5: Konfigurasi Interface GigabitEthernet0/0 pada R1</b><br/>Masuk ke mode konfigurasi interface (`interface GigabitEthernet0/0`). Tetapkan alamat IP dan Subnet Mask (`ip address 192.168.10.1 255.255.255.224`). Aktifkan interface (`no shutdown`). Verifikasi status interface (`do show ip interface brief`).",
+    "<b>Langkah 6: Konfigurasi Alamat IP Manajemen pada Switch SW1 (Opsional, Namun Direkomendasikan)</b><br/>Klik pada Switch SW1, pilih tab 'CLI'. Masuk ke mode konfigurasi global. Berikan hostname (`hostname SW1`). Masuk ke interface VLAN 1 (`interface vlan 1`). Tetapkan alamat IP dan Subnet Mask (`ip address 192.168.10.2 255.255.255.224`). Aktifkan interface (`no shutdown`). Tetapkan Default Gateway untuk Switch (`ip default-gateway 192.168.10.1`). Verifikasi status interface (`do show ip interface brief`).",
+    "<b>Langkah 7: Verifikasi Konfigurasi IP</b><br/>Dari PC0 atau PC1, buka 'Command Prompt' dan ketik `ipconfig`. Pastikan IP Address, Subnet Mask, dan Default Gateway sudah benar. Pada Router R1, gunakan perintah `show ip interface brief` dan `show running-config` untuk memverifikasi konfigurasi.",
+    "<b>Langkah 8: Uji Konektivitas Antar Perangkat</b><br/>Dari PC0, lakukan ping ke PC1, ke IP manajemen SW1, dan ke Default Gateway (R1 Gig0/0). Ulangi pengujian dari PC1. Pastikan semua ping berhasil.",
+    "<b>Langkah 9: Dokumentasi Hasil Praktikum</b><br/>Catat semua alamat IP yang digunakan, hasil perhitungan subnetting, dan output verifikasi `ping` serta `show` command."
+  ],
+  "commands": "Berikut adalah contoh baris perintah Cisco IOS untuk Router R1 dan Switch SW1, serta perintah di End Device:\n\n# --- Konfigurasi Router R1 ---\nR1#configure terminal\nR1(config)#hostname R1\nR1(config)#interface GigabitEthernet0/0\nR1(config-if)#ip address 192.168.10.1 255.255.255.224\nR1(config-if)#no shutdown\nR1(config-if)#description KONEKSI_KE_LAN_DIVISI_A\nR1(config-if)#exit\nR1(config)#line console 0\nR1(config-line)#password cisco\nR1(config-line)#login\nR1(config-line)#exit\nR1(config)#line vty 0 4\nR1(config-line)#password cisco\nR1(config-line)#login\nR1(config-line)#exit\nR1(config)#enable secret class\nR1(config)#banner motd #WELCOME TO R1. AUTHORIZED ACCESS ONLY!#\nR1(config)#do show ip interface brief\nR1(config)#do show running-config\nR1(config)#end\nR1#copy running-config startup-config\n\n# --- Konfigurasi Switch SW1 (Management VLAN) ---\nSW1#configure terminal\nSW1(config)#hostname SW1\nSW1(config)#interface Vlan1\nSW1(config-if)#ip address 192.168.10.2 255.255.255.224\nSW1(config-if)#no shutdown\nSW1(config-if)#description MANAGEMENT_VLAN_DIVISI_A\nSW1(config-if)#exit\nSW1(config)#ip default-gateway 192.168.10.1\nSW1(config)#line console 0\nSW1(config-line)#password cisco\nSW1(config-line)#login\nSW1(config-line)#exit\nSW1(config)#line vty 0 15\nSW1(config-line)#password cisco\nSW1(config-line)#login\nSW1(config-line)#exit\nSW1(config)#enable secret class\nSW1(config)#do show ip interface brief\nSW1(config)#do show running-config\nSW1(config)#end\nSW1#copy running-config startup-config\n\n# --- Verifikasi di PC (Command Prompt) ---\nC:\\Users\\PC0>ipconfig\nC:\\Users\\PC0>ping 192.168.10.11\nC:\\Users\\PC0>ping 192.168.10.2\nC:\\Users\\PC0>ping 192.168.10.1\n",
+  "uji_coba_text": "Pengujian konektivitas adalah langkah krusial untuk memverifikasi keberhasilan implementasi subnetting dan konfigurasi IP. Setelah semua perangkat dikonfigurasi, gunakan utilitas 'ping' dari Command Prompt pada PC0 dan PC1. Lakukan ping secara berurutan ke alamat IP PC lain dalam subnet yang sama, ke alamat IP manajemen switch, dan ke alamat IP interface router yang berfungsi sebagai default gateway. Respon 'Reply from' menunjukkan koneksi berhasil, sementara 'Request timed out' atau 'Destination Host Unreachable' mengindikasikan adanya masalah. Selain itu, gunakan perintah `show ip interface brief` pada router dan switch untuk memastikan status interface 'up/up' dan alamat IP telah terpasang dengan benar. Perhatikan waktu respon (latency) dan jumlah paket yang hilang (loss rate); nilai yang tinggi atau adanya kehilangan paket dapat menunjukkan masalah kualitas jaringan atau konfigurasi.",
+  "uji_coba_cmd": "C:\\Users\\PC0>ping 192.168.10.11\n\nPinging 192.168.10.11 with 32 bytes of data:\nReply from 192.168.10.11: bytes=32 time<1ms TTL=128\nReply from 192.168.10.11: bytes=32 time<1ms TTL=128\nReply from 192.168.10.11: bytes=32 time<1ms TTL=128\nReply from 192.168.10.11: bytes=32 time<1ms TTL=128\n\nPing statistics for 192.168.10.11:\n    Packets: Sent = 4, Received = 4, Lost = 0 (0% loss),\nApproximate round trip times in milli-seconds:\n    Minimum = 0ms, Maximum = 0ms, Average = 0ms\n\nC:\\Users\\PC0>ping 192.168.10.1\n\nPinging 192.168.10.1 with 32 bytes of data:\nReply from 192.168.10.1: bytes=32 time<1ms TTL=255\nReply from 192.168.10.1: bytes=32 time<1ms TTL=255\nReply from 192.168.10.1: bytes=32 time<1ms TTL=255\nReply from 192.168.10.1: bytes=32 time<1ms TTL=255\n\nPing statistics for 192.168.10.1:\n    Packets: Sent = 4, Received = 4, Lost = 0 (0% loss),\nApproximate round trip times in milli-seconds:\n    Minimum = 0ms, Maximum = 0ms, Average = 0ms",
+  "troubleshooting_table": [
+    [
+      "Gejala Masalah",
+      "Kemungkinan Penyebab",
+      "Tindakan Korektif"
+    ],
+    [
+      "Ping 'Request timed out' atau 'Destination Host Unreachable'",
+      "Kesalahan penulisan IP Address, Subnet Mask, atau Default Gateway pada perangkat sumber/tujuan. Kabel tidak terhubung dengan benar atau port tidak aktif (shutdown). Interface router/switch belum 'no shutdown'.",
+      "Periksa kembali konfigurasi IP di setiap perangkat, pastikan kabel terpasang dengan baik, dan verifikasi status interface menggunakan `show ip interface brief` pada CLI router/switch."
+    ],
+    [
+      "Tidak bisa ping ke perangkat di subnet yang sama",
+      "Subnet Mask yang salah atau tidak konsisten antar perangkat dalam satu subnet. Network ID perangkat berbeda.",
+      "Periksa Subnet Mask semua perangkat dan pastikan mereka berada dalam Network ID yang sama sesuai hasil perhitungan subnetting."
+    ],
+    [
+      "Tidak bisa ping ke Default Gateway",
+      "Alamat Default Gateway pada host salah, atau interface router yang terhubung ke subnet lokal belum dikonfigurasi IP atau belum diaktifkan.",
+      "Pastikan alamat Default Gateway di PC sudah menunjuk ke IP interface router. Verifikasi konfigurasi dan status interface router (GigabitEthernet0/0) menggunakan `show running-config` dan `show ip interface brief`."
+    ]
+  ],
+  "tugas_mandiri": "Sebagai kelanjutan dari praktikum ini, Anda diminta untuk mengembangkan topologi yang telah ada. Tambahkan satu divisi baru yang membutuhkan maksimal 10 host. Gunakan Network ID 192.168.10.0/24 yang sama, namun alokasikan subnet berikutnya yang tersedia setelah subnet yang digunakan di praktikum ini. Buat dua PC baru (PC2 dan PC3) untuk divisi tersebut dan hubungkan ke Router R1 melalui Switch SW2 (Switch baru). Konfigurasikan Router R1 agar dapat merutekan antar kedua subnet (divisi lama dan divisi baru). Hitung Network ID, Broadcast ID, dan Usable Host Range untuk subnet divisi baru. Lakukan konfigurasi IP pada PC2, PC3, interface router yang baru, dan IP manajemen SW2. Verifikasi konektivitas antar semua PC, termasuk antar divisi. Dokumentasikan hasil perhitungan, topologi, konfigurasi, dan hasil uji coba dalam bentuk laporan praktikum yang lengkap dan sistematis.",
+  "evaluasi_questions": [
+    "Jelaskan mengapa subnetting diperlukan dalam pengelolaan jaringan modern, khususnya di lingkungan IPv4, dan berikan contoh konkret manfaatnya.",
+    "Apabila Anda diberikan alamat IP 172.16.10.15/26, hitunglah Network Address, Broadcast Address, dan rentang alamat host yang dapat digunakan (Usable Host Range) untuk subnet tersebut.",
+    "Bagaimana notasi CIDR mempengaruhi jumlah host yang tersedia dalam sebuah subnet? Berikan perbandingan antara /24, /28, dan /30 dalam hal jumlah total alamat IP dan host usable.",
+    "Dalam konteks routing, mengapa Default Gateway harus berada dalam subnet yang sama dengan host? Jelaskan mekanisme paket yang meninggalkan subnet lokal menuju jaringan lain.",
+    "Identifikasi minimal tiga skenario di mana kesalahan perhitungan subnetting atau konfigurasi Subnet Mask yang tidak tepat dapat menyebabkan kegagalan komunikasi dalam jaringan, dan jelaskan langkah troubleshooting untuk masing-masing skenario tersebut."
+  ]
+}

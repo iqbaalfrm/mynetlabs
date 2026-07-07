@@ -79,9 +79,10 @@ class ChatbotController extends GetxController {
 
   Future<void> initTts() async {
     await _tts.setLanguage('id-ID');
-    await _tts.setSpeechRate(0.5);
+    await _tts.setSpeechRate(0.35);
     await _tts.setVolume(1.0);
-    await _tts.setPitch(1.0);
+    await _tts.setPitch(0.85);
+    await _tts.setVoice({'name': 'id-id-x-sfg#male_1-local', 'locale': 'id-ID'});
     _tts.setCompletionHandler(() {
       isSpeaking.value = false;
       speakingMessageId.value = '';
@@ -296,16 +297,16 @@ class ChatbotController extends GetxController {
       final r = await _api.getRiwayatChat();
       final list = r.data['data'] as List;
       if (list.isNotEmpty) {
-        messages.value = list.asMap().entries.map((e) {
-          final i = e.key;
-          final item = e.value;
-          return {
+        messages.clear();
+        for (var i = 0; i < list.length; i++) {
+          final item = list[i] as Map<String, dynamic>;
+          messages.add({
             'id': 'hist_$i',
             'sender': item['sender'],
             'pesan': item['pesan'],
             'sumber': item['sumber'],
-          };
-        }).toList();
+          });
+        }
         _scrollToBottom();
       }
     } catch (_) {}

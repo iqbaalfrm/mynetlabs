@@ -263,6 +263,12 @@ class ProfileView extends GetView<ProfileController> {
                       child: Column(
                         children: [
                           _buildActionTile(
+                            Icons.lock_outline,
+                            "Ganti Password",
+                            () => controller.gantiPassword(),
+                          ),
+                          const Divider(height: 1, indent: 56, color: NetlabsTheme.surface),
+                          _buildActionTile(
                             Icons.shield_outlined,
                             "Kebijakan Privasi",
                             () {},

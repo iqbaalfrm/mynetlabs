@@ -10,18 +10,14 @@
         <a href="{{ route('admin.materi.show', $p->id) }}" class="btn btn-outline-primary btn-sm">
           <i class="ti-eye"></i> Detail
         </a>
-        <div>
-          <a href="{{ route('admin.materi.edit', $p->id) }}" class="btn btn-outline-secondary btn-sm">
-            <i class="ti-pencil"></i>
-          </a>
-          <form action="{{ route('admin.materi.destroy', $p->id) }}" method="POST" class="d-inline" onsubmit="return confirm('Hapus pertemuan ini?')">
-            @csrf
-            @method('DELETE')
-            <button class="btn btn-outline-danger btn-sm">
-              <i class="ti-trash"></i>
-            </button>
-          </form>
-        </div>
+         <div>
+           <a href="{{ route('admin.materi.edit', $p->id) }}" class="btn btn-outline-secondary btn-sm">
+             <i class="ti-pencil"></i>
+           </a>
+           <button class="btn btn-outline-danger btn-sm" onclick="deletePertemuan({{ $p->id }}, '{{ addslashes($p->judul) }}')">
+             <i class="ti-trash"></i>
+           </button>
+         </div>
       </div>
     </div>
   </div>

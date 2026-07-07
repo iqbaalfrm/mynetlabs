@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import '../../../data/providers/api_provider.dart';
@@ -37,6 +38,15 @@ class HomeController extends GetxController {
     studentClass.value = GetStorage().read('kelas') ?? '-';
     updateGreeting();
     loadDashboard();
+    _checkPasswordDefault();
+  }
+
+  void _checkPasswordDefault() {
+    final box = GetStorage();
+    final isDefault = box.read('password_is_default') ?? false;
+    if (isDefault == true) {
+      Future.delayed(const Duration(milliseconds: 800), () => Get.toNamed(Routes.CHANGE_PASSWORD));
+    }
   }
 
   void updateGreeting() {
@@ -96,8 +106,20 @@ class HomeController extends GetxController {
     try {
       final r = await _api.getPertemuan();
       final d = r.data['data'];
-      final s1 = (d['1'] as List).map((e) => Map<String, dynamic>.from(e)).toList();
-      final s2 = (d['2'] as List).map((e) => Map<String, dynamic>.from(e)).toList();
+      List<Map<String, dynamic>> s1 = [];
+      List<Map<String, dynamic>> s2 = [];
+      if (d is Map) {
+        if (d['1'] != null) {
+          s1 = (d['1'] as List).map((e) => Map<String, dynamic>.from(e)).toList();
+        }
+        if (d['2'] != null) {
+          s2 = (d['2'] as List).map((e) => Map<String, dynamic>.from(e)).toList();
+        }
+      } else if (d is List) {
+        final list = d.map((e) => Map<String, dynamic>.from(e)).toList();
+        s1 = list.where((e) => e['semester'].toString() == '1').toList();
+        s2 = list.where((e) => e['semester'].toString() == '2').toList();
+      }
       semuaPertemuan.value = [...s1, ...s2];
       pertemuanAktif.value = semuaPertemuan.where((p) => (p['progress'] as num) > 0 && (p['progress'] as num) < 1).toList();
       if (pertemuanAktif.isNotEmpty) {

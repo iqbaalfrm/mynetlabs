@@ -14,7 +14,7 @@
     - Flask (REST API)
     - Qdrant (Vector Database, persistent storage lokal)
     - Sentence Transformers (paraphrase-multilingual-MiniLM-L12-v2, dimensi 384)
-    - Google Gemini LLM (gemini-1.5-flash) — untuk generate jawaban & soal
+    - Google Gemini LLM (gemini-2.5-flash) — untuk generate jawaban & soal
     - PyMuPDF / fitz (Ekstraksi teks PDF)
     - LangChain Text Splitter (Chunking)
 
@@ -120,13 +120,13 @@ logger.info(f"   Total dokumen saat ini: {total_docs}")
 gemini_model = genai.GenerativeModel(
     model_name="gemini-2.5-flash",
     generation_config=genai.GenerationConfig(
-        temperature=0.3,      
+        temperature=0.3,
         top_p=0.85,
         top_k=40,
         max_output_tokens=2048,
     ),
 )
-logger.info("🤖 Model Gemini 'gemini-1.5-flash' berhasil diinisialisasi.")
+logger.info("🤖 Model Gemini 'gemini-2.5-flash' berhasil diinisialisasi.")
 
 # ─────────────────────────────────────────────────────────────────────────────
 # Flask App
@@ -333,14 +333,14 @@ def index_pdf():
         }), 200
 
     except FileNotFoundError as e:
-        logger.error(f"❌ File tidak ditemukan: {e}")
+        logger.error(f"File tidak ditemukan: {e}")
         return jsonify({
             "success": False,
             "message": f"File PDF tidak ditemukan di server: {str(e)}"
         }), 404
 
     except Exception as e:
-        logger.exception(f"❌ Error saat indexing PDF: {e}")
+        logger.exception(f"Error saat indexing PDF: {e}")
         return jsonify({
             "success": False,
             "message": f"Terjadi kesalahan internal saat memproses PDF: {str(e)}"
@@ -354,14 +354,16 @@ def index_pdf():
 # System Prompt ketat untuk NetLabs AI Tutor
 SYSTEM_PROMPT = """Kamu adalah NetLabs AI Tutor, asisten cerdas untuk pembelajaran Jaringan Komputer di tingkat SMK.
 
-ATURAN KETAT YANG WAJIB DIPATUHI:
-1. Jawab pertanyaan siswa HANYA berdasarkan konteks dokumen praktikum jaringan komputer yang disediakan di bawah ini.
+ATURAN KETAT:
+1. Jawab pertanyaan siswa HANYA berdasarkan konteks dokumen praktikum jaringan komputer yang disediakan di bawah.
 2. JANGAN pernah berhalusinasi atau memberikan jawaban di luar konteks materi bab pertemuan ini.
 3. Jika informasi yang ditanyakan TIDAK ADA dalam konteks dokumen, sampaikan dengan jujur bahwa materi tersebut tidak tersedia di modul bab pertemuan ini.
 4. Gunakan bahasa Indonesia yang formal, jelas, dan mudah dipahami oleh siswa SMK.
 5. Jika memungkinkan, berikan contoh praktis atau langkah-langkah yang terstruktur.
-6. Gunakan format yang rapi: gunakan poin-poin, penomoran, atau tabel jika diperlukan.
+6. Gunakan format yang rapi dengan poin-poin atau penomoran.
 7. Sertakan istilah teknis jaringan komputer yang relevan beserta penjelasan singkatnya.
+8. JANGAN gunakan markdown bold (**) atau formatting khusus dalam jawaban. Gunakan teks biasa saja.
+9. JANGAN gunakan asterisk (*) untuk bullet points. Gunakan format: "1. " atau "- " saja.
 
 KONTEKS DOKUMEN MODUL PERTEMUAN:
 ---

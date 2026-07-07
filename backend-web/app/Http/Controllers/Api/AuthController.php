@@ -74,13 +74,44 @@ class AuthController extends Controller
                 'nama' => $user->nama,
                 'username' => $user->username,
                 'role' => $user->role,
-                'kelas' => $user->kelas
+                'kelas' => $user->kelas,
+                'password_is_default' => is_null($user->password_set_at),
             ],
             'token' => $token
         ], 200);
     }
 
-    // 3. API LOGOUT (Menghapus Token)
+    // 3. API GANTI PASSWORD
+    public function changePassword(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'password_lama' => 'required|string',
+            'password_baru' => 'required|string|min:6',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 422);
+        }
+
+        $user = $request->user();
+
+        if (!Hash::check($request->password_lama, $user->password)) {
+            return response()->json([
+                'message' => 'Password lama tidak sesuai.'
+            ], 401);
+        }
+
+        $user->password = Hash::make($request->password_baru);
+        $user->password_set_at = now();
+        $user->save();
+
+        return response()->json([
+            'message' => 'Password berhasil diubah.',
+            'password_is_default' => false,
+        ], 200);
+    }
+
+    // 4. API LOGOUT (Menghapus Token)
     public function logout(Request $request)
     {
         // Hapus token yang sedang digunakan saat ini

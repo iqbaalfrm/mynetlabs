@@ -91,8 +91,6 @@ class QuizController extends GetxController {
   }
 
   void nextQuestion() {
-    if (selectedJawaban.value.isEmpty) return;
-
     // Confirm dialog before submitting the last question
     if (currentQuestionIndex.value >= daftarSoal.length - 1) {
       _showSubmitConfirm();
@@ -145,6 +143,18 @@ class QuizController extends GetxController {
       isQuizFinished.value = true;
       return;
     }
+    // Hitung jawaban benar dari data soal lokal (kunci ada di field 'kunci')
+    // ponytail: backend tidak mengirim kunci via getSoalKuis, jadi fallback
+    // ini hanya akurat jika soal punya field kunci_jawaban lokal.
+    int benar = 0;
+    for (final soal in daftarSoal) {
+      final soalId = soal['id'] as int;
+      final jawab = _jawabanSiswa[soalId];
+      if (jawab != null && jawab == soal['kunci_jawaban']) {
+        benar++;
+      }
+    }
+    _jumlahBenar.value = benar;
     nilaiAkhir.value = (_jumlahBenar.value / daftarSoal.length) * 100;
     if (nilaiAkhir.value == 100) {
       rekomendasiAi.value =

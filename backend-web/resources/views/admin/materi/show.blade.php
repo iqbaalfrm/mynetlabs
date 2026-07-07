@@ -10,6 +10,8 @@
   .status-processing { color: #3B82F6; }
   .status-success { color: #10B981; }
   .status-failed { color: #EF4444; }
+  .pdf-viewer-modal .modal-dialog { max-width: 90vw; }
+  .pdf-viewer-modal .modal-body { height: 70vh; }
 </style>
 @endpush
 
@@ -92,10 +94,9 @@
                   </div>
                   <div>
                     <a href="{{ route('admin.topik.edit', $topik->id) }}" class="btn btn-outline-secondary btn-sm"><i class="ti-pencil"></i></a>
-                    <form action="{{ route('admin.topik.destroy', $topik->id) }}" method="POST" class="d-inline" onsubmit="return confirm('Hapus topik ini?')">
-                      @csrf @method('DELETE')
-                      <button class="btn btn-outline-danger btn-sm"><i class="ti-trash"></i></button>
-                    </form>
+                    <button class="btn btn-outline-danger btn-sm" onclick="deleteTopik({{ $topik->id }}, '{{ addslashes($topik->judul) }}')">
+                      <i class="ti-trash"></i>
+                    </button>
                   </div>
                 </div>
                 <p class="text-muted small mt-1 mb-0">{{ Str::limit($topik->isi_materi, 150) }}</p>
@@ -140,14 +141,16 @@
                     </td>
                     <td>{{ $pdf->created_at->format('d M Y H:i') }}</td>
                     <td>
+                      <button class="btn btn-outline-primary btn-sm" onclick="viewPdf('{{ asset('storage/modul_pdf/'.$pdf->file_name) }}', '{{ $pdf->file_name }}')">
+                        <i class="ti-eye"></i> View
+                      </button>
                       <form action="{{ route('admin.pdf.reindex', $pdf->id) }}" method="POST" class="d-inline">
                         @csrf
                         <button class="btn btn-outline-info btn-sm"><i class="ti-reload"></i> Re-index</button>
                       </form>
-                      <form action="{{ route('admin.pdf.destroy', $pdf->id) }}" method="POST" class="d-inline" onsubmit="return confirm('Hapus PDF ini?')">
-                        @csrf @method('DELETE')
-                        <button class="btn btn-outline-danger btn-sm"><i class="ti-trash"></i></button>
-                      </form>
+                      <button class="btn btn-outline-danger btn-sm" onclick="deletePdf({{ $pdf->id }}, '{{ $pdf->file_name }}', {{ $pertemuan->id }})">
+                        <i class="ti-trash"></i>
+                      </button>
                     </td>
                   </tr>
                 @empty
@@ -181,10 +184,9 @@
                     </div>
                     <div>
                       <a href="{{ route('admin.quiz.edit', $soal->id) }}" class="btn btn-outline-secondary btn-sm"><i class="ti-pencil"></i></a>
-                      <form action="{{ route('admin.quiz.destroy', $soal->id) }}" method="POST" class="d-inline" onsubmit="return confirm('Hapus soal ini?')">
-                        @csrf @method('DELETE')
-                        <button class="btn btn-outline-danger btn-sm"><i class="ti-trash"></i></button>
-                      </form>
+                      <button class="btn btn-outline-danger btn-sm" onclick="deleteSoal({{ $soal->id }}, '{{ addslashes(Str::limit($soal->pertanyaan, 50)) }}')">
+                        <i class="ti-trash"></i>
+                      </button>
                     </div>
                   </div>
                   <small class="text-muted">A. {{ $soal->pilihan_a }} | B. {{ $soal->pilihan_b }} | C. {{ $soal->pilihan_c }} | D. {{ $soal->pilihan_d }}</small>
@@ -238,6 +240,27 @@
           <button type="submit" class="btn btn-primary">Simpan</button>
         </div>
       </form>
+    </div>
+  </div>
+</div>
+
+<!-- Modal PDF Viewer -->
+<div class="modal fade pdf-viewer-modal" id="modalPdfViewer" tabindex="-1">
+  <div class="modal-dialog modal-xl">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="pdfTitle">PDF Viewer</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <iframe id="pdfFrame" src="" frameborder="0" width="100%" height="100%"></iframe>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-light" data-bs-dismiss="modal">Tutup</button>
+        <a id="pdfDownload" href="" class="btn btn-primary" download>
+          <i class="ti-download"></i> Download
+        </a>
+      </div>
     </div>
   </div>
 </div>
@@ -313,26 +336,182 @@
     })
   })
 
+  // PDF Viewer Functions
+  function viewPdf(url, title) {
+    document.getElementById('pdfTitle').textContent = title;
+    document.getElementById('pdfFrame').src = url;
+    document.getElementById('pdfDownload').href = url;
+    var modal = new bootstrap.Modal(document.getElementById('modalPdfViewer'));
+    modal.show();
+  }
+
+  // Delete PDF with SweetAlert
+  function deletePdf(id, fileName, pertemuanId) {
+    Swal.fire({
+      title: 'Hapus PDF?',
+      text: 'Apakah Anda yakin ingin menghapus file "' + fileName + '"?',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#d33',
+      cancelButtonColor: '#6c757d',
+      confirmButtonText: 'Ya, hapus!',
+      cancelButtonText: 'Batal'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        fetch('{{ url('admin/pdf') }}/' + id, {
+          method: 'DELETE',
+          headers: {
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+            'Accept': 'application/json'
+          }
+        })
+        .then(res => res.json())
+        .then(data => {
+          if (data.success || data.redirect) {
+            Swal.fire('Terhapus!', 'PDF berhasil dihapus.', 'success');
+            location.reload();
+          } else {
+            Swal.fire('Gagal!', 'Terjadi kesalahan saat menghapus.', 'error');
+          }
+        })
+        .catch(err => {
+          Swal.fire('Error!', 'Terjadi kesalahan: ' + err.message, 'error');
+        });
+      }
+    });
+  }
+
+  // Delete Topik with SweetAlert
+  function deleteTopik(id, judul) {
+    Swal.fire({
+      title: 'Hapus Topik?',
+      text: 'Apakah Anda yakin ingin menghapus topik "' + judul + '"?',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#d33',
+      cancelButtonColor: '#6c757d',
+      confirmButtonText: 'Ya, hapus!',
+      cancelButtonText: 'Batal'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        fetch('{{ url('admin/topik') }}/' + id, {
+          method: 'DELETE',
+          headers: {
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+            'Accept': 'application/json'
+          }
+        })
+        .then(res => res.json())
+        .then(data => {
+          if (data.success || data.redirect) {
+            Swal.fire('Terhapus!', 'Topik berhasil dihapus.', 'success');
+            location.reload();
+          } else {
+            Swal.fire('Gagal!', 'Terjadi kesalahan saat menghapus.', 'error');
+          }
+        })
+        .catch(err => {
+          Swal.fire('Error!', 'Terjadi kesalahan: ' + err.message, 'error');
+        });
+      }
+    });
+  }
+
+  // Delete Soal with SweetAlert
+  function deleteSoal(id, pertanyaan) {
+    Swal.fire({
+      title: 'Hapus Soal?',
+      text: 'Apakah Anda yakin ingin menghapus soal "' + pertanyaan + '"?',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#d33',
+      cancelButtonColor: '#6c757d',
+      confirmButtonText: 'Ya, hapus!',
+      cancelButtonText: 'Batal'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        fetch('{{ url('admin/quiz') }}/' + id, {
+          method: 'DELETE',
+          headers: {
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+            'Accept': 'application/json'
+          }
+        })
+        .then(res => res.json())
+        .then(data => {
+          if (data.success || data.redirect) {
+            Swal.fire('Terhapus!', 'Soal berhasil dihapus.', 'success');
+            location.reload();
+          } else {
+            Swal.fire('Gagal!', 'Terjadi kesalahan saat menghapus.', 'error');
+          }
+        })
+        .catch(err => {
+          Swal.fire('Error!', 'Terjadi kesalahan: ' + err.message, 'error');
+        });
+      }
+    });
+  }
+
+  // Generate Soal with SweetAlert
   function generateSoal() {
-    if (!confirm('Generate soal kuis menggunakan AI? Ini akan memproses topik materi pertemuan ini.')) return;
-    fetch('{{ route('admin.quiz.generate', $pertemuan->id) }}', {
-      method: 'POST',
-      headers: {
-        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
-        'Accept': 'application/json'
+    Swal.fire({
+      title: 'Generate Soal AI',
+      html: `
+        <p class="mb-3">AI akan membuat soal pilihan ganda dari modul yang sudah di-index.</p>
+        <div class="d-flex align-items-center gap-2">
+          <label class="form-label mb-0">Jumlah Soal:</label>
+          <input id="swal-jumlah-soal" type="number" class="form-control" value="5" min="1" max="20" style="width:80px;display:inline-block;">
+        </div>
+      `,
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Generate!',
+      cancelButtonText: 'Batal',
+      preConfirm: () => {
+        const jumlah = document.getElementById('swal-jumlah-soal').value;
+        if (!jumlah || jumlah < 1 || jumlah > 20) {
+          Swal.showValidationMessage('Jumlah soal harus 1-20');
+          return false;
+        }
+        return parseInt(jumlah);
       }
-    })
-    .then(res => res.json())
-    .then(data => {
-      if (data.success) {
-        alert(data.message || 'Soal berhasil di-generate!');
-        location.reload();
-      } else {
-        alert('Gagal: ' + (data.message || 'Unknown error'));
+    }).then((result) => {
+      if (result.isConfirmed) {
+        Swal.fire({
+          title: 'Memproses...',
+          text: 'AI sedang generate soal, mohon tunggu...',
+          icon: 'info',
+          allowOutsideClick: false,
+          didOpen: () => {
+            Swal.showLoading();
+          }
+        });
+
+        fetch('{{ route('admin.quiz.generate', $pertemuan->id) }}', {
+          method: 'POST',
+          headers: {
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ jumlah_soal: result.value })
+        })
+        .then(res => res.json())
+        .then(data => {
+          if (data.success) {
+            Swal.fire('Sukses!', data.message || 'Soal berhasil di-generate!', 'success');
+            location.reload();
+          } else {
+            Swal.fire('Gagal!', data.message || 'Unknown error', 'error');
+          }
+        })
+        .catch(err => {
+          Swal.fire('Error!', err.message, 'error');
+        });
       }
-    })
-    .catch(err => {
-      alert('Error: ' + err.message);
     });
   }
 </script>

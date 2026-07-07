@@ -76,14 +76,17 @@ class ApiProvider extends GetxController {
   // ============ AUTH ============
 
   Future<Response> login(String username, String password) async {
-    return await _dio.post('/login', data: {
+    return _dio.post('/api/login', data: {
       'username': username,
       'password': password,
     });
   }
 
-  Future<Response> register(Map<String, dynamic> data) async {
-    return await _dio.post('/register', data: data);
+  Future<Response> changePassword(String passwordLama, String passwordBaru) async {
+    return _dio.post('/api/change-password', data: {
+      'password_lama': passwordLama,
+      'password_baru': passwordBaru,
+    });
   }
 
   Future<Response> logout() async {

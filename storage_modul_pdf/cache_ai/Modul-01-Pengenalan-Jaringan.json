@@ -1,0 +1,140 @@
+{
+  "judul": "Modul 1: Pengenalan Jaringan Komputer",
+  "subjudul": "Memahami Konsep Dasar, Sejarah ARPANET, Tipe, dan Topologi Jaringan Komputer",
+  "tujuan": [
+    "Setelah mempelajari modul ini, peserta didik diharapkan mampu menjelaskan secara komprehensif konsep dasar jaringan komputer, termasuk definisi, manfaat, dan komponen utamanya dengan bahasa yang lugas dan akurat.",
+    "Peserta didik mampu mengidentifikasi dan membedakan berbagai tipe jaringan berdasarkan skala geografisnya (PAN, LAN, MAN, WAN), serta menguraikan karakteristik unik dan implementasi praktis dari masing-masing tipe.",
+    "Peserta didik mampu menganalisis sejarah perkembangan jaringan komputer, khususnya peran krusial ARPANET sebagai cikal bakal internet modern, serta memahami evolusi teknologi jaringan hingga saat ini.",
+    "Peserta didik mampu mengidentifikasi dan menjelaskan karakteristik berbagai topologi jaringan (Bus, Star, Ring, Mesh) beserta kelebihan dan kekurangannya dalam konteks desain jaringan yang efisien dan andal.",
+    "Peserta didik mampu menerapkan konsep topologi jaringan dasar dalam simulasi menggunakan Cisco Packet Tracer, serta menguji konektivitas antar perangkat untuk memverifikasi pemahaman konfigurasi awal."
+  ],
+  "kompetensi_dasar": [
+    "KD 3.1 Menganalisis konsep dasar jaringan komputer, tipe-tipe jaringan, dan berbagai topologi jaringan.",
+    "KD 4.1 Mengidentifikasi dan mempraktikkan pengenalan perangkat jaringan serta menyimulasikan topologi jaringan dasar menggunakan perangkat lunak simulasi."
+  ],
+  "alat_bahan": [
+    "PC/Laptop dengan spesifikasi minimal Intel Core i3, RAM 4GB, HDD/SSD 250GB (direkomendasikan spesifikasi lebih tinggi untuk performa optimal)",
+    "Software Simulator Cisco Packet Tracer versi terbaru (misal: 8.2.1 atau yang lebih baru)",
+    "Modul ajar digital atau akses internet untuk referensi tambahan",
+    "Jaringan internet aktif (opsional, untuk unduh software atau materi tambahan)"
+  ],
+  "prasyarat": "Peserta didik diharapkan telah memiliki pemahaman dasar tentang pengoperasian sistem operasi komputer (Windows/Linux), manajemen file dan folder, serta mampu menginstal aplikasi perangkat lunak. Pemahaman awal tentang komponen hardware komputer akan sangat membantu dalam mengaitkan konsep jaringan dengan fisik perangkat.",
+  "teori_1": "Jaringan komputer merupakan kumpulan dua atau lebih perangkat komputasi yang saling terhubung untuk berbagi sumber daya (misalnya printer, file), data, dan aplikasi. Konsep ini lahir dari kebutuhan manusia untuk berkomunikasi dan berbagi informasi secara efisien, yang telah ada sejak era pra-digital. Pada hakikatnya, jaringan adalah sarana untuk <br/><b>memperluas kapabilitas individu menjadi kolektif</b>, sebuah prinsip yang mendasari berbagai inovasi teknologi.<br/><br/>Sejarah jaringan komputer tidak bisa dilepaskan dari proyek ambisius bernama <b>ARPANET (Advanced Research Projects Agency Network)</b>, yang didanai oleh Departemen Pertahanan Amerika Serikat pada akhir tahun 1960-an. Tujuan awalnya adalah menciptakan jaringan komunikasi yang tangguh dan terdistribusi, mampu beroperasi meskipun sebagian jaringannya rusak akibat serangan. Konsep <br/><i>packet switching</i>, yang memungkinkan data dipecah menjadi paket-paket kecil dan dikirim secara independen melalui jalur yang berbeda, merupakan inovasi fundamental ARPANET yang menjadi tulang punggung internet saat ini. ARPANET pertama kali beroperasi pada tahun 1969, menghubungkan empat universitas di Amerika Serikat, dan secara bertahap berkembang, membuka jalan bagi lahirnya protokol TCP/IP dan akhirnya, World Wide Web.<br/><br/>Dalam konteks akademis dan praktis, pemahaman mendalam tentang jaringan komputer mencakup berbagai aspek, mulai dari perangkat keras (seperti router, switch, kabel), perangkat lunak (sistem operasi jaringan, protokol), hingga arsitektur dan topologi. Kemampuan untuk mendesain, mengimplementasikan, dan memelihara jaringan adalah keterampilan esensial bagi seorang teknisi komputer dan jaringan, yang membuka gerbang ke berbagai peluang karir di era digital.",
+  "teori_2_text": "Jaringan komputer dapat diklasifikasikan berdasarkan cakupan geografisnya, yang mana setiap tipe memiliki karakteristik, tujuan, dan implementasi yang berbeda. Klasifikasi ini sangat penting untuk dipahami agar kita dapat memilih arsitektur jaringan yang paling sesuai dengan kebutuhan dan skala organisasi, mulai dari lingkungan pribadi hingga skala global.<br/><br/>Pemilihan tipe jaringan yang tepat akan sangat berpengaruh terhadap performa, keamanan, biaya implementasi, dan kompleksitas pengelolaan. Sebagai seorang praktisi jaringan, kemampuan untuk menganalisis kebutuhan dan merekomendasikan tipe jaringan yang optimal adalah kompetensi kunci. Berikut adalah tabel yang merangkum berbagai tipe jaringan berdasarkan cakupan geografis:",
+  "teori_2_table": [
+    [
+      "Tipe Jaringan",
+      "Cakupan Geografis",
+      "Contoh Implementasi",
+      "Karakteristik Kunci"
+    ],
+    [
+      "PAN (Personal Area Network)",
+      "Beberapa meter (personal)",
+      "Bluetooth headset, USB tethering",
+      "Jaringan pribadi, kecepatan rendah, jarak pendek"
+    ],
+    [
+      "LAN (Local Area Network)",
+      "Satu gedung/area kecil",
+      "Jaringan kantor, rumah, sekolah",
+      "Kecepatan tinggi, kepemilikan privat, biaya relatif rendah"
+    ],
+    [
+      "MAN (Metropolitan Area Network)",
+      "Satu kota/kampus besar",
+      "Jaringan antar gedung dalam kota, ISP lokal",
+      "Menghubungkan beberapa LAN, kecepatan sedang-tinggi, membutuhkan lisensi"
+    ],
+    [
+      "WAN (Wide Area Network)",
+      "Antar kota, negara, benua",
+      "Internet, jaringan korporasi multinasional",
+      "Jarak sangat jauh, biaya tinggi, kecepatan bervariasi, teknologi kompleks"
+    ]
+  ],
+  "teori_2_extra": "Penting untuk dicatat bahwa batasan antara tipe jaringan ini bisa menjadi kabur seiring perkembangan teknologi, terutama dengan munculnya konsep SD-WAN (Software-Defined Wide Area Network) dan virtualisasi. Namun, pemahaman dasar mengenai PAN, LAN, MAN, dan WAN tetap krusial sebagai fondasi dalam merancang arsitektur jaringan yang solid. Perhatikan juga bahwa kecepatan dan biaya yang disebutkan bersifat relatif dan dapat berubah seiring inovasi teknologi serta kebijakan penyedia layanan.",
+  "topologi_desc": "Dalam praktikum ini, kita akan mengimplementasikan topologi Star sederhana. Topologi ini terdiri dari satu perangkat sentral (Switch) yang menghubungkan beberapa perangkat End Device (PC/Host). Kabel yang digunakan adalah Straight-Through Ethernet untuk menghubungkan PC ke Switch. Misalnya, PC1 terhubung ke port FastEthernet0/1 pada Switch1, dan PC2 terhubung ke FastEthernet0/2 pada Switch1. Topologi Star dikenal karena kemudahannya dalam penambahan perangkat baru dan isolasi masalah, karena kegagalan satu koneksi End Device tidak akan mempengaruhi jaringan secara keseluruhan.",
+  "addressing_table": [
+    [
+      "Perangkat",
+      "Interface",
+      "IP Address",
+      "Subnet Mask",
+      "Default Gateway"
+    ],
+    [
+      "PC1",
+      "FastEthernet0",
+      "192.168.10.10",
+      "255.255.255.0",
+      "192.168.10.1"
+    ],
+    [
+      "PC2",
+      "FastEthernet0",
+      "192.168.10.11",
+      "255.255.255.0",
+      "192.168.10.1"
+    ],
+    [
+      "Switch1",
+      "VLAN1 (Management)",
+      "192.168.10.2",
+      "255.255.255.0",
+      "N/A"
+    ],
+    [
+      "Router1 (Optional untuk Gateway)",
+      "GigabitEthernet0/0",
+      "192.168.10.1",
+      "255.255.255.0",
+      "N/A"
+    ]
+  ],
+  "skenario_desc": "Anda adalah seorang Network Engineer muda yang ditugaskan untuk membangun sebuah jaringan lokal sederhana di kantor baru PT. Jaya Abadi. Kantor tersebut baru saja pindah ke ruangan kecil dan membutuhkan konektivitas dasar untuk dua unit komputer karyawan agar bisa saling berbagi file dan mengakses printer jaringan di masa depan. Manajemen menginginkan jaringan yang mudah diimplementasikan, mudah dikelola, dan biaya awal yang efisien.<br/><br/>Oleh karena itu, Anda memutuskan untuk menggunakan topologi Star dengan satu switch sebagai pusat koneksi, yang merupakan pilihan ideal untuk skala kecil seperti ini. Tujuan utama praktikum ini adalah memastikan kedua komputer dapat berkomunikasi satu sama lain dengan baik. Nantinya, jika ada penambahan karyawan atau perangkat, sistem ini dapat dengan mudah diperluas tanpa perlu merombak seluruh infrastruktur, cukup menambahkan port pada switch atau switch baru jika diperlukan.",
+  "langkah_kerja": [
+    "Buka aplikasi Cisco Packet Tracer. Klik 'End Devices' di pojok kiri bawah, lalu seret dan letakkan dua buah 'PC' (PC1 dan PC2) ke area kerja.",
+    "Klik 'Network Devices' lalu pilih 'Switches'. Seret dan letakkan satu buah 'Switch' (Switch1 - 2960) ke area kerja.",
+    "Pilih ikon 'Connections' (gambar petir), lalu pilih kabel 'Copper Straight-Through' (garis hitam solid).",
+    "Hubungkan PC1 ke Switch1: Klik PC1, pilih 'FastEthernet0'. Klik Switch1, pilih 'FastEthernet0/1'. (Pastikan ikon kabel hijau).",
+    "Hubungkan PC2 ke Switch1: Klik PC2, pilih 'FastEthernet0'. Klik Switch1, pilih 'FastEthernet0/2'. (Pastikan ikon kabel hijau).",
+    "Konfigurasi IP Address pada PC1: Klik PC1, pilih tab 'Desktop', lalu 'IP Configuration'. Masukkan IP Address: 192.168.10.10, Subnet Mask: 255.255.255.0, Default Gateway: 192.168.10.1 (jika ada router, jika tidak, bisa dikosongkan untuk koneksi antar PC di LAN yang sama).",
+    "Konfigurasi IP Address pada PC2: Lakukan langkah serupa untuk PC2. Masukkan IP Address: 192.168.10.11, Subnet Mask: 255.255.255.0, Default Gateway: 192.168.10.1.",
+    "Verifikasi koneksi fisik: Pastikan semua indikator link pada kabel di Packet Tracer berwarna hijau, menandakan koneksi fisik sudah terbentuk dan aktif.",
+    "Uji konektivitas: Dari Command Prompt (PC1), ketik 'ping 192.168.10.11'. Amati hasilnya. Lakukan juga ping dari PC2 ke PC1."
+  ],
+  "commands": "# Konfigurasi IP Address pada PC1 (melalui GUI Desktop -> IP Configuration)\n# IP Address: 192.168.10.10\n# Subnet Mask: 255.255.255.0\n# Default Gateway: 192.168.10.1 (Jika ada Router, jika tidak tidak wajib diisi untuk koneksi LAN saja)\n\n# Konfigurasi IP Address pada PC2 (melalui GUI Desktop -> IP Configuration)\n# IP Address: 192.168.10.11\n# Subnet Mask: 255.255.255.0\n# Default Gateway: 192.168.10.1\n\n# Konfigurasi Dasar Switch (Optional, hanya untuk latihan CLI)\nSwitch>\nenable\nSwitch#configure terminal\nEnter configuration commands, one per line. End with CNTL/Z.\nSwitch(config)#hostname Switch-LAB\nSwitch-LAB(config)#interface vlan 1\n# Konfigurasi IP Management untuk Switch (agar bisa diakses dari jaringan)\nSwitch-LAB(config-if)#ip address 192.168.10.2 255.255.255.0\nSwitch-LAB(config-if)#no shutdown\nSwitch-LAB(config-if)#exit\nSwitch-LAB(config)#line vty 0 15\nSwitch-LAB(config-line)#password cisco\nSwitch-LAB(config-line)#login\nSwitch-LAB(config-line)#exit\nSwitch-LAB(config)#service password-encryption\nSwitch-LAB(config)#enable secret class\nSwitch-LAB(config)#exit\nSwitch-LAB#copy running-config startup-config\nDestination filename [startup-config]? \nBuilding configuration...\n[OK]\nSwitch-LAB#\n\n# Perintah untuk Uji Konektivitas (dari Command Prompt PC)\n# Untuk ping dari PC1 ke PC2:\nping 192.168.10.11\n\n# Untuk melihat konfigurasi IP pada PC:\nipconfig\n\n# Untuk melihat tabel ARP pada PC (address resolution protocol):\narp -a\n\n# Perintah verifikasi pada Switch (setelah login via console/telnet)\n# Melihat status interface:\nSwitch-LAB#show ip interface brief\n\n# Melihat MAC Address Table pada Switch:\nSwitch-LAB#show mac address-table\n\n# Melihat konfigurasi yang sedang berjalan:\nSwitch-LAB#show running-config",
+  "uji_coba_text": "Setelah semua konfigurasi IP Address pada perangkat PC dan koneksi fisik telah dibuat, langkah selanjutnya adalah melakukan pengujian konektivitas. Pengujian ini bertujuan untuk memastikan bahwa kedua perangkat End Device (PC1 dan PC2) dapat saling berkomunikasi di dalam jaringan yang telah dibangun. Utilitas paling dasar dan sering digunakan untuk menguji konektivitas pada jaringan IP adalah 'ping'. Ping akan mengirimkan paket data kecil (ICMP Echo Request) ke alamat IP tujuan dan menunggu balasan (ICMP Echo Reply). Analisis respons ping sangat penting: jika berhasil, menunjukkan koneksi end-to-end telah terbentuk; jika gagal, indikasikan masalah pada konfigurasi IP, kabel, atau perangkat jaringan.",
+  "uji_coba_cmd": "C:\\>ping 192.168.10.11\n\nPinging 192.168.10.11 with 32 bytes of data:\nReply from 192.168.10.11: bytes=32 time=1ms TTL=128\nReply from 192.168.10.11: bytes=32 time=1ms TTL=128\nReply from 192.168.10.11: bytes=32 time=1ms TTL=128\nReply from 192.168.10.11: bytes=32 time=1ms TTL=128\n\nPing statistics for 192.168.10.11:\n    Packets: Sent = 4, Received = 4, Lost = 0 (0% loss),\nApproximate round trip times in milli-seconds:\n    Minimum = 1ms, Maximum = 1ms, Average = 1ms\n\nC:\\>ping 127.0.0.1\n\nPinging 127.0.0.1 with 32 bytes of data:\nReply from 127.0.0.1: bytes=32 time<1ms TTL=128\nReply from 127.0.0.1: bytes=32 time<1ms TTL=128\nReply from 127.0.0.1: bytes=32 time<1ms TTL=128\nReply from 127.0.0.1: bytes=32 time<1ms TTL=128\n\nPing statistics for 127.0.0.1:\n    Packets: Sent = 4, Received = 4, Lost = 0 (0% loss),\nApproximate round trip times in milli-seconds:\n    Minimum = 0ms, Maximum = 0ms, Average = 0ms",
+  "troubleshooting_table": [
+    [
+      "Gejala Masalah",
+      "Kemungkinan Penyebab",
+      "Tindakan Korektif"
+    ],
+    [
+      "Ping 'Request timed out' atau 'Destination Host Unreachable'",
+      "Kesalahan konfigurasi IP Address/Subnet Mask, kabel tidak terhubung dengan benar, port switch mati/non-aktif",
+      "Periksa kembali IP Address dan Subnet Mask pada kedua PC. Pastikan kabel terpasang kuat dan lampu indikator link pada port switch/PC menyala hijau. Coba ganti port switch atau kabel."
+    ],
+    [
+      "Koneksi fisik (lampu indikator) tidak menyala hijau",
+      "Kabel rusak, jenis kabel salah (misal: Cross-Over untuk PC-Switch), port perangkat rusak, perangkat mati",
+      "Periksa jenis kabel (harus Straight-Through untuk PC ke Switch). Ganti kabel dengan yang baru. Pastikan perangkat (PC/Switch) dalam keadaan menyala."
+    ],
+    [
+      "Hanya bisa ping ke diri sendiri (loopback 127.0.0.1) tapi tidak ke perangkat lain",
+      "Konfigurasi IP Address salah, Subnet Mask salah, atau Default Gateway tidak diatur dengan benar",
+      "Verifikasi kembali IP Address dan Subnet Mask. Pastikan IP Address tujuan berada dalam segmen jaringan yang sama. Jika ada router, pastikan Default Gateway telah dikonfigurasi dengan benar pada PC."
+    ]
+  ],
+  "tugas_mandiri": "Sebagai kelanjutan dari praktikum ini, Anda ditugaskan untuk memperluas jaringan PT. Jaya Abadi. Tambahkan dua unit 'Laptop' baru (Laptop1 dan Laptop2) ke topologi yang sudah ada. Konfigurasikan Laptop1 dan Laptop2 dengan IP Address dari segmen jaringan yang berbeda (misal: 192.168.20.0/24). Tambahkan satu unit 'Router' (Router1 - 2911) ke topologi, lalu hubungkan Switch1 ke Router1 (misal: Switch1 FastEthernet0/24 ke Router1 GigabitEthernet0/0). Konfigurasikan Router1 agar dapat melakukan routing antar kedua segmen jaringan (192.168.10.0/24 dan 192.168.20.0/24). Pastikan semua perangkat dapat saling ping, termasuk dari PC ke Laptop, dan sebaliknya. Laporkan dalam bentuk laporan praktikum yang mencakup topologi, tabel pengalamatan, langkah-langkah konfigurasi, dan hasil uji konektivitas.",
+  "evaluasi_questions": [
+    "Jelaskan mengapa ARPANET dianggap sebagai cikal bakal internet modern, dan apa konsep inovatif utamanya yang masih relevan hingga saat ini?",
+    "Dalam skenario pembangunan jaringan kantor kecil dengan 10 komputer, jelaskan topologi apa yang paling cocok digunakan beserta alasan pemilihan dan identifikasi 2 (dua) kelebihan dan kekurangannya!",
+    "Seorang siswa mengkonfigurasi IP Address 192.168.10.5 dengan Subnet Mask 255.255.255.128. Jelaskan berapa jumlah host yang bisa ditampung dalam subnet tersebut dan alamat network serta broadcast-nya!",
+    "Mengapa dalam topologi Star, kegagalan satu koneksi End Device tidak akan melumpuhkan seluruh jaringan, namun kegagalan pada perangkat sentral (Switch) dapat mengakibatkan seluruh jaringan terganggu? Analisis perbedaan dampaknya!",
+    "Jika Anda diminta untuk membangun jaringan yang menghubungkan dua gedung berbeda di kota yang sama, tipe jaringan apa yang akan Anda pilih? Jelaskan alasan teknis pemilihan Anda, serta pertimbangkan faktor kecepatan, biaya, dan kompleksitas implementasinya!"
+  ]
+}

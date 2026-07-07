@@ -10,7 +10,6 @@ use Illuminate\Http\Request;
 
 class MateriController extends Controller
 {
-    // Index: tab semester 1 & 2
     public function index()
     {
         $pertemuanSemester1 = Pertemuan::where('semester', '1')->orderBy('nomor_urut')->get();
@@ -18,7 +17,6 @@ class MateriController extends Controller
         return view('admin.materi.index', compact('pertemuanSemester1', 'pertemuanSemester2'));
     }
 
-    // Detail pertemuan (tabs: topik, PDF, quiz)
     public function show($id)
     {
         $pertemuan = Pertemuan::with(['topikMateris' => fn($q) => $q->orderBy('urutan'), 'soalKuis', 'modulPdfs'])->findOrFail($id);
@@ -75,6 +73,6 @@ class MateriController extends Controller
         $pertemuan = Pertemuan::findOrFail($id);
         $pertemuan->delete();
 
-        return redirect()->route('admin.materi.index')->with('success', 'Pertemuan berhasil dihapus.');
+        return response()->json(['success' => true, 'message' => 'Pertemuan berhasil dihapus.']);
     }
 }

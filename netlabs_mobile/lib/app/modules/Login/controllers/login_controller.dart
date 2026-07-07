@@ -53,10 +53,11 @@ class LoginController extends GetxController {
 
         _auth.saveLoginData({
           'token': data['token'] as String,
-          'nis': user['nis'] ?? '',
+          'nis': user['username'] ?? '',
           'nama': user['nama'] ?? '',
           'kelas': user['kelas'] ?? '',
           'role': user['role'] ?? 'siswa',
+          'password_is_default': user['password_is_default'] ?? true,
         });
 
         isLoading.value = false;

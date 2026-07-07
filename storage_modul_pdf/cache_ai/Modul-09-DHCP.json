@@ -1,0 +1,138 @@
+{
+  "judul": "Modul 9: DHCP (Dynamic Host Configuration Protocol)",
+  "subjudul": "Implementasi dan Manajemen Alokasi IP Dinamis Menggunakan DHCP Server pada Router Cisco",
+  "tujuan": [
+    "Memahami konsep dasar alokasi IP dinamis dan mengenali manfaat signifikan penerapannya dalam lingkungan jaringan modern untuk efisiensi operasional dan mitigasi kesalahan konfigurasi.",
+    "Menganalisis secara mendalam tahapan proses DORA (Discover, Offer, Request, Acknowledge) sebagai fondasi komunikasi antara DHCP Client dan DHCP Server, termasuk jenis pesan dan metode transmisi pada setiap tahapnya.",
+    "Menguasai teknik dan perintah konfigurasi DHCP Server pada perangkat Router Cisco IOS, termasuk pembuatan pool alamat IP, definisi default gateway, DNS server, serta opsi konfigurasi lainnya.",
+    "Menerapkan mekanisme DHCP IP Exclusion secara tepat untuk mengalokasikan rentang alamat IP statis yang spesifik, memastikan alamat-alamat tersebut tidak didistribusikan secara dinamis kepada klien lain, misalnya untuk server atau perangkat infrastruktur.",
+    "Melakukan verifikasi dan troubleshooting terhadap konfigurasi DHCP Server yang telah diimplementasikan, menggunakan berbagai utilitas diagnostik dan perintah 'show' pada Router Cisco serta klien untuk memastikan fungsionalitas dan kinerja yang optimal."
+  ],
+  "kompetensi_dasar": [
+    "KD 3.10 Menganalisis konsep dan implementasi DHCP Server untuk otomatisasi pengalamatan IP pada jaringan lokal.",
+    "KD 4.10 Mengonfigurasikan DHCP Server pada perangkat jaringan (Router Cisco) dan melakukan pengujian fungsionalitasnya."
+  ],
+  "alat_bahan": [
+    "PC/Laptop dengan sistem operasi Windows 10/11 atau Linux, RAM minimal 4 GB, dan ruang penyimpanan bebas minimal 10 GB.",
+    "Software Simulator Cisco Packet Tracer versi 8.2 atau yang lebih baru, terinstal dengan baik.",
+    "Modul praktikum ini dan akses internet untuk referensi tambahan atau troubleshooting.",
+    "Koneksi jaringan internet (opsional, untuk memperbarui Packet Tracer atau mencari referensi)."
+  ],
+  "prasyarat": "Peserta didik diharapkan telah memiliki pemahaman dasar yang kuat mengenai konsep TCP/IP, model referensi OSI, subnetting IPv4, jenis-jenis pengalamatan IP (statis dan dinamis), serta dasar-dasar konfigurasi Command Line Interface (CLI) pada perangkat Router Cisco. Pemahaman tentang peran dan fungsi Router sebagai gateway serta Switch sebagai penghubung perangkat dalam LAN juga esensial sebelum mempelajari modul ini.",
+  "teori_1": "Dalam era komputasi modern, manajemen alamat IP menjadi salah satu aspek krusial dalam administrasi jaringan. Secara historis, konfigurasi alamat IP pada setiap perangkat klien dilakukan secara manual, sebuah proses yang tidak hanya memakan waktu tetapi juga sangat rentan terhadap kesalahan manusia, seperti duplikasi alamat IP atau kesalahan subnet mask. Untuk mengatasi tantangan ini, muncullah kebutuhan akan mekanisme otomatisasi. Cikal bakal alokasi IP dinamis ini adalah protokol BOOTP (Bootstrap Protocol) yang pertama kali diperkenalkan pada tahun 1985.<br/><br/>Seiring dengan perkembangan dan kebutuhan jaringan yang semakin kompleks, BOOTP berevolusi menjadi <b>DHCP (Dynamic Host Configuration Protocol)</b>, yang didefinisikan dalam RFC 2131 pada tahun 1997. DHCP adalah protokol standar yang digunakan untuk memberikan alamat IP dan informasi konfigurasi jaringan lainnya secara otomatis kepada perangkat klien dalam jaringan. Fungsi utama DHCP adalah mengelola kumpulan alamat IP (disebut 'pool') dan menyewakannya kepada klien untuk periode waktu tertentu (lease time). Hal ini memungkinkan alamat IP untuk digunakan kembali setelah masa sewanya berakhir atau perangkat klien tidak lagi aktif di jaringan.<br/><br/>Keunggulan DHCP terletak pada kemampuannya untuk menyederhanakan administrasi jaringan secara signifikan. Dengan DHCP, administrator tidak perlu lagi mengonfigurasi setiap perangkat secara manual, mengurangi kemungkinan kesalahan konfigurasi, dan memungkinkan penggunaan kembali alamat IP secara efisien. Selain alamat IP, DHCP juga dapat mendistribusikan informasi vital lainnya seperti subnet mask, default gateway, DNS server, hingga NTP server, memastikan setiap klien memiliki konfigurasi yang lengkap dan benar untuk berpartisipasi dalam jaringan.",
+  "teori_2_text": "Proses alokasi alamat IP dinamis oleh DHCP server kepada klien terjadi melalui serangkaian empat tahapan komunikasi yang dikenal dengan akronim <b>DORA (Discover, Offer, Request, Acknowledge)</b>. Setiap tahapan memiliki peran spesifik dan menggunakan jenis pesan DHCP yang berbeda untuk memastikan klien mendapatkan konfigurasi IP yang valid dan unik dari server.<br/><br/>Pemahaman mendalam tentang proses DORA sangat vital bagi network engineer untuk melakukan troubleshooting ketika terjadi kegagalan alokasi IP atau untuk menganalisis perilaku DHCP dalam jaringan. Tahapan ini dimulai ketika klien baru terhubung ke jaringan dan berkeinginan untuk mendapatkan alamat IP secara otomatis, hingga server secara resmi memberikan 'sewa' alamat IP tersebut kepada klien.",
+  "teori_2_table": [
+    [
+      "Tahap",
+      "Tipe Pesan DHCP",
+      "Sumber",
+      "Tujuan"
+    ],
+    [
+      "1. Discover",
+      "DHCPDISCOVER",
+      "DHCP Client (Source IP: 0.0.0.0)",
+      "Broadcast (Destination IP: 255.255.255.255)"
+    ],
+    [
+      "2. Offer",
+      "DHCPOFFER",
+      "DHCP Server (Source IP: Server IP)",
+      "Broadcast (Destination IP: 255.255.255.255)"
+    ],
+    [
+      "3. Request",
+      "DHCPREQUEST",
+      "DHCP Client (Source IP: 0.0.0.0 / Assigned IP)",
+      "Broadcast (Destination IP: 255.255.255.255)"
+    ],
+    [
+      "4. Acknowledge",
+      "DHCPACK",
+      "DHCP Server (Source IP: Server IP)",
+      "Unicast (Destination IP: Assigned IP)"
+    ]
+  ],
+  "teori_2_extra": "Penting untuk dicatat bahwa pada tahapan Discover, Offer, dan Request, komunikasi umumnya menggunakan paket broadcast (kecuali jika klien sudah memiliki alamat IP sementara dari proses sebelumnya). Ini karena klien belum memiliki alamat IP yang valid untuk berkomunikasi secara unicast dengan server. Jika DHCP Server berada pada subnet yang berbeda dari klien, <b>DHCP Relay Agent</b> (biasanya diimplementasikan pada router) diperlukan untuk meneruskan pesan broadcast DHCP ke server secara unicast. Selain itu, masa sewa (lease time) alamat IP yang diberikan oleh server sangat krusial; terlalu pendek dapat menyebabkan lalu lintas DHCP yang berlebihan, sedangkan terlalu panjang dapat mengakibatkan pemborosan alamat IP jika banyak perangkat sering berganti jaringan.",
+  "topologi_desc": "Topologi jaringan yang akan digunakan terdiri dari satu buah Router Cisco, satu buah Switch Layer 2, dan dua buah perangkat PC sebagai klien. Router Cisco (misal: 2911 atau 1941) akan berperan sebagai DHCP Server dan Default Gateway untuk jaringan lokal. Interface GigabitEthernet0/0 pada Router akan dihubungkan ke salah satu port FastEthernet pada Switch (misal: FastEthernet0/1) menggunakan kabel straight-through. Switch (misal: 2960) akan menjadi penghubung antara Router dengan PC klien. PC1 akan dihubungkan ke port FastEthernet0/2 pada Switch, dan PC2 akan dihubungkan ke port FastEthernet0/3 pada Switch, keduanya menggunakan kabel straight-through. Jaringan akan berada dalam segmen 192.168.10.0/24.",
+  "addressing_table": [
+    [
+      "Perangkat",
+      "Interface",
+      "IP Address",
+      "Subnet Mask",
+      "Default Gateway"
+    ],
+    [
+      "Router1",
+      "GigabitEthernet0/0",
+      "192.168.10.1",
+      "255.255.255.0",
+      "N/A"
+    ],
+    [
+      "PC1",
+      "FastEthernet0",
+      "DHCP",
+      "DHCP",
+      "192.168.10.1"
+    ],
+    [
+      "PC2",
+      "FastEthernet0",
+      "DHCP",
+      "DHCP",
+      "192.168.10.1"
+    ]
+  ],
+  "skenario_desc": "Anda adalah seorang Network Engineer yang bertanggung jawab atas implementasi infrastruktur jaringan di sebuah kantor cabang baru. Kantor cabang ini akan memiliki sekitar 50 workstation yang memerlukan akses jaringan. Untuk mempermudah proses administrasi dan menghindari kesalahan konfigurasi IP yang kerap terjadi pada konfigurasi manual, Anda memutuskan untuk mengimplementasikan DHCP Server pada router utama yang ada.<br/><br/>Selain workstation, terdapat beberapa perangkat krusial seperti Server Aplikasi dan Network Printer yang memerlukan alamat IP statis agar mudah diakses dan dikelola. Alamat IP untuk perangkat-perangkat ini telah dialokasikan pada rentang 192.168.10.2 hingga 192.168.10.10, serta alamat 192.168.10.254 untuk perangkat khusus lainnya. Tugas Anda adalah mengonfigurasi Router Cisco sebagai DHCP Server, memastikan semua workstation mendapatkan alamat IP secara otomatis dari pool yang ditentukan, dan yang terpenting, memastikan rentang alamat IP yang telah dialokasikan untuk perangkat statis tidak didistribusikan oleh DHCP Server kepada workstation.",
+  "langkah_kerja": [
+    "<b>Langkah 1: Membuat Topologi Jaringan.</b> Buka Cisco Packet Tracer dan buat topologi sesuai deskripsi di atas. Letakkan satu Router (misal: 2911), satu Switch (misal: 2960), dan dua PC (PC1, PC2). Hubungkan Router Gig0/0 ke Switch Fa0/1, Switch Fa0/2 ke PC1, dan Switch Fa0/3 ke PC2 menggunakan kabel Straight-Through. Pastikan semua koneksi hijau (link up).",
+    "<b>Langkah 2: Konfigurasi Interface Router.</b> Akses CLI Router1 dan konfigurasi alamat IP pada interface GigabitEthernet0/0 sebagai default gateway untuk segmen LAN. Pastikan interface diaktifkan.",
+    "<b>Langkah 3: Konfigurasi DHCP IP Exclusion.</b> Sebelum membuat DHCP pool, definisikan rentang alamat IP yang tidak boleh didistribusikan oleh DHCP Server (192.168.10.2 hingga 192.168.10.10, dan 192.168.10.254). Ini penting untuk perangkat yang membutuhkan IP statis.",
+    "<b>Langkah 4: Konfigurasi DHCP Pool.</b> Buat DHCP pool dengan nama yang deskriptif (misal: 'LAN_KANTOR') pada Router1. Tentukan network address dan subnet mask untuk pool tersebut, serta alamat default gateway (yang merupakan IP interface Router Gig0/0) dan DNS server (misal: 8.8.8.8).",
+    "<b>Langkah 5: Konfigurasi Klien DHCP.</b> Pada setiap PC (PC1 dan PC2), masuk ke Desktop > IP Configuration dan pilih opsi 'DHCP'. Amati apakah PC berhasil mendapatkan alamat IP secara otomatis.",
+    "<b>Langkah 6: Verifikasi Alokasi IP Klien.</b> Setelah PC berhasil mendapatkan IP, buka Command Prompt pada masing-masing PC dan jalankan perintah <code>ipconfig /all</code>. Periksa alamat IP, Subnet Mask, Default Gateway, dan DNS Server yang diterima, dan pastikan sesuai dengan konfigurasi DHCP Server.",
+    "<b>Langkah 7: Verifikasi DHCP Binding di Router.</b> Kembali ke CLI Router1 dan jalankan perintah <code>show ip dhcp binding</code> untuk melihat daftar alamat IP yang telah disewakan oleh DHCP Server kepada klien. Periksa apakah PC1 dan PC2 tercatat di sana.",
+    "<b>Langkah 8: Uji Konektivitas.</b> Dari PC1, lakukan ping ke alamat IP PC2, lalu ping ke default gateway (Router Gig0/0). Jika berhasil, coba ping ke alamat DNS server (8.8.8.8).",
+    "<b>Langkah 9: Verifikasi Exclusion.</b> Secara opsional, coba atur salah satu PC secara manual ke alamat IP dalam rentang eksklusi (misal 192.168.10.5). Walaupun tidak ada larangan untuk manual, DHCP Server tidak akan mengalokasikan alamat tersebut secara dinamis. Amati jika ada perubahan pada output <code>show ip dhcp binding</code>."
+  ],
+  "commands": "Berikut adalah contoh perintah CLI yang akan digunakan pada Router Cisco:\n```\nRouter> enable\nRouter# configure terminal\nRouter(config)# hostname R1\n\n# --- Konfigurasi Interface GigabitEthernet0/0 sebagai Gateway ---\nR1(config)# interface GigabitEthernet0/0\nR1(config-if)# ip address 192.168.10.1 255.255.255.0\nR1(config-if)# no shutdown\nR1(config-if)# description GATEWAY_LAN_KANTOR\nR1(config-if)# exit\n\n# --- Konfigurasi DHCP IP Exclusion (alamat yang tidak disewakan) ---\nR1(config)# ip dhcp excluded-address 192.168.10.2 192.168.10.10\nR1(config)# ip dhcp excluded-address 192.168.10.254\n\n# --- Konfigurasi DHCP Pool untuk Jaringan Lokal ---\nR1(config)# ip dhcp pool LAN_KANTOR\nR1(dhcp-config)# network 192.168.10.0 255.255.255.0\nR1(dhcp-config)# default-router 192.168.10.1\nR1(dhcp-config)# dns-server 8.8.8.8 8.8.4.4\nR1(dhcp-config)# lease 0 0 10  # Lease time 10 menit (format: hari jam menit)\nR1(dhcp-config)# exit\n\n# --- Verifikasi Konfigurasi DHCP ---\nR1(config)# do show running-config | section dhcp\nR1(config)# do show ip dhcp binding\nR1(config)# do show ip dhcp server statistics\n\n# --- Simpan Konfigurasi ---\nR1(config)# end\nR1# copy running-config startup-config\nDestination filename [startup-config]? [Enter]\n```",
+  "uji_coba_text": "Setelah semua konfigurasi DHCP Server dan klien selesai, langkah selanjutnya adalah melakukan pengujian konektivitas secara menyeluruh untuk memastikan semua komponen berfungsi sebagaimana mestinya. Dari sisi klien (PC1 dan PC2), gunakan utilitas `ipconfig /all` di Command Prompt untuk memverifikasi bahwa alamat IP, subnet mask, default gateway, dan DNS server telah diterima dengan benar dari DHCP Server. Pastikan alamat IP yang diterima berada di luar rentang eksklusi yang telah dikonfigurasi. Kemudian, lakukan pengujian konektivitas menggunakan perintah `ping`. Pertama, ping ke default gateway (alamat IP interface Router Gig0/0) untuk memastikan klien dapat berkomunikasi dengan router. Selanjutnya, ping ke alamat IP PC lain dalam jaringan yang sama untuk memverifikasi konektivitas antar klien. Jika jaringan memiliki akses internet, ping ke alamat DNS publik seperti 8.8.8.8 atau sebuah situs web untuk menguji resolusi nama dan konektivitas keluar. Dari sisi server (Router), gunakan perintah `show ip dhcp binding` untuk melihat daftar alamat IP yang telah disewakan beserta MAC address kliennya. Amati statusnya apakah 'Automatic' dan periksa apakah alamat-alamat tersebut tidak tumpang tindih dengan rentang IP yang dikecualikan. Analisis respons `ping`: 'Reply from...' menunjukkan konektivitas berhasil, sementara 'Request timed out' atau 'Destination Host Unreachable' mengindikasikan adanya masalah yang perlu diinvestigasi.",
+  "uji_coba_cmd": "Simulasi output terminal ketika pengujian sukses:\n\n<b>Pada PC Client (Command Prompt):</b>\n```\nC:\\Users\\User> ipconfig /all\n\nEthernet adapter Ethernet0:\n   Connection-specific DNS Suffix  . :\n   Description . . . . . . . . . . . : Intel(R) PRO/1000 MT Desktop Adapter\n   Physical Address. . . . . . . . . : 00-01-C9-4C-F2-72\n   DHCP Enabled. . . . . . . . . . . : Yes\n   Autoconfiguration Enabled . . . . : Yes\n   IPv4 Address. . . . . . . . . . . : 192.168.10.11(Preferred)\n   Subnet Mask . . . . . . . . . . . : 255.255.255.0\n   Default Gateway . . . . . . . . . : 192.168.10.1\n   DNS Servers . . . . . . . . . . . : 8.8.8.8\n                                       8.8.4.4\n   Lease Obtained. . . . . . . . . . : 26 September 2023 10:00:00\n   Lease Expires . . . . . . . . . . : 26 September 2023 10:10:00\n\nC:\\Users\\User> ping 192.168.10.1\n\nPinging 192.168.10.1 with 32 bytes of data:\nReply from 192.168.10.1: bytes=32 time<1ms TTL=255\nReply from 192.168.10.1: bytes=32 time<1ms TTL=255\nReply from 192.168.10.1: bytes=32 time<1ms TTL=255\nReply from 192.168.10.1: bytes=32 time<1ms TTL=255\n\nPing statistics for 192.168.10.1:\n    Packets: Sent = 4, Received = 4, Lost = 0 (0% loss),\nApproximate round trip times in milli-seconds:\n    Minimum = 0ms, Maximum = 0ms, Average = 0ms\n\nC:\\Users\\User> ping 192.168.10.88  # contoh ping ke PC lain\n\nPinging 192.168.10.88 with 32 bytes of data:\nReply from 192.168.10.88: bytes=32 time<1ms TTL=128\n...\n```\n<b>Pada Router Cisco (CLI):</b>\n```\nR1# show ip dhcp binding\nIP address        Hardware address        Lease expiration        Type\n192.168.10.11     0001.c94c.f272          Sep 26 2023 10:10 AM    Automatic\n192.168.10.12     0050.f2b3.c7d5          Sep 26 2023 10:10 AM    Automatic\n```",
+  "troubleshooting_table": [
+    [
+      "Gejala Masalah",
+      "Kemungkinan Penyebab",
+      "Tindakan Korektif"
+    ],
+    [
+      "Klien tidak mendapatkan alamat IP (mendapatkan IP APIPA: 169.254.x.x)",
+      "DHCP Server belum dikonfigurasi atau sedang down. Interface router yang terhubung ke LAN tidak aktif ('shutdown'). Kabel putus atau koneksi fisik bermasalah.",
+      "Periksa konfigurasi DHCP Server di router (`show running-config | section dhcp`). Pastikan interface router aktif (`no shutdown` pada interface yang bersangkutan). Verifikasi status fisik kabel dan port switch."
+    ],
+    [
+      "Klien mendapatkan IP dari DHCP, tetapi tidak bisa ping ke default gateway",
+      "Alamat IP default gateway yang dikonfigurasi pada DHCP pool salah. Interface router yang berfungsi sebagai gateway memiliki IP yang salah atau tidak aktif. Firewall pada router memblokir trafik ICMP.",
+      "Periksa perintah `default-router` dalam konfigurasi DHCP pool. Pastikan IP interface router sudah benar dan aktif (`show ip interface brief`). Periksa konfigurasi Access Control List (ACL) jika ada."
+    ],
+    [
+      "Klien mendapatkan alamat IP dalam rentang yang seharusnya telah dikecualikan (excluded)",
+      "Kesalahan dalam konfigurasi perintah `ip dhcp excluded-address`. DHCP pool overlapping dengan rentang excluded. DHCP server lain di jaringan yang tidak dikenal mendistribusikan IP.",
+      "Verifikasi perintah `ip dhcp excluded-address` apakah sudah benar dan ditempatkan sebelum deklarasi `ip dhcp pool`. Pastikan rentang `network` pada pool tidak menimpa excluded range. Lakukan pengecekan terhadap adanya DHCP server rogue."
+    ],
+    [
+      "Klien mendapatkan alamat IP, tetapi tidak bisa mengakses internet atau melakukan resolusi nama domain",
+      "DHCP Server tidak mengonfigurasi DNS server atau alamat DNS yang diberikan salah. Router tidak memiliki rute ke internet atau firewall memblokir DNS/HTTP.",
+      "Periksa perintah `dns-server` dalam konfigurasi DHCP pool. Pastikan router memiliki konektivitas ke internet dan DNS server yang terdaftar aktif serta dapat dijangkau. Periksa konfigurasi NAT dan ACL pada router."
+    ]
+  ],
+  "tugas_mandiri": "Sebagai bagian dari laporan praktikum, kembangkan topologi yang telah dibuat dengan menambahkan satu buah Switch lagi (Switch2) dan dua PC klien (PC3, PC4) di segmen jaringan yang berbeda (misal: 192.168.20.0/24). Lakukan konfigurasi VLAN pada Switch1 dan Switch2, serta konfigurasi 'Router on a Stick' pada Router1 untuk melayani kedua segmen VLAN tersebut. Buat DHCP pool baru untuk segmen 192.168.20.0/24 dengan eksklusi alamat IP yang berbeda (misal: 192.168.20.2 - 192.168.20.5). Pastikan semua klien di kedua segmen VLAN dapat memperoleh alamat IP secara dinamis dari Router1 dan dapat saling berkomunikasi. Tambahkan juga konfigurasi NTP server ke dalam DHCP pool yang sudah ada. Laporkan hasil konfigurasi, verifikasi, dan output dari `show` commands pada laporan praktikum Anda.",
+  "evaluasi_questions": [
+    "Jelaskan secara komprehensif perbedaan mendasar antara alokasi alamat IP statis dan dinamis. Dalam kondisi jaringan seperti apa DHCP menjadi pilihan yang lebih unggul dibandingkan konfigurasi IP statis?",
+    "Uraikan secara detail fungsi dan pentingnya setiap tahapan dalam proses DORA. Mengapa pesan DHCPDISCOVER dan DHCPOFFER menggunakan metode broadcast pada awalnya?",
+    "Apa saja keuntungan dan kerugian dari konfigurasi DHCP IP Exclusion? Berikan contoh skenario nyata di mana fitur ini mutlak diperlukan dalam sebuah jaringan perusahaan.",
+    "Andai kata Anda mengonfigurasi DHCP Server pada Router Cisco, namun klien tidak mendapatkan alamat IP dan terus berada pada status APIPA (Automatic Private IP Addressing). Sebutkan minimal tiga kemungkinan penyebab beserta langkah-langkah troubleshooting yang akan Anda lakukan.",
+    "Bagaimana peran 'lease time' dalam manajemen alamat IP dinamis oleh DHCP Server? Apa dampak yang mungkin terjadi jika 'lease time' disetel terlalu singkat atau terlalu panjang dalam sebuah lingkungan jaringan yang padat dan dinamis?"
+  ]
+}

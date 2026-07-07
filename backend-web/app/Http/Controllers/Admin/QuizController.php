@@ -63,7 +63,7 @@ class QuizController extends Controller
 
     public function generateByAI(Request $request, $pertemuan_id)
     {
-        $jumlahSoal = $request->input('jumlah_soal', 5);
+        $jumlahSoal = $request->json('jumlah_soal', $request->input('jumlah_soal', 5));
 
         try {
             $response = \Illuminate\Support\Facades\Http::timeout(120)->post('http://127.0.0.1:5050/generate-quiz', [

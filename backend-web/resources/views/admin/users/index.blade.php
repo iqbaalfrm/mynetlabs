@@ -9,9 +9,9 @@
       <div class="card-body">
         <div class="d-flex justify-content-between align-items-center mb-3">
           <h4 class="card-title mb-0">Kelola Users</h4>
-          <a href="{{ route('admin.users.create') }}" class="btn btn-primary btn-sm">
+          <button class="btn btn-primary btn-sm" onclick="openModalCreate()">
             <i class="ti-plus"></i> Tambah User
-          </a>
+          </button>
         </div>
 
         @if(session('success'))
@@ -74,13 +74,13 @@
                   </td>
                   <td>{{ $user->kelasRelation->nama_kelas ?? '-' }}</td>
                   <td>
-                    <a href="{{ route('admin.users.edit', $user->id) }}" class="btn btn-outline-secondary btn-sm">
-                      <i class="ti-pencil"></i>
-                    </a>
-                    <form action="{{ route('admin.users.destroy', $user->id) }}" method="POST" class="d-inline" onsubmit="return confirm('Hapus user ini?')">
-                      @csrf @method('DELETE')
-                      <button class="btn btn-outline-danger btn-sm"><i class="ti-trash"></i></button>
-                    </form>
+                     <button class="btn btn-outline-secondary btn-sm"
+                       onclick="openModalEdit({{ $user->id }}, '{{ addslashes($user->username) }}', '{{ addslashes($user->nama) }}', '{{ $user->role }}', {{ $user->kelas_id ?? 'null' }})">
+                       <i class="ti-pencil"></i>
+                     </button>
+                     <button class="btn btn-outline-danger btn-sm" onclick="deleteUser({{ $user->id }}, '{{ addslashes($user->nama) }}')">
+                       <i class="ti-trash"></i>
+                     </button>
                   </td>
                 </tr>
               @empty
@@ -90,13 +90,143 @@
               @endforelse
             </tbody>
           </table>
-        </div>
+         </div>
 
-        <div class="mt-3">
-          {{ $users->appends(request()->query())->links() }}
+         <div class="mt-3">
+           {{ $users->appends(request()->query())->links() }}
+         </div>
+       </div>
+     </div>
+   </div>
+ </div>
+
+<!-- Modal Create/Edit User -->
+<div class="modal fade" id="modalUser" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <form id="formUser" method="POST" action="" enctype="multipart/form-data">
+        @csrf
+        <input type="hidden" name="_method" id="formMethod" value="">
+        <div class="modal-header">
+          <h5 class="modal-title" id="modalTitle">Tambah User</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
         </div>
-      </div>
+        <div class="modal-body">
+          <div class="mb-3">
+            <label class="form-label">Username <span class="text-danger">*</span></label>
+            <input type="text" name="username" id="inputUsername" class="form-control" required>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Nama <span class="text-danger">*</span></label>
+            <input type="text" name="nama" id="inputNama" class="form-control" required>
+          </div>
+          <div class="mb-3">
+            <label class="form-label" id="labelPassword">Password <span class="text-danger">*</span></label>
+            <input type="password" name="password" id="inputPassword" class="form-control">
+            <small class="text-muted" id="passwordHint" style="display:none;">Kosongkan jika tidak ingin diubah</small>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Role <span class="text-danger">*</span></label>
+            <select name="role" id="inputRole" class="form-select" required>
+              <option value="">Pilih Role</option>
+              <option value="guru">Guru</option>
+              <option value="siswa">Siswa</option>
+            </select>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Kelas</label>
+            <select name="kelas_id" id="inputKelas" class="form-select">
+              <option value="">Tanpa Kelas</option>
+              @foreach($kelasList as $kelas)
+                <option value="{{ $kelas->id }}">{{ $kelas->nama_kelas }}</option>
+              @endforeach
+            </select>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Foto Profil</label>
+            <input type="file" name="foto_profil" class="form-control" accept="image/*">
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-light" data-bs-dismiss="modal">Batal</button>
+          <button type="submit" class="btn btn-primary" id="btnSubmit">Simpan</button>
+        </div>
+      </form>
     </div>
   </div>
 </div>
 @endsection
+
+@push('scripts')
+<script>
+  var modalUser = new bootstrap.Modal(document.getElementById('modalUser'));
+
+  function openModalCreate() {
+    document.getElementById('modalTitle').textContent = 'Tambah User';
+    document.getElementById('formUser').action = '{{ route('admin.users.store') }}';
+    document.getElementById('formMethod').value = 'POST';
+    document.getElementById('inputUsername').value = '';
+    document.getElementById('inputNama').value = '';
+    document.getElementById('inputPassword').value = '';
+    document.getElementById('inputPassword').required = true;
+    document.getElementById('labelPassword').innerHTML = 'Password <span class="text-danger">*</span>';
+    document.getElementById('passwordHint').style.display = 'none';
+    document.getElementById('inputRole').value = '';
+    document.getElementById('inputKelas').value = '';
+    document.getElementById('btnSubmit').textContent = 'Simpan';
+    modalUser.show();
+  }
+
+  function openModalEdit(id, username, nama, role, kelasId) {
+    document.getElementById('modalTitle').textContent = 'Edit User';
+    document.getElementById('formUser').action = '{{ url('admin/users') }}/' + id;
+    document.getElementById('formMethod').value = 'PUT';
+    document.getElementById('inputUsername').value = username;
+    document.getElementById('inputNama').value = nama;
+    document.getElementById('inputPassword').value = '';
+    document.getElementById('inputPassword').required = false;
+    document.getElementById('labelPassword').innerHTML = 'Password';
+    document.getElementById('passwordHint').style.display = 'block';
+    document.getElementById('inputRole').value = role;
+    document.getElementById('inputKelas').value = kelasId || '';
+    document.getElementById('btnSubmit').textContent = 'Update';
+    modalUser.show();
+  }
+
+  // Delete User with SweetAlert
+  function deleteUser(id, nama) {
+    Swal.fire({
+      title: 'Hapus User?',
+      text: 'Apakah Anda yakin ingin menghapus user "' + nama + '"?',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#d33',
+      cancelButtonColor: '#6c757d',
+      confirmButtonText: 'Ya, hapus!',
+      cancelButtonText: 'Batal'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        fetch('{{ url('admin/users') }}/' + id, {
+          method: 'DELETE',
+          headers: {
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+            'Accept': 'application/json'
+          }
+        })
+        .then(res => res.json())
+        .then(data => {
+          if (data.success) {
+            Swal.fire('Terhapus!', 'User berhasil dihapus.', 'success');
+            location.reload();
+          } else {
+            Swal.fire('Gagal!', data.message || 'Terjadi kesalahan saat menghapus.', 'error');
+          }
+        })
+        .catch(err => {
+          Swal.fire('Error!', 'Terjadi kesalahan: ' + err.message, 'error');
+        });
+      }
+    });
+  }
+</script>
+@endpush

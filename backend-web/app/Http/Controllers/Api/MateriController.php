@@ -17,32 +17,38 @@ class MateriController extends Controller
     {
         $siswa = $request->user();
 
+        $topikSelesaiIds = [];
+        if ($siswa && $siswa->role === 'siswa') {
+            $topikSelesaiIds = ProgressSiswa::where('siswa_id', $siswa->id)
+                ->where('is_completed', true)
+                ->pluck('topik_id')
+                ->toArray();
+        }
+
         $pertemuans = Pertemuan::orderBy('semester')
             ->orderBy('nomor_urut')
+            ->withCount('topikMateris as total_topik')
+            ->with(['modulPdfs' => fn($q) => $q->latest()->limit(1)])
             ->get();
 
-        $data = $pertemuans->map(function ($p) use ($siswa) {
-            // Hitung total topik pada pertemuan ini
-            $totalTopik = $p->topikMateris()->count();
+        $data = $pertemuans->map(function ($p) use ($siswa, $topikSelesaiIds) {
+            $totalTopik = $p->total_topik;
 
-            // Hitung topik yang sudah diselesaikan siswa (jika siswa login)
             $topikSelesai = 0;
             if ($siswa && $siswa->role === 'siswa') {
-                $topikSelesai = ProgressSiswa::where('siswa_id', $siswa->id)
-                    ->whereIn('topik_id', $p->topikMateris()->pluck('id'))
-                    ->where('is_completed', true)
+                $topikSelesai = $p->topikMateris()
+                    ->whereIn('id', $topikSelesaiIds)
                     ->count();
             }
 
             $progress = $totalTopik > 0 ? round($topikSelesai / $totalTopik, 2) : 0;
 
-            // Status indexing dari modul_pdf terbaru (untuk AI badge di mobile)
-            $latestModul = $p->modulPdfs()->latest()->first();
-            $statusIndexing = $latestModul?->status_indexing ?? 'pending';
+            $statusIndexing = $p->modulPdfs->first()?->status_indexing ?? 'pending';
 
             return [
                 'id' => $p->id,
                 'nomor' => $p->nomor_urut,
+                'urutan' => $p->nomor_urut,
                 'judul' => $p->judul,
                 'deskripsi' => $p->deskripsi,
                 'semester' => $p->semester,
@@ -54,15 +60,9 @@ class MateriController extends Controller
             ];
         });
 
-        // Kelompokkan berdasarkan semester untuk memudahkan tab di mobile
-        $grouped = [
-            '1' => $data->where('semester', '1')->values(),
-            '2' => $data->where('semester', '2')->values(),
-        ];
-
         return response()->json([
             'message' => 'Daftar pertemuan berhasil dimuat.',
-            'data' => $grouped,
+            'data' => $data,
         ], 200);
     }
 

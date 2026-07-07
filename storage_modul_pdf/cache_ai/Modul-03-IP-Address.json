@@ -1,0 +1,164 @@
+{
+  "judul": "Modul 3: Pengalamatan IPv4",
+  "subjudul": "Memahami Konsep Dasar, Struktur Bit, Pembagian Kelas, dan Perbedaan IP Privat & Publik dalam Jaringan Komputer",
+  "tujuan": [
+    "Mengidentifikasi dan menjelaskan secara komprehensif konsep dasar Internet Protocol (IP) Address sebagai identitas logis perangkat dalam jaringan.",
+    "Menganalisis struktur biner dan desimal dari alamat IPv4, termasuk representasi octet dan nilai bit untuk menentukan Network ID dan Host ID.",
+    "Mengklasifikasikan alamat IPv4 ke dalam kelas A, B, dan C berdasarkan rentang alamat, jumlah bit jaringan dan host, serta default subnet mask.",
+    "Membedakan secara tepat antara alamat IP Privat dan alamat IP Publik sesuai dengan standar RFC 1918 serta menguraikan fungsi dan implikasinya dalam arsitektur jaringan skala lokal dan global.",
+    "Merencanakan dan mengimplementasikan skema pengalamatan IPv4 pada perangkat jaringan (router, switch, host) menggunakan simulasi Cisco Packet Tracer untuk memastikan konektivitas antar perangkat."
+  ],
+  "kompetensi_dasar": [
+    "KD 3.1 Menganalisis konsep pengalamatan IPv4 dan IPv6.",
+    "KD 4.1 Mengonfigurasi pengalamatan IP pada jaringan komputer."
+  ],
+  "alat_bahan": [
+    "PC/Laptop dengan spesifikasi minimal Intel Core i3 (atau setara), RAM 4GB, dan sistem operasi Windows 10/11.",
+    "Software Simulator Cisco Packet Tracer versi terbaru (disarankan v8.2 atau lebih tinggi).",
+    "Modul Ajar Pengalamatan IPv4 dan akses internet untuk referensi tambahan.",
+    "Editor teks (Notepad++, VS Code) untuk mencatat konfigurasi."
+  ],
+  "prasyarat": "Siswa diharapkan telah memiliki pemahaman dasar mengenai topologi jaringan (Bus, Star, Ring, Mesh), fungsi perangkat jaringan (router, switch, hub, server, client), serta model referensi OSI/TCP-IP. Pemahaman dasar tentang sistem bilangan biner dan desimal juga sangat membantu dalam memahami struktur alamat IP.",
+  "teori_1": "Selamat datang, para calon Network Engineer masa depan! Di modul ini, kita akan menyelami jantung dari setiap komunikasi di jaringan internet, yaitu <b>IP Address (Internet Protocol Address)</b>. IP Address adalah label numerik yang ditetapkan untuk setiap perangkat (komputer, printer, router, switch, dsb.) yang terhubung ke jaringan komputer yang menggunakan protokol internet untuk komunikasi. Ibarat alamat rumah di dunia nyata, IP Address berfungsi sebagai identitas unik yang memungkinkan paket data menemukan tujuannya dengan tepat.<br/><br/>Sejarah IP Address dimulai dengan pengembangan protokol TCP/IP di era 1970-an, yang kemudian menjadi fondasi Internet modern. Versi yang paling umum kita gunakan saat ini adalah <b>IPv4 (Internet Protocol version 4)</b>. IPv4 adalah alamat 32-bit yang direpresentasikan dalam format desimal bertitik (dotted-decimal notation), seperti <code>192.168.1.1</code>. Setiap alamat IPv4 terdiri dari empat oktet (kelompok 8 bit) yang dipisahkan oleh titik. Setiap oktet dapat memiliki nilai dari 0 hingga 255.<br/><br/>Struktur 32-bit ini dibagi menjadi dua bagian utama: <b>Network ID</b> dan <b>Host ID</b>. Network ID mengidentifikasi jaringan tempat sebuah host berada, sedangkan Host ID mengidentifikasi host spesifik di dalam jaringan tersebut. Pembagian ini ditentukan oleh <b>Subnet Mask</b>, sebuah nilai 32-bit lain yang bekerja \"bersama\" dengan IP Address untuk menentukan bagian mana dari alamat yang merupakan Network ID dan mana yang merupakan Host ID. Misalnya, subnet mask <code>255.255.255.0</code> berarti tiga oktet pertama adalah Network ID dan oktet terakhir adalah Host ID. Memahami struktur bit ini adalah kunci untuk melakukan subnetting yang efisien dan mengoptimalkan penggunaan alamat IP di jaringan.",
+  "teori_2_text": "Untuk mempermudah pengelolaan dan alokasi alamat IP di awal pengembangan Internet, IPv4 diklasifikasikan menjadi beberapa kelas berdasarkan rentang oktet pertamanya. Klasifikasi ini, meskipun sekarang sebagian besar digantikan oleh <i>Classless Inter-Domain Routing (CIDR)</i>, masih fundamental untuk memahami konsep dasar subnetting dan rentang alamat. Terdapat lima kelas IP Address, yaitu Kelas A, B, C, D, dan E. Namun, dalam konteks jaringan komersial dan praktikum kita, fokus utama akan pada Kelas A, B, dan C yang dapat dialokasikan untuk host.<br/><br/>Selain klasifikasi kelas, penting juga untuk membedakan antara <b>IP Privat</b> dan <b>IP Publik</b>. Konsep ini diperkenalkan melalui <b>RFC 1918</b>, sebuah standar yang mendefinisikan rentang alamat IP tertentu yang dikhususkan untuk penggunaan di jaringan lokal (privat) dan tidak dapat dirouting secara langsung di Internet global. Tujuannya adalah untuk menghemat alamat IP Publik yang semakin menipis dan menyediakan mekanisme keamanan isolasi jaringan internal. IP Publik adalah alamat yang unik secara global dan dapat diakses langsung dari Internet.",
+  "teori_2_table": [
+    [
+      "Kelas IP",
+      "Rentang Oktet Pertama",
+      "Rentang Alamat",
+      "Default Subnet Mask",
+      "Bit Network/Host"
+    ],
+    [
+      "Kelas A",
+      "1-126",
+      "1.0.0.0 - 126.255.255.255",
+      "255.0.0.0 (/8)",
+      "8 bit Network, 24 bit Host"
+    ],
+    [
+      "Kelas B",
+      "128-191",
+      "128.0.0.0 - 191.255.255.255",
+      "255.255.0.0 (/16)",
+      "16 bit Network, 16 bit Host"
+    ],
+    [
+      "Kelas C",
+      "192-223",
+      "192.0.0.0 - 223.255.255.255",
+      "255.255.255.0 (/24)",
+      "24 bit Network, 8 bit Host"
+    ],
+    [
+      "IP Privat Kelas A",
+      "10",
+      "10.0.0.0 - 10.255.255.255",
+      "N/A (RFC 1918)",
+      "N/A"
+    ],
+    [
+      "IP Privat Kelas B",
+      "172.16 - 172.31",
+      "172.16.0.0 - 172.31.255.255",
+      "N/A (RFC 1918)",
+      "N/A"
+    ],
+    [
+      "IP Privat Kelas C",
+      "192.168",
+      "192.168.0.0 - 192.168.255.255",
+      "N/A (RFC 1918)",
+      "N/A"
+    ]
+  ],
+  "teori_2_extra": "Penting untuk diingat bahwa rentang alamat IP Privat yang didefinisikan dalam RFC 1918 tidak dapat digunakan sebagai alamat tujuan di Internet. Jika perangkat dalam jaringan lokal dengan IP Privat ingin mengakses Internet, ia harus melewati proses <b>Network Address Translation (NAT)</b> pada router perbatasan. NAT akan menerjemahkan IP Privat ke IP Publik milik router. Dengan demikian, alamat IP Publik berfungsi sebagai representasi tunggal jaringan lokal di mata Internet global. Ini adalah mekanisme vital untuk menghemat alamat IPv4 yang semakin langka dan sekaligus menyediakan lapisan keamanan.",
+  "topologi_desc": "Praktikum ini akan menggunakan topologi jaringan <i>Star</i> yang sederhana namun fundamental, terdiri dari satu buah router, satu buah switch, dan dua buah perangkat end-device (Host PC).<br/><ul><li><b>Router</b>: Router1 (Generik Cisco 1841) akan berfungsi sebagai gateway dan penghubung antar jaringan, meskipun dalam skenario ini hanya satu segmen LAN.</li><li><b>Switch</b>: Switch1 (Generik Cisco 2960) akan menghubungkan semua perangkat end-device dalam satu segmen LAN yang sama.</li><li><b>Host PC</b>: PC1 dan PC2 akan bertindak sebagai client yang membutuhkan pengalamatan IP untuk berkomunikasi.</li></ul>Koneksi antar perangkat akan menggunakan kabel <b>Straight-Through</b>. Port FastEthernet0/0 pada Router1 akan terhubung ke port FastEthernet0/1 pada Switch1. PC1 akan terhubung ke port FastEthernet0/2 pada Switch1, dan PC2 akan terhubung ke port FastEthernet0/3 pada Switch1.",
+  "addressing_table": [
+    [
+      "Perangkat",
+      "Interface",
+      "IP Address",
+      "Subnet Mask",
+      "Default Gateway"
+    ],
+    [
+      "Router1",
+      "FastEthernet0/0",
+      "192.168.10.1",
+      "255.255.255.0",
+      "N/A"
+    ],
+    [
+      "Switch1",
+      "VLAN1 (Management)",
+      "192.168.10.2",
+      "255.255.255.0",
+      "192.168.10.1"
+    ],
+    [
+      "PC1",
+      "FastEthernet0",
+      "192.168.10.10",
+      "255.255.255.0",
+      "192.168.10.1"
+    ],
+    [
+      "PC2",
+      "FastEthernet0",
+      "192.168.10.11",
+      "255.255.255.0",
+      "192.168.10.1"
+    ]
+  ],
+  "skenario_desc": "Anda adalah seorang teknisi jaringan junior di sebuah kantor cabang baru 'SMK Jaya Abadi'. Tugas Anda adalah menyiapkan infrastruktur jaringan lokal (LAN) untuk departemen administrasi. Departemen ini membutuhkan konektivitas antar komputer dan akses ke server pusat yang akan terhubung melalui router utama. Sebagai langkah awal, Anda perlu mengimplementasikan skema pengalamatan IP Address secara manual untuk dua komputer pengguna (PC1 dan PC2) serta mengkonfigurasi interface gateway pada router dan alamat IP manajemen pada switch.<br/><br/>Tujuan dari skenario ini adalah memastikan bahwa semua perangkat dalam segmen LAN dapat berkomunikasi satu sama lain dan bahwa host-host tersebut memiliki jalur keluar melalui router. Anda akan menggunakan rentang IP Privat Kelas C sesuai RFC 1918 (192.168.10.0/24) untuk segmen LAN ini. Ini adalah studi kasus umum yang sering ditemui oleh teknisi jaringan ketika membangun atau memperluas infrastruktur jaringan kecil hingga menengah, di mana efisiensi dan kejelasan pengalamatan sangat krusial.",
+  "langkah_kerja": [
+    "<b>Membuat Topologi Jaringan</b>: Buka Cisco Packet Tracer. Tarik dan letakkan satu buah Router (Cisco 1841), satu buah Switch (Cisco 2960), dan dua buah PC (Generic) ke area kerja.",
+    "<b>Menghubungkan Perangkat</b>: Gunakan kabel Straight-Through. Hubungkan Router1 Fa0/0 ke Switch1 Fa0/1. Hubungkan PC1 Fa0 ke Switch1 Fa0/2. Hubungkan PC2 Fa0 ke Switch1 Fa0/3. Pastikan semua indikator port berwarna hijau setelah beberapa detik.",
+    "<b>Konfigurasi IP Address pada Router1</b>: Masuk ke mode CLI Router1. Berikan nama host dan konfigurasikan interface FastEthernet0/0 sesuai addressing table. Jangan lupa mengaktifkan interface (`no shutdown`).",
+    "<b>Verifikasi Konfigurasi Router1</b>: Gunakan perintah `show ip interface brief` atau `show running-config` untuk memastikan IP Address dan status interface sudah benar.",
+    "<b>Konfigurasi IP Address pada Switch1 (Manajemen VLAN)</b>: Masuk ke mode CLI Switch1. Konfigurasikan IP Address pada interface VLAN1 dan set default gateway sesuai addressing table. Aktifkan interface (`no shutdown`).",
+    "<b>Verifikasi Konfigurasi Switch1</b>: Gunakan perintah `show ip interface brief` atau `show running-config` untuk memastikan IP Address VLAN1 dan default gateway sudah benar.",
+    "<b>Konfigurasi IP Address pada PC1</b>: Klik PC1 > Desktop > IP Configuration. Masukkan IP Address, Subnet Mask, dan Default Gateway sesuai addressing table.",
+    "<b>Konfigurasi IP Address pada PC2</b>: Lakukan langkah serupa seperti PC1 untuk PC2, sesuaikan dengan IP Address yang sudah ditentukan.",
+    "<b>Verifikasi Konektivitas Awal</b>: Dari PC1, lakukan `ping` ke Default Gateway (Router1 Fa0/0). Kemudian `ping` ke PC2. Lakukan juga `ping` dari Router1 ke IP manajemen Switch1. Amati dan pastikan semua ping berhasil."
+  ],
+  "commands": "# --- Konfigurasi Router1 ---\nRouter> enable\nRouter# configure terminal\nRouter(config)# hostname Router1\nRouter1(config)# interface FastEthernet0/0\nRouter1(config-if)# ip address 192.168.10.1 255.255.255.0\nRouter1(config-if)# no shutdown\nRouter1(config-if)# exit\nRouter1(config)# end\nRouter1# write memory\n# Verifikasi Router1\nRouter1# show ip interface brief\nRouter1# show running-config interface FastEthernet0/0\n\n# --- Konfigurasi Switch1 (Manajemen IP) ---\nSwitch> enable\nSwitch# configure terminal\nSwitch(config)# hostname Switch1\nSwitch1(config)# interface vlan 1\nSwitch1(config-if)# ip address 192.168.10.2 255.255.255.0\nSwitch1(config-if)# no shutdown\nSwitch1(config-if)# exit\nSwitch1(config)# ip default-gateway 192.168.10.1\nSwitch1(config)# end\nSwitch1# write memory\n# Verifikasi Switch1\nSwitch1# show ip interface brief\nSwitch1# show running-config interface vlan 1\nSwitch1# show ip default-gateway\n\n# --- Konfigurasi PC1 (Dilakukan via GUI Packet Tracer) ---\n# IP Configuration:\n# IP Address: 192.168.10.10\n# Subnet Mask: 255.255.255.0\n# Default Gateway: 192.168.10.1\n\n# --- Konfigurasi PC2 (Dilakukan via GUI Packet Tracer) ---\n# IP Configuration:\n# IP Address: 192.168.10.11\n# Subnet Mask: 255.255.255.0\n# Default Gateway: 192.168.10.1\n\n# --- Perintah Uji Coba dari PC (Command Prompt) ---\n# PC> ipconfig\n# PC> ping 192.168.10.1  # Ping ke Default Gateway\n# PC> ping 192.168.10.11 # Ping ke PC2 (dari PC1)\n\n# --- Perintah Uji Coba dari Router CLI ---\n# Router1# ping 192.168.10.2 # Ping ke IP Manajemen Switch1\n# Router1# ping 192.168.10.10 # Ping ke PC1",
+  "uji_coba_text": "Setelah semua konfigurasi selesai dilakukan, langkah berikutnya yang krusial adalah melakukan pengujian konektivitas untuk memastikan bahwa setiap perangkat dapat berkomunikasi dengan benar sesuai skenario. Utilitas utama yang akan digunakan adalah perintah <code>ping</code>. Perintah <code>ping</code> mengirimkan paket ICMP (Internet Control Message Protocol) Echo Request ke alamat IP tujuan dan menunggu balasan Echo Reply. Keberhasilan ping menunjukkan bahwa jalur komunikasi logis dan fisik antara sumber dan tujuan telah terbentuk dengan baik. Selain ping, kita juga bisa menggunakan <code>traceroute</code> (atau `tracert` di Windows) untuk melihat jalur hop-by-hop yang dilewati paket, dan perintah `show ip interface brief` atau `show running-config` pada perangkat Cisco untuk memverifikasi konfigurasi yang aktif. Analisis respon `ping` sangat penting: jika berhasil (mendapat Reply), berarti konektivitas OK. Jika `Request timed out` atau `Destination Host Unreachable`, berarti ada masalah pada pengalamatan atau koneksi fisik/logis.",
+  "uji_coba_cmd": "C:\\>ping 192.168.10.11\n\nPinging 192.168.10.11 with 32 bytes of data:\nReply from 192.168.10.11: bytes=32 time=1ms TTL=128\nReply from 192.168.10.11: bytes=32 time=1ms TTL=128\nReply from 192.168.10.11: bytes=32 time=1ms TTL=128\nReply from 192.168.10.11: bytes=32 time=1ms TTL=128\n\nPing statistics for 192.168.10.11:\n    Packets: Sent = 4, Received = 4, Lost = 0 (0% loss),\nApproximate round trip times in milli-seconds:\n    Minimum = 1ms, Maximum = 1ms, Average = 1ms\n\nRouter1#show ip interface brief\nInterface                  IP-Address      OK? Method Status                Protocol\nFastEthernet0/0            192.168.10.1    YES manual up                    up\nFastEthernet0/1            unassigned      YES unset  administratively down down\nVlan1                      unassigned      YES unset  administratively down down",
+  "troubleshooting_table": [
+    [
+      "Gejala Masalah",
+      "Kemungkinan Penyebab",
+      "Tindakan Korektif"
+    ],
+    [
+      "Ping 'Request timed out' antar perangkat di LAN",
+      "IP Address, Subnet Mask, atau Default Gateway salah pada salah satu host/router.",
+      "Periksa kembali konfigurasi IP pada semua perangkat. Pastikan IP di segmen yang sama dan gateway benar."
+    ],
+    [
+      "Ping 'Destination Host Unreachable'",
+      "Kabel tidak terhubung, interface down, atau IP di segmen yang berbeda.",
+      "Periksa koneksi fisik kabel. Cek status interface (`show ip interface brief`) pada router/switch. Pastikan IP dalam network ID yang sama."
+    ],
+    [
+      "Indikator port di Packet Tracer merah/oranye",
+      "Interface belum diaktifkan (no shutdown) atau kabel salah jenis/rusak.",
+      "Masuk ke CLI perangkat, aktifkan interface dengan perintah `no shutdown`. Pastikan menggunakan kabel `Straight-Through` untuk Host-Switch dan Router-Switch."
+    ],
+    [
+      "Tidak bisa ping dari PC ke Router",
+      "Default Gateway PC salah atau interface Router mati/IP salah.",
+      "Verifikasi IP Default Gateway pada PC. Cek konfigurasi IP dan status interface pada Router FastEthernet0/0."
+    ]
+  ],
+  "tugas_mandiri": "Sebagai lanjutan dari praktikum ini, Anda ditugaskan untuk memperluas jaringan 'SMK Jaya Abadi'. Tambahkan satu buah divisi baru, yaitu divisi keuangan. Divisi ini memiliki 3 unit PC (PC3, PC4, PC5) dan akan menggunakan segmen jaringan <b>192.168.20.0/24</b>. Anda perlu menambahkan satu Switch baru (Switch2) untuk divisi ini dan menghubungkannya ke Router1 melalui port FastEthernet0/1. Alamat IP untuk interface Router1 Fa0/1 adalah 192.168.20.1/24. Konfigurasikan IP Address pada PC3, PC4, PC5, dan IP manajemen pada Switch2. Pastikan semua PC di divisi keuangan dapat saling berkomunikasi dan juga dapat berkomunikasi dengan PC di divisi administrasi (PC1, PC2). Dokumentasikan semua konfigurasi dan hasil pengujian dalam bentuk laporan praktikum lengkap.",
+  "evaluasi_questions": [
+    "Jelaskan mengapa alamat IP Privat sangat penting dalam arsitektur jaringan modern dan bagaimana implementasinya dapat menghemat penggunaan alamat IP Publik?",
+    "Bagaimana Anda dapat menentukan apakah sebuah alamat IPv4 termasuk dalam kelas A, B, atau C hanya dengan melihat oktet pertamanya? Berikan contoh rentang untuk masing-masing kelas.",
+    "Dalam konteks praktikum ini, jelaskan fungsi dari Default Gateway pada konfigurasi PC. Apa yang akan terjadi jika Default Gateway tidak dikonfigurasi atau dikonfigurasi dengan alamat yang salah?",
+    "Apa perbedaan mendasar antara Network ID dan Host ID dalam sebuah alamat IPv4? Bagaimana subnet mask berperan dalam memisahkan kedua bagian tersebut?",
+    "Bayangkan Anda memiliki alamat IP 172.16.50.1/24. Apakah ini alamat IP Privat atau Publik? Jelaskan mengapa demikian, dan apakah alamat ini dapat di-routing langsung ke Internet?"
+  ]
+}

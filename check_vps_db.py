@@ -22,10 +22,7 @@ def run(cmd, title):
         safe_print("STDERR: " + err)
     safe_print("\n")
 
-# Show journalctl logs of netlabs-ai service for errors
-run("journalctl -u netlabs-ai --no-pager | grep -i -E \"error|fail|exception\" | tail -n 20", "AI Service Error Logs")
-
-# Test calling the AI chat endpoint locally on VPS
-run("curl -s -X POST -H 'Content-Type: application/json' -d '{\"message\":\"test\"}' http://localhost:5050/chat", "Test Chat Endpoint Local Curl")
+# Describe pertemuan table
+run("mysql -u root_netlabs -p'PasswordRahasia123!' -D netlabs_db -e 'DESCRIBE pertemuan;'", "pertemuan table columns")
 
 ssh.close()

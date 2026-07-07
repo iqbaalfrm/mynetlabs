@@ -4,12 +4,12 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Admin Login - NetLabs</title>
-  <link rel="stylesheet" href="{{ asset('assets/skydash/dist/assets/vendors/feather/feather.css') }}">
-  <link rel="stylesheet" href="{{ asset('assets/skydash/dist/assets/vendors/ti-icons/css/themify-icons.css') }}">
-  <link rel="stylesheet" href="{{ asset('assets/skydash/dist/assets/vendors/css/vendor.bundle.base.css') }}">
-  <link rel="stylesheet" href="{{ asset('assets/skydash/dist/assets/vendors/font-awesome/css/font-awesome.min.css') }}">
-  <link rel="stylesheet" href="{{ asset('assets/skydash/dist/assets/css/style.css') }}">
-  <link rel="shortcut icon" href="{{ asset('assets/skydash/dist/assets/images/favicon.png') }}" />
+  <link rel="stylesheet" href="{{ asset('assets/netlabs/dist/assets/vendors/feather/feather.css') }}">
+  <link rel="stylesheet" href="{{ asset('assets/netlabs/dist/assets/vendors/ti-icons/css/themify-icons.css') }}">
+  <link rel="stylesheet" href="{{ asset('assets/netlabs/dist/assets/vendors/css/vendor.bundle.base.css') }}">
+  <link rel="stylesheet" href="{{ asset('assets/netlabs/dist/assets/vendors/font-awesome/css/font-awesome.min.css') }}">
+  <link rel="stylesheet" href="{{ asset('assets/netlabs/dist/assets/css/style.css') }}">
+  <link rel="shortcut icon" href="{{ asset('assets/netlabs/dist/assets/images/favicon.png') }}" />
 </head>
 <body>
   <div class="container-scroller">
@@ -18,8 +18,11 @@
         <div class="row w-100 mx-0">
           <div class="col-lg-4 mx-auto">
             <div class="auth-form-light text-left py-5 px-4 px-sm-5">
-              <div class="brand-logo">
-                <img src="{{ asset('assets/skydash/dist/assets/images/logo.svg') }}" alt="logo">
+              <div class="brand-logo d-flex align-items-center mb-3">
+                <div style="width: 40px; height: 40px; background: linear-gradient(135deg, #4B49AC, #7978E9); border-radius: 10px; display: flex; align-items: center; justify-content: center; color: white; font-size: 20px;" class="me-2">
+                  <i class="ti-server"></i>
+                </div>
+                <span style="font-size: 28px; font-weight: 800; color: #4B49AC; letter-spacing: -0.5px;">NetLabs</span>
               </div>
               <h4>Admin Login</h4>
               <h6 class="fw-light">Masuk untuk mengelola materi dan quiz.</h6>
@@ -50,6 +53,6 @@
       </div>
     </div>
   </div>
-  <script src="{{ asset('assets/skydash/dist/assets/vendors/js/vendor.bundle.base.js') }}"></script>
+  <script src="{{ asset('assets/netlabs/dist/assets/vendors/js/vendor.bundle.base.js') }}"></script>
 </body>
 </html>
