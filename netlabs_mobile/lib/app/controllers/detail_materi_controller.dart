@@ -1,4 +1,4 @@
-﻿import 'package:get/get.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../../data/providers/api_provider.dart';
 import 'home_controller.dart';
 import 'materi_controller.dart';
@@ -14,6 +14,7 @@ class DetailMateriController extends GetxController {
   var daftarTopik = <Map<String, dynamic>>[].obs;
   var isKuisEnabled = false.obs;
   var isLoading = false.obs;
+  var pdfUrl = ''.obs;
 
   @override
   void onInit() {
@@ -30,6 +31,7 @@ class DetailMateriController extends GetxController {
       final response = await _api.getDetailPertemuan(pertemuanId);
       final d = response.data['data'];
       deskripsiPertemuan.value = d['deskripsi'] ?? '';
+      pdfUrl.value = d['pdf_url'] ?? '';
       final list = (d['daftar_topik'] as List)
           .map((e) => Map<String, dynamic>.from(e))
           .toList();
@@ -39,6 +41,24 @@ class DetailMateriController extends GetxController {
       print('Gagal memuat detail: $e');
     } finally {
       isLoading.value = false;
+    }
+  }
+
+  void unduhPdfMateri() async {
+    if (pdfUrl.value.isEmpty) {
+      Get.snackbar('Informasi', 'Modul PDF belum diunggah oleh guru untuk pertemuan ini.',
+        snackPosition: SnackPosition.BOTTOM,
+      );
+      return;
+    }
+
+    final uri = Uri.parse(pdfUrl.value);
+    if (await canLaunchUrl(uri)) {
+      await launchUrl(uri, mode: LaunchMode.externalApplication);
+    } else {
+      Get.snackbar('Error', 'Gagal membuka modul PDF.',
+        snackPosition: SnackPosition.BOTTOM,
+      );
     }
   }
 

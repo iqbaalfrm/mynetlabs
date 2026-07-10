@@ -20,6 +20,15 @@ class DetailMateriView extends GetView<DetailMateriController> {
         backgroundColor: NetlabsTheme.surface,
         elevation: 0,
         iconTheme: const IconThemeData(color: NetlabsTheme.dark),
+        actions: [
+          Obx(() => controller.pdfUrl.value.isNotEmpty
+              ? IconButton(
+                  icon: const Icon(Icons.download_for_offline_rounded, color: NetlabsTheme.primary, size: 24),
+                  tooltip: 'Unduh Modul PDF',
+                  onPressed: () => controller.unduhPdfMateri(),
+                )
+              : const SizedBox.shrink()),
+        ],
       ),
       body: SingleChildScrollView(
         physics: const BouncingScrollPhysics(),

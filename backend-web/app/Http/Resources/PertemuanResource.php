@@ -21,6 +21,9 @@ class PertemuanResource extends JsonResource
             'progress' => $this->when(isset($this->progress), $this->progress),
             'is_completed' => $this->when(isset($this->progress), $this->progress >= 1.0),
             'status_indexing' => $this->when(isset($this->status_indexing), $this->status_indexing),
+            'pdf_url' => $this->relationLoaded('modulPdfs') && $this->modulPdfs->first()
+                ? asset('storage/modul_pdf/' . $this->modulPdfs->first()->file_name)
+                : null,
             'daftar_topik' => TopikMateriResource::collection($this->whenLoaded('topikMateris')),
         ];
     }

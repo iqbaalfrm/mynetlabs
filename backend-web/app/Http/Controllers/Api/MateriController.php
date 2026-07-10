@@ -71,7 +71,10 @@ class MateriController extends Controller
         try {
             $siswa = $request->user();
 
-            $pertemuan = Pertemuan::with('topikMateris')->find($id);
+            $pertemuan = Pertemuan::with([
+                'topikMateris',
+                'modulPdfs' => fn($q) => $q->latest()->limit(1)
+            ])->find($id);
 
             if (!$pertemuan) {
                 return response()->json([
