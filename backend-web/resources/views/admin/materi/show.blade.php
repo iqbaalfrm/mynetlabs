@@ -110,13 +110,13 @@
           <div class="tab-pane fade" id="pdf" role="tabpanel">
             <div class="d-flex justify-content-between align-items-center mb-3">
               <h5 class="mb-0">Modul PDF untuk RAG</h5>
-              <form action="{{ route('admin.pdf.upload', $pertemuan->id) }}" method="POST" enctype="multipart/form-data">
+              <form id="uploadPdfForm" action="{{ route('admin.pdf.upload', $pertemuan->id) }}" method="POST" enctype="multipart/form-data">
                 @csrf
                 <div class="input-group input-group-sm">
-                  <input type="file" name="file_pdf" accept=".pdf" class="form-control" required>
-                  <button class="btn btn-primary" type="submit">
-                    <i class="ti-upload"></i> Upload & Index
-                  </button>
+                   <input type="file" name="file_pdf" accept=".pdf" class="form-control" required>
+                   <button class="btn btn-primary" type="submit">
+                     <i class="ti-upload"></i> Upload & Index
+                   </button>
                 </div>
               </form>
             </div>
@@ -144,7 +144,7 @@
                       <button class="btn btn-outline-primary btn-sm" onclick="viewPdf('{{ asset('storage/modul_pdf/'.$pdf->file_name) }}', '{{ $pdf->file_name }}')">
                         <i class="ti-eye"></i> View
                       </button>
-                      <form action="{{ route('admin.pdf.reindex', $pdf->id) }}" method="POST" class="d-inline">
+                      <form action="{{ route('admin.pdf.reindex', $pdf->id) }}" method="POST" class="d-inline reindex-form">
                         @csrf
                         <button class="btn btn-outline-info btn-sm"><i class="ti-reload"></i> Re-index</button>
                       </form>
@@ -514,5 +514,36 @@
       }
     });
   }
+
+  // Handle PDF Upload Form Loading
+  const uploadPdfForm = document.getElementById('uploadPdfForm');
+  if (uploadPdfForm) {
+    uploadPdfForm.addEventListener('submit', function(e) {
+      Swal.fire({
+        title: 'Mengunggah & Mengindeks PDF...',
+        text: 'AI sedang mengekstrak teks modul dan membuat vektor embedding. Harap tunggu...',
+        icon: 'info',
+        allowOutsideClick: false,
+        didOpen: () => {
+          Swal.showLoading();
+        }
+      });
+    });
+  }
+
+  // Handle Re-index Form Loading
+  document.querySelectorAll('.reindex-form').forEach(form => {
+    form.addEventListener('submit', function(e) {
+      Swal.fire({
+        title: 'Membangun Ulang Indeks (Re-indexing)...',
+        text: 'Server sedang memperbarui representasi vektor untuk pencarian RAG yang akurat.',
+        icon: 'info',
+        allowOutsideClick: false,
+        didOpen: () => {
+          Swal.showLoading();
+        }
+      });
+    });
+  });
 </script>
 @endpush
