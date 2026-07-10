@@ -44,10 +44,12 @@ class HomeController extends GetxController {
   // Mengecek apakah siswa masih menggunakan password default dan memproses masa tenggang login
   void _checkPasswordDefault() {
     final box = GetStorage();
+    // Membaca status sandi default dan data tenggang waktu dari penyimpanan lokal
     final isDefault = box.read('password_is_default') ?? false;
     final mustChange = box.read('must_change_password') ?? false;
     final graceDays = box.read('password_grace_days_remaining') ?? 0;
 
+    // Jika masa tenggang 7 hari telah habis, kunci akses dan paksa pindah ke halaman ganti password
     if (mustChange == true) {
       Get.snackbar(
         'Peringatan Keamanan',
@@ -57,8 +59,11 @@ class HomeController extends GetxController {
         colorText: Colors.white,
         duration: const Duration(seconds: 5),
       );
+      // Tunggu 1,5 detik agar snackbar terbaca, lalu lakukan pengalihan rute halaman
       Future.delayed(const Duration(milliseconds: 1500), () => Get.toNamed(Routes.CHANGE_PASSWORD));
-    } else if (isDefault == true) {
+    } 
+    // Jika masih dalam masa tenggang, tampilkan peringatan oranye sebagai pengingat santai
+    else if (isDefault == true) {
       Get.snackbar(
         'Peringatan Keamanan',
         'Kata sandi Anda masih default. Harap ganti kata sandi Anda. Sisa waktu ganti password: $graceDays hari lagi.',
