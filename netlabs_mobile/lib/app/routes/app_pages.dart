@@ -1,23 +1,23 @@
-﻿import 'package:get/get.dart';
+import 'package:get/get.dart';
 
-import '../modules/Login/bindings/login_binding.dart';
-import '../modules/Login/views/login_view.dart';
-import '../modules/chatbot/bindings/chatbot_binding.dart';
-import '../modules/chatbot/views/chatbot_view.dart';
-import '../modules/detail_materi/bindings/detail_materi_binding.dart';
-import '../modules/detail_materi/views/detail_materi_view.dart';
-import '../modules/home/bindings/home_binding.dart';
-import '../modules/materi/bindings/materi_binding.dart';
-import '../modules/materi/views/materi_view.dart';
-import '../modules/onboarding/bindings/onboarding_binding.dart';
-import '../modules/onboarding/views/onboarding_view.dart';
-import '../modules/profile/bindings/profile_binding.dart';
-import '../modules/profile/views/profile_view.dart';
-import '../modules/change_password/bindings/change_password_binding.dart';
-import '../modules/change_password/views/change_password_view.dart';
-import '../modules/quiz/bindings/quiz_binding.dart';
-import '../modules/quiz/views/quiz_view.dart';
-import '../modules/main_layout/views/main_layout_view.dart';
+import '../bindings/login_binding.dart';
+import '../views/auth/login_view.dart';
+import '../bindings/chatbot_binding.dart';
+import '../views/chatbot/chatbot_view.dart';
+import '../bindings/detail_materi_binding.dart';
+import '../views/modul/detail_materi_view.dart';
+import '../bindings/home_binding.dart';
+import '../bindings/materi_binding.dart';
+import '../views/modul/materi_view.dart';
+import '../bindings/onboarding_binding.dart';
+import '../views/auth/onboarding_view.dart';
+import '../bindings/profile_binding.dart';
+import '../views/profil/profile_view.dart';
+import '../bindings/change_password_binding.dart';
+import '../views/profil/change_password_view.dart';
+import '../bindings/quiz_binding.dart';
+import '../views/kuis/quiz_view.dart';
+import '../views/home/main_layout_view.dart';
 
 part 'app_routes.dart';
 

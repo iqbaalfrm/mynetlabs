@@ -11,31 +11,48 @@
     //Active class can be hard coded directly in html file also as required
 
     function addActiveClass(element) {
-      if (current === "") {
-        //for root url
-        if (element.attr('href').indexOf("index.html") !== -1) {
-          element.parents('.nav-item').last().addClass('active');
-          if (element.parents('.sub-menu').length) {
-            element.closest('.collapse').addClass('show');
-            element.addClass('active');
-          }
+      var href = element.attr('href');
+      if (!href) return;
+
+      var currentPath = window.location.pathname;
+      
+      // Convert href to relative pathname if it's absolute
+      var linkPath = href;
+      if (href.indexOf('http://') === 0 || href.indexOf('https://') === 0) {
+        try {
+          linkPath = new URL(href).pathname;
+        } catch (e) {}
+      }
+
+      // Normalise paths by removing leading/trailing slashes
+      var normCurrent = currentPath.replace(/^\/|\/$/g, '');
+      var normLink = linkPath.replace(/^\/|\/$/g, '');
+
+      // Check if current page is active
+      // Exact match or if the current path starts with the link path (e.g. nested routes)
+      var isActive = false;
+      if (normLink !== '') {
+        if (normCurrent === normLink) {
+          isActive = true;
+        } else if (normCurrent.indexOf(normLink + '/') === 0) {
+          isActive = true;
         }
-      } else {
-        //for other url
-        if (element.attr('href').indexOf(current) !== -1) {
-          element.parents('.nav-item').last().addClass('active');
-          if (element.parents('.sub-menu').length) {
-            element.closest('.collapse').addClass('show');
-            element.addClass('active');
-          }
-          if (element.parents('.submenu-item').length) {
-            element.addClass('active');
-          }
+      } else if (normCurrent === '') {
+        isActive = true;
+      }
+
+      if (isActive) {
+        element.parents('.nav-item').last().addClass('active');
+        if (element.parents('.sub-menu').length) {
+          element.closest('.collapse').addClass('show');
+          element.addClass('active');
+        }
+        if (element.parents('.submenu-item').length) {
+          element.addClass('active');
         }
       }
     }
 
-    var current = location.pathname.split("/").slice(-1)[0].replace(/^\/|\/$/g, '');
     $('.nav li a', sidebar).each(function() {
       var $this = $(this);
       addActiveClass($this);

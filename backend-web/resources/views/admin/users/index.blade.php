@@ -1,6 +1,6 @@
 @extends('layouts.master')
 
-@section('title', 'Kelola Users - NetLabs Admin')
+@section('title', 'Kelola Pengguna - NetLabs Admin')
 
 @section('content')
 <div class="row">
@@ -8,9 +8,9 @@
     <div class="card">
       <div class="card-body">
         <div class="d-flex justify-content-between align-items-center mb-3">
-          <h4 class="card-title mb-0">Kelola Users</h4>
+          <h4 class="card-title mb-0">Kelola Pengguna</h4>
           <button class="btn btn-primary btn-sm" onclick="openModalCreate()">
-            <i class="ti-plus"></i> Tambah User
+            <i class="ti-plus"></i> Tambah Pengguna
           </button>
         </div>
 

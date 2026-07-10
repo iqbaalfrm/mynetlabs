@@ -3,7 +3,7 @@ import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'app/data/providers/api_provider.dart';
 import 'app/data/services/auth_service.dart';
-import 'app/modules/theme/netlabs_theme.dart';
+import 'core/theme/app_theme.dart';
 import 'app/routes/app_pages.dart';
 
 void main() async {

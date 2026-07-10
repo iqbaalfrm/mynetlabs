@@ -1,14 +1,15 @@
 import 'package:dio/dio.dart';
 import 'package:get/get.dart' hide Response, FormData, MultipartFile;
 import 'package:get_storage/get_storage.dart';
+import '../../../core/constants/app_constants.dart';
 import '../../routes/app_pages.dart';
 
 /// Kelas penyedia HTTP tunggal (Dio) untuk seluruh aplikasi Netlabs.
-/// - Base URL diambil dari konstanta [baseUrl].
+/// - Base URL diambil dari konstanta [AppConstants.baseUrl].
 /// - Token Sanctum disisipkan otomatis via Interceptor.
 /// - Response ditangani secara seragam agar mudah dipakai di controller.
 class ApiProvider extends GetxController {
-  static const String baseUrl = 'http://157.230.93.99/api';
+  static const String baseUrl = AppConstants.baseUrl;
 
   late Dio _dio;
   final storage = GetStorage();

@@ -1,13 +1,13 @@
 @extends('layouts.master')
 
-@section('title', 'Edit User - NetLabs Admin')
+@section('title', 'Edit Pengguna - NetLabs Admin')
 
 @section('content')
 <div class="row">
   <div class="col-md-8 grid-margin stretch-card">
     <div class="card">
       <div class="card-body">
-        <h4 class="card-title">Edit User: {{ $user->nama }}</h4>
+        <h4 class="card-title">Edit Pengguna: {{ $user->nama }}</h4>
 
         @if($errors->any())
           <div class="alert alert-danger">

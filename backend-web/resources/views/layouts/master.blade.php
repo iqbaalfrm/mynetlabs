@@ -353,7 +353,7 @@
           <li class="nav-category">Siswa</li>
           @php
             $siswaMenu = [
-              ['route' => 'admin.users.index', 'icon' => 'ti-user', 'label' => 'Users'],
+              ['route' => 'admin.users.index', 'icon' => 'ti-user', 'label' => 'Pengguna'],
               ['route' => 'admin.kelas.index', 'icon' => 'ti-headphone-alt', 'label' => 'Kelas'],
             ];
           @endphp
