@@ -19,6 +19,7 @@ class User extends Authenticatable
         'kelas',
         'kelas_id',
         'foto_profil',
+        'status',
     ];
 
     protected $appends = ['foto_profil_url'];

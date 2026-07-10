@@ -354,6 +354,7 @@
           @php
             $siswaMenu = [
               ['route' => 'admin.users.index', 'icon' => 'ti-user', 'label' => 'Pengguna'],
+              ['route' => 'admin.siswa.index', 'icon' => 'ti-id-badge', 'label' => 'Siswa'],
               ['route' => 'admin.kelas.index', 'icon' => 'ti-headphone-alt', 'label' => 'Kelas'],
             ];
           @endphp

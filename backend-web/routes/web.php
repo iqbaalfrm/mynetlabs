@@ -11,6 +11,7 @@ use App\Http\Controllers\Admin\TopikController;
 use App\Http\Controllers\Admin\PdfController;
 use App\Http\Controllers\Admin\QuizController;
 use App\Http\Controllers\Admin\ChatController;
+use App\Http\Controllers\Admin\SiswaController;
 
 // Admin Auth Routes
 Route::prefix('admin')->name('admin.')->group(function () {
@@ -52,6 +53,10 @@ Route::prefix('admin')->name('admin.')->group(function () {
 
         // Users
         Route::resource('users', UserController::class);
+
+        // Siswa Management
+        Route::resource('siswa', SiswaController::class);
+        Route::patch('siswa/{id}/toggle-status', [SiswaController::class, 'toggleStatus'])->name('siswa.toggle-status');
 
         // Chat AI Monitoring
         Route::get('/chat', [ChatController::class, 'index'])->name('chat.index');

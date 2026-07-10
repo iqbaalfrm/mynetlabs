@@ -22,6 +22,10 @@ class AuthController extends Controller
 
         if (Auth::attempt($credentials)) {
             $user = Auth::user();
+            if ($user->status === 'nonaktif') {
+                Auth::logout();
+                return back()->withErrors(['username' => 'Akun Anda telah dinonaktifkan oleh administrator.']);
+            }
             if (!in_array($user->role, ['guru', 'admin'])) {
                 Auth::logout();
                 return back()->withErrors(['username' => 'Akses hanya untuk guru/admin.']);

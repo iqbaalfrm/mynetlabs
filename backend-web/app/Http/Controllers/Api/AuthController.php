@@ -58,6 +58,13 @@ class AuthController extends Controller
                 ], 401);
             }
 
+            // Validasi status akun (aktif/nonaktif)
+            if ($user->status === 'nonaktif') {
+                return response()->json([
+                    'message' => 'Akun Anda telah dinonaktifkan oleh administrator. Silakan hubungi guru Anda.'
+                ], 403);
+            }
+ 
             // Buat token Sanctum baru
             $token = $user->createToken('netlabs_token')->plainTextToken;
 
