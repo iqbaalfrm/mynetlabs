@@ -5,8 +5,12 @@ namespace App\Http\Resources;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
+/**
+ * Mengubah data Model User menjadi format JSON untuk API respon mobile.
+ */
 class UserResource extends JsonResource
 {
+    // Mengonversi resource model menjadi array JSON
     public function toArray(Request $request): array
     {
         $passwordIsDefault = is_null($this->password_set_at);

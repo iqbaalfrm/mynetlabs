@@ -41,6 +41,7 @@ class HomeController extends GetxController {
     _checkPasswordDefault();
   }
 
+  // Mengecek apakah siswa masih menggunakan password default dan memproses masa tenggang login
   void _checkPasswordDefault() {
     final box = GetStorage();
     final isDefault = box.read('password_is_default') ?? false;

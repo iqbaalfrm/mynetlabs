@@ -8,7 +8,7 @@ use Illuminate\Validation\Rule;
 class StoreSiswaRequest extends FormRequest
 {
     /**
-     * Determine if the user is authorized to make this request.
+     * Tentukan apakah pengguna diizinkan untuk membuat permintaan ini.
      */
     public function authorize(): bool
     {
@@ -16,7 +16,7 @@ class StoreSiswaRequest extends FormRequest
     }
 
     /**
-     * Get the validation rules that apply to the request.
+     * Dapatkan aturan validasi yang berlaku untuk permintaan ini.
      */
     public function rules(): array
     {
@@ -39,7 +39,7 @@ class StoreSiswaRequest extends FormRequest
     }
 
     /**
-     * Custom attributes for validator errors.
+     * Kustomisasi nama atribut untuk pesan kesalahan validator.
      */
     public function attributes(): array
     {

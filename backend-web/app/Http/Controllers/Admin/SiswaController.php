@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\Hash;
 class SiswaController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * Menampilkan daftar data siswa.
      */
     public function index(Request $request)
     {
@@ -37,7 +37,7 @@ class SiswaController extends Controller
     }
 
     /**
-     * Show the form for creating a new resource.
+     * Menampilkan formulir untuk membuat siswa baru.
      */
     public function create()
     {
@@ -46,7 +46,7 @@ class SiswaController extends Controller
     }
 
     /**
-     * Store a newly created resource in storage.
+     * Menyimpan data siswa baru ke database.
      */
     public function store(StoreSiswaRequest $request)
     {
@@ -60,7 +60,7 @@ class SiswaController extends Controller
     }
 
     /**
-     * Show the form for editing the specified resource.
+     * Menampilkan formulir edit data siswa tertentu.
      */
     public function edit($id)
     {
@@ -70,7 +70,7 @@ class SiswaController extends Controller
     }
 
     /**
-     * Update the specified resource in storage.
+     * Memperbarui data siswa tertentu di database.
      */
     public function update(StoreSiswaRequest $request, $id)
     {
@@ -89,7 +89,7 @@ class SiswaController extends Controller
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Menghapus data siswa tertentu dari database.
      */
     public function destroy($id)
     {
@@ -100,7 +100,7 @@ class SiswaController extends Controller
     }
 
     /**
-     * Toggle the active status of the specified student.
+     * Mengubah status keaktifan akun siswa (aktif/nonaktif).
      */
     public function toggleStatus($id)
     {

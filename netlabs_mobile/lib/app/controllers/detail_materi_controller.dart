@@ -25,6 +25,7 @@ class DetailMateriController extends GetxController {
     loadDetail();
   }
 
+  // Memuat data detail pertemuan dan topik dari API
   void loadDetail() async {
     isLoading.value = true;
     try {
@@ -44,6 +45,7 @@ class DetailMateriController extends GetxController {
     }
   }
 
+  // Melakukan unduh modul PDF menggunakan browser eksternal
   void unduhPdfMateri() async {
     if (pdfUrl.value.isEmpty) {
       Get.snackbar('Informasi', 'Modul PDF belum diunggah oleh guru untuk pertemuan ini.',
