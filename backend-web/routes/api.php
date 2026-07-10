@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Route;
 
 // Endpoint Publik (Bisa diakses tanpa token)
 Route::post('/register', [AuthController::class, 'register']);
-Route::post('/login', [AuthController::class, 'login']);
+Route::post('/login', [AuthController::class, 'login'])->middleware('throttle:5,15');
 
 // Endpoint Terproteksi (Wajib membawa Bearer Token Sanctum)
 Route::middleware('auth:sanctum')->group(function () {

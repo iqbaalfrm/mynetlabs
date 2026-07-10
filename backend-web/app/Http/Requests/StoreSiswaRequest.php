@@ -32,8 +32,8 @@ class StoreSiswaRequest extends FormRequest
             ],
             'kelas_id' => 'required|exists:kelas,id',
             'password' => $this->isMethod('POST')
-                ? 'required|string|min:8|confirmed'
-                : 'nullable|string|min:8|confirmed',
+                ? ['required', 'string', 'confirmed', \Illuminate\Validation\Rules\Password::min(8)->letters()->mixedCase()->numbers()->symbols()]
+                : ['nullable', 'string', 'confirmed', \Illuminate\Validation\Rules\Password::min(8)->letters()->mixedCase()->numbers()->symbols()],
             'status' => 'required|in:aktif,nonaktif',
         ];
     }

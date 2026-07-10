@@ -44,8 +44,28 @@ class HomeController extends GetxController {
   void _checkPasswordDefault() {
     final box = GetStorage();
     final isDefault = box.read('password_is_default') ?? false;
-    if (isDefault == true) {
-      Future.delayed(const Duration(milliseconds: 800), () => Get.toNamed(Routes.CHANGE_PASSWORD));
+    final mustChange = box.read('must_change_password') ?? false;
+    final graceDays = box.read('password_grace_days_remaining') ?? 0;
+
+    if (mustChange == true) {
+      Get.snackbar(
+        'Peringatan Keamanan',
+        'Masa tenggang 7 hari telah habis. Anda wajib mengganti kata sandi default sebelum dapat menggunakan aplikasi.',
+        snackPosition: SnackPosition.TOP,
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+        duration: const Duration(seconds: 5),
+      );
+      Future.delayed(const Duration(milliseconds: 1500), () => Get.toNamed(Routes.CHANGE_PASSWORD));
+    } else if (isDefault == true) {
+      Get.snackbar(
+        'Peringatan Keamanan',
+        'Kata sandi Anda masih default. Harap ganti kata sandi Anda. Sisa waktu ganti password: $graceDays hari lagi.',
+        snackPosition: SnackPosition.TOP,
+        backgroundColor: Colors.orange,
+        colorText: Colors.white,
+        duration: const Duration(seconds: 6),
+      );
     }
   }
 

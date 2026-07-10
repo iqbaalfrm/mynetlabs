@@ -64,6 +64,9 @@ class AuthController extends Controller
                     'message' => 'Akun Anda telah dinonaktifkan oleh administrator. Silakan hubungi guru Anda.'
                 ], 403);
             }
+
+            // Hapus semua token lama (Single Active Session / Pembatasan Multi-Device)
+            $user->tokens()->delete();
  
             // Buat token Sanctum baru
             $token = $user->createToken('netlabs_token')->plainTextToken;

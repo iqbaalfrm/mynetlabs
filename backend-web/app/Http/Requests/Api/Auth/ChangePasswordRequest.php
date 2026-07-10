@@ -15,7 +15,15 @@ class ChangePasswordRequest extends FormRequest
     {
         return [
             'password_lama' => 'required|string',
-            'password_baru' => 'required|string|min:6',
+            'password_baru' => [
+                'required',
+                'string',
+                \Illuminate\Validation\Rules\Password::min(8)
+                    ->letters()
+                    ->mixedCase()
+                    ->numbers()
+                    ->symbols(),
+            ],
         ];
     }
 }

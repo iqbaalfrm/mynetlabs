@@ -57,7 +57,9 @@ class LoginController extends GetxController {
           'nama': user['nama'] ?? '',
           'kelas': user['kelas'] ?? '',
           'role': user['role'] ?? 'siswa',
-          'password_is_default': user['password_is_default'] ?? true,
+          'password_is_default': user['password_is_default'] ?? false,
+          'must_change_password': user['must_change_password'] ?? false,
+          'password_grace_days_remaining': user['password_grace_days_remaining'] ?? 0,
         });
 
         isLoading.value = false;
