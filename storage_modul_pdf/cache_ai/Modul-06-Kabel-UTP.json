@@ -1,87 +1,87 @@
 {
   "judul": "Modul 6: Media Transmisi Kabel UTP",
-  "subjudul": "Memahami Standar EIA/TIA 568, Implementasi Crimping Konektor RJ-45, dan Pengujian Kabel UTP Menggunakan LAN Tester",
+  "subjudul": "Pengenalan Standar EIA/TIA 568A dan 568B, Teknik Crimping Kabel UTP Straight-Through & Crossover, serta Metode Pengujian dengan LAN Tester",
   "tujuan": [
-    "Menganalisis dan mengidentifikasi standar pengkabelan jaringan EIA/TIA 568A dan EIA/TIA 568B secara komprehensif.",
-    "Mengidentifikasi komponen utama kabel UTP (Unshielded Twisted Pair) dan konektor RJ-45, serta memahami fungsi masing-masing dalam infrastruktur jaringan.",
-    "Menerapkan prosedur crimping konektor RJ-45 pada kabel UTP dengan teknik yang benar, presisi, dan sesuai standar untuk menjamin konektivitas yang optimal.",
-    "Merancang dan membuat kabel UTP jenis straight-through dan crossover berdasarkan kebutuhan topologi jaringan yang berbeda secara efektif dan efisien.",
-    "Melakukan pengujian fungsionalitas kabel UTP yang telah dibuat menggunakan perangkat LAN Tester, serta mampu menganalisis hasil pengujian untuk validasi atau troubleshooting."
+    "Setelah menyelesaikan praktikum ini, siswa diharapkan mampu memahami secara komprehensif struktur fisik dan standar pengkabelan Unshielded Twisted Pair (UTP) sesuai dengan rekomendasi EIA/TIA 568A dan 568B, termasuk fungsi masing-masing pasangan kabel.",
+    "Siswa akan mampu mengidentifikasi dan menyiapkan berbagai komponen yang diperlukan dalam proses crimping kabel UTP, seperti kabel UTP Cat5e/Cat6, konektor RJ-45, tang crimping, dan cable stripper, dengan memperhatikan aspek keselamatan kerja.",
+    "Siswa diharapkan memiliki keterampilan praktis dalam melakukan proses crimping konektor RJ-45 pada kabel UTP untuk menghasilkan kabel straight-through dan crossover, dengan mengikuti urutan warna standar yang benar dan kualitas koneksi yang optimal.",
+    "Siswa akan mampu menggunakan alat LAN Tester untuk menguji integritas dan fungsionalitas kabel UTP yang telah dibuat, menganalisis hasil pengujian (continuity, open, short, crossed pairs), serta mengidentifikasi potensi kesalahan dalam proses crimping.",
+    "Siswa diharapkan mampu menerapkan pengetahuan dan keterampilan yang diperoleh untuk mengidentifikasi dan memecahkan masalah dasar pada koneksi fisik jaringan yang disebabkan oleh kesalahan pengkabelan, serta mampu menjelaskan implikasinya terhadap performa jaringan."
   ],
   "kompetensi_dasar": [
-    "KD 3.12 Menerapkan pengkabelan jaringan.",
-    "KD 4.12 Membuat pengkabelan jaringan."
+    "KD 3.10 Menganalisis secara mendalam tentang standar pengkabelan EIA/TIA 568A dan 568B pada kabel UTP, serta jenis-jenis kabel berdasarkan fungsi konektivitasnya (straight-through dan crossover).",
+    "KD 4.10 Mengonfigurasikan, menguji, dan memverifikasi pembuatan kabel UTP straight-through dan crossover sesuai dengan standar industri, serta mendemonstrasikan pengujian menggunakan LAN tester."
   ],
   "alat_bahan": [
-    "Kabel UTP Kategori 5e/6 (minimal 3 meter per siswa)",
-    "Konektor RJ-45 (minimal 8 buah per siswa)",
-    "Tang Crimping RJ-45",
-    "LAN Tester",
-    "Cutter/Striping Tool untuk kabel UTP",
-    "PC/Laptop dengan sistem operasi Windows atau Linux (untuk simulasi konfigurasi IP dan pengujian)",
-    "Modul Praktikum dan Akses Internet (untuk referensi tambahan)"
+    "PC/Laptop dengan sistem operasi Windows/Linux, minimal RAM 4GB, Processor Dual Core, dan memiliki port Ethernet RJ-45 untuk pengujian fisik.",
+    "Kabel UTP (Unshielded Twisted Pair) kategori 5e atau 6, minimal panjang 3 meter per siswa untuk praktikum crimping.",
+    "Konektor RJ-45 (Registered Jack 45) berkualitas baik, minimal 10-12 buah per siswa.",
+    "Tang Crimping RJ-45 multi-fungsi yang dilengkapi pemotong kabel dan pengupas isolasi.",
+    "Cable Stripper atau cutter khusus untuk mengupas isolasi luar kabel UTP tanpa merusak inti kabel.",
+    "LAN Tester untuk pengujian kontinuitas dan urutan kabel UTP.",
+    "Modul Praktikum dan akses internet untuk referensi tambahan."
   ],
-  "prasyarat": "Sebelum mempelajari modul ini, peserta didik diharapkan telah memiliki pemahaman dasar tentang konsep jaringan komputer, model referensi OSI Layer 1 (Physical Layer), berbagai jenis perangkat jaringan (PC, Switch, Router), serta fungsi dasar dari topologi jaringan. Pemahaman mengenai alamat IP (IPv4) dan subnet mask juga akan sangat membantu dalam sesi pengujian.",
-  "teori_1": "Dalam dunia jaringan komputer, media transmisi kabel memegang peranan fundamental sebagai jalur fisik pengiriman data. Salah satu jenis kabel yang paling dominan digunakan dalam jaringan lokal (LAN) adalah kabel UTP (Unshielded Twisted Pair). Sejarahnya, penggunaan kabel twisted pair dimulai sejak era Ethernet awal, berevolusi dari kabel koaksial, karena kemampuannya dalam mengurangi interferensi elektromagnetik (EMI) dan interferensi frekuensi radio (RFI) melalui mekanisme pilinan antar pasangan kabel.<br/><br/>Kabel UTP secara struktural terdiri dari delapan konduktor tembaga yang dikelompokkan menjadi empat pasang (pair), di mana setiap pasang dipilin dengan kerapatan tertentu. Pilinan ini sangat krusial; semakin rapat pilinan, semakin baik kemampuannya dalam menolak crosstalk dan noise, sehingga kualitas transmisi data menjadi lebih stabil. Kategori kabel UTP diklasifikasikan berdasarkan performa dan kapasitas bandwidth-nya, mulai dari Category 3 (telepon), Category 5 (100 Mbps), Category 5e (1 Gbps), Category 6 (1 Gbps hingga 10 Gbps pada jarak tertentu), hingga Category 6a (10 Gbps pada jarak yang lebih jauh). Pemilihan kategori kabel harus disesuaikan dengan kebutuhan kecepatan jaringan dan lingkungan operasional.<br/><br/>Sebagai media fisik pada Layer 1 model OSI, kabel UTP bertanggung jawab untuk membawa sinyal listrik dari satu perangkat ke perangkat lain. Konektor yang umum digunakan untuk kabel UTP adalah RJ-45, sebuah konektor modular yang dirancang untuk delapan konduktor. Penting untuk memahami bahwa kualitas kabel UTP dan presisi dalam pemasangan konektor RJ-45 sangat menentukan kinerja keseluruhan infrastruktur jaringan. Kesalahan kecil pada pengkabelan dapat menyebabkan penurunan performa, hilangnya konektivitas, atau bahkan kerusakan perangkat.",
-  "teori_2_text": "Untuk memastikan interoperabilitas dan keandalan sistem pengkabelan, industri jaringan telah menetapkan standar baku. Salah satu standar yang paling dikenal dan diterima secara global adalah standar EIA/TIA-568 (Electronic Industries Alliance/Telecommunications Industry Association), khususnya bagian TIA/EIA-568-B yang mengatur tentang pengkabelan terstruktur (structured cabling) untuk bangunan komersial.<br/><br/>Standar EIA/TIA-568 mendefinisikan urutan warna kabel UTP yang harus dipatuhi saat memasang konektor RJ-45. Ada dua skema pengkabelan utama yang diakui, yaitu TIA/EIA-568A (sering disebut sebagai T568A) dan TIA/EIA-568B (sering disebut sebagai T568B). Kedua skema ini menentukan penempatan delapan kabel berwarna ke dalam delapan pin pada konektor RJ-45. Perbedaan mendasar antara 568A dan 568B terletak pada posisi pasangan kabel hijau dan orange yang ditukar. Pemilihan salah satu standar (misalnya T568B) harus konsisten di seluruh instalasi jaringan untuk menghindari kebingungan dan kesalahan pengkabelan.",
+  "prasyarat": "Sebelum memulai modul ini, siswa diharapkan telah memiliki pemahaman dasar mengenai konsep jaringan komputer, termasuk fungsi dasar perangkat jaringan seperti komputer, switch, dan hub. Siswa juga perlu memahami prinsip kerja lapisan fisik (Layer 1) dan lapisan data link (Layer 2) dari model OSI, serta konsep dasar transmisi data melalui media kabel. Pengetahuan tentang perbedaan antara komunikasi serial dan paralel juga akan sangat membantu dalam memahami fungsi pin pada konektor RJ-45.",
+  "teori_1": "Media transmisi kabel Unshielded Twisted Pair (UTP) telah menjadi tulang punggung infrastruktur jaringan lokal (LAN) selama beberapa dekade. Sejarahnya berakar pada awal pengembangan Ethernet pada tahun 1970-an, di mana Xerox PARC mengembangkan sistem yang memungkinkan komputer berkomunikasi melalui kabel koaksial. Namun, seiring dengan kebutuhan akan kecepatan dan fleksibilitas yang lebih tinggi, serta biaya yang lebih efisien, kabel UTP mulai mendapatkan popularitas. Kabel UTP secara formal didefinisikan sebagai jenis kabel tembaga yang terdiri dari empat pasang kawat yang dipilin (twisted pair) dan tidak memiliki pelindung (unshielded) tambahan dari interferensi elektromagnetik.<br/><br/><b>Standardisasi</b> adalah kunci dalam dunia jaringan. Tanpa standar, perangkat dari berbagai vendor tidak akan dapat berkomunikasi. Di sinilah peran besar <b>Telecommunications Industry Association (TIA)</b> dan <b>Electronic Industries Alliance (EIA)</b>. Organisasi ini bertanggung jawab untuk mengembangkan dan memelihara standar industri untuk produk teknologi informasi dan telekomunikasi di Amerika Serikat. Salah satu standar paling krusial yang mereka hasilkan adalah seri <b>EIA/TIA 568</b>, yang secara spesifik mengatur tentang pengkabelan telekomunikasi untuk bangunan komersial. Standar ini mencakup berbagai aspek, mulai dari jenis kabel yang digunakan (misalnya UTP, STP, Fiber Optic), topologi pengkabelan, hingga prosedur instalasi dan pengujian.<br/><br/>Konsep utama di balik 'twisted pair' adalah untuk mengurangi <b>noise</b> atau interferensi elektromagnetik dari sumber eksternal (EMI) dan crosstalk (interferensi dari pasangan kawat di dalam kabel yang sama). Dengan memilin pasangan kawat, sinyal yang berjalan di kedua kawat dalam pasangan tersebut akan terpapar pada noise yang hampir identik. Ketika sinyal tersebut diterima, perbedaan potensial dihitung, dan noise yang serupa dapat dibatalkan, menghasilkan sinyal yang lebih bersih dan kuat. Frekuensi pilinan per inci bervariasi antar pasangan, yang lebih lanjut mengurangi crosstalk antara pasangan kawat yang berbeda.<br/><br/>Kabel UTP diklasifikasikan ke dalam beberapa kategori berdasarkan performa dan kemampuan transmisi data, seperti Cat3 (telepon), Cat5, Cat5e (Enhanced), Cat6, Cat6a, Cat7, dan Cat8. Semakin tinggi kategorinya, semakin tinggi pula bandwidth yang didukung dan semakin baik kemampuan mengurangi noise. Misalnya, Cat5e mendukung kecepatan Gigabit Ethernet (1000BASE-T) hingga 100 meter, sedangkan Cat6 dirancang untuk performa yang lebih baik dalam lingkungan yang lebih bising dan dapat mendukung 10 Gigabit Ethernet (10GBASE-T) untuk jarak yang lebih pendek (hingga 55 meter), serta Cat6a yang mendukung 10GBASE-T hingga 100 meter. Pemilihan kategori kabel UTP yang tepat sangat penting untuk memastikan infrastruktur jaringan dapat mendukung kebutuhan aplikasi dan kecepatan yang diinginkan tanpa mengalami degradasi performa yang signifikan. Memahami standar EIA/TIA 568 adalah fundamental bagi setiap praktisi jaringan untuk memastikan interoperabilitas dan keandalan sistem komunikasi data.",
+  "teori_2_text": "Di dalam standar EIA/TIA 568, terdapat dua skema pengkabelan utama yang sangat penting untuk dipahami oleh para praktisi jaringan: <b>EIA/TIA 568A</b> dan <b>EIA/TIA 568B</b>. Kedua standar ini menetapkan urutan penempatan warna kabel di dalam konektor RJ-45, yang merupakan antarmuka standar untuk koneksi Ethernet. Perbedaan utama antara 568A dan 568B terletak pada penukaran posisi pasangan kabel hijau dan oranye, namun keduanya dirancang untuk memastikan kompatibilitas dan integritas sinyal dengan menjaga pasangan kabel yang sama digunakan untuk fungsi transmisi (Tx) dan penerimaan (Rx).\n\nSkema pengkabelan ini menjadi dasar dalam pembuatan kabel jaringan, khususnya untuk jenis kabel straight-through dan crossover. Kabel straight-through, yang paling umum digunakan untuk menghubungkan perangkat akhir (seperti PC) ke perangkat interkoneksi (seperti switch atau hub), menggunakan skema warna yang sama di kedua ujung kabel (misalnya, 568B di kedua ujungnya). Sementara itu, kabel crossover dirancang untuk menghubungkan dua perangkat sejenis secara langsung (misalnya, PC ke PC atau switch ke switch generasi lama) dan menggunakan skema warna 568A di satu ujung dan 568B di ujung lainnya, secara efektif menyilangkan pin transmisi satu perangkat dengan pin penerima perangkat lainnya. Pemahaman mendalam tentang kedua standar ini sangat krusial untuk memastikan konektivitas jaringan yang benar dan fungsionalitas yang optimal.",
   "teori_2_table": [
     [
       "Pin",
-      "Warna Kabel EIA/TIA-568A",
-      "Warna Kabel EIA/TIA-568B",
-      "Fungsi"
+      "Warna (EIA/TIA 568A)",
+      "Warna (EIA/TIA 568B)",
+      "Fungsi (Pasangan)"
     ],
     [
       "1",
-      "Putih Hijau",
-      "Putih Orange",
-      "Tx+ (Mengirim Data Positif)"
+      "Putih-Hijau",
+      "Putih-Oranye",
+      "TX+ (Pair 3)"
     ],
     [
       "2",
       "Hijau",
-      "Orange",
-      "Tx- (Mengirim Data Negatif)"
+      "Oranye",
+      "TX- (Pair 3)"
     ],
     [
       "3",
-      "Putih Orange",
-      "Putih Hijau",
-      "Rx+ (Menerima Data Positif)"
+      "Putih-Oranye",
+      "Putih-Hijau",
+      "RX+ (Pair 2)"
     ],
     [
       "4",
       "Biru",
       "Biru",
-      "Tidak Digunakan (Tapi terhubung untuk PoE)"
+      "N/A (Pair 1)"
     ],
     [
       "5",
-      "Putih Biru",
-      "Putih Biru",
-      "Tidak Digunakan (Tapi terhubung untuk PoE)"
+      "Putih-Biru",
+      "Putih-Biru",
+      "N/A (Pair 1)"
     ],
     [
       "6",
-      "Orange",
+      "Oranye",
       "Hijau",
-      "Rx- (Menerima Data Negatif)"
+      "RX- (Pair 2)"
     ],
     [
       "7",
-      "Putih Cokelat",
-      "Putih Cokelat",
-      "Tidak Digunakan (Tapi terhubung untuk PoE)"
+      "Putih-Coklat",
+      "Putih-Coklat",
+      "N/A (Pair 4)"
     ],
     [
       "8",
-      "Cokelat",
-      "Cokelat",
-      "Tidak Digunakan (Tapi terhubung untuk PoE)"
+      "Coklat",
+      "Coklat",
+      "N/A (Pair 4)"
     ]
   ],
-  "teori_2_extra": "Dari tabel di atas, dapat dilihat bahwa perbedaan kunci antara standar 568A dan 568B terletak pada pasangan kabel orange dan hijau yang bertukar posisi untuk pin 1/2 dan 3/6. Untuk membuat kabel straight-through, kedua ujung kabel harus menggunakan standar yang sama, misalnya 568B di kedua ujung. Kabel straight-through digunakan untuk menghubungkan perangkat yang berbeda jenis, seperti PC ke Switch/Hub, Router ke Switch, atau Server ke Switch. Sebaliknya, untuk membuat kabel crossover, satu ujung harus menggunakan standar 568A dan ujung lainnya menggunakan standar 568B. Kabel crossover digunakan untuk menghubungkan perangkat yang sejenis, seperti PC ke PC, Switch ke Switch, atau Router ke Router (tanpa fitur Auto MDI/MDIX). Penting untuk diingat bahwa perangkat jaringan modern seringkali sudah dilengkapi dengan fitur Auto MDI/MDIX, yang memungkinkan mereka secara otomatis mendeteksi dan menyesuaikan jenis kabel yang digunakan, sehingga penggunaan kabel crossover menjadi kurang krusial dibandingkan masa lalu, namun pemahaman konsepnya tetap esensial.",
-  "topologi_desc": "Dalam praktikum ini, kita akan membuat dan menguji dua jenis konfigurasi koneksi fisik menggunakan kabel UTP yang dibuat secara mandiri. <br/><b>Skenario 1: Koneksi Jaringan Client-Server Sederhana (Menggunakan Kabel Straight-Through)</b>. Satu unit Personal Computer (PC-A) akan dihubungkan ke sebuah perangkat Switch Ethernet. PC-A akan menggunakan antarmuka FastEthernet0, dan Switch akan menggunakan salah satu port FastEthernet, misalnya FastEthernet0/1. Kabel yang digunakan untuk koneksi ini adalah jenis Straight-Through.<br/><b>Skenario 2: Koneksi Peer-to-Peer Langsung (Menggunakan Kabel Crossover)</b>. Dua unit Personal Computer (PC-B dan PC-C) akan dihubungkan secara langsung tanpa melalui perangkat perantara seperti Switch. PC-B akan menggunakan antarmuka FastEthernet0, dan PC-C juga akan menggunakan antarmuka FastEthernet0. Kabel yang digunakan untuk koneksi ini adalah jenis Crossover.",
+  "teori_2_extra": "Dari tabel di atas, dapat dilihat bahwa perbedaan utama antara standar 568A dan 568B terletak pada pertukaran posisi pasangan kabel hijau dan oranye untuk pin 1/2 dan 3/6. Meskipun berbeda, kedua standar ini sama-sama valid dan berfungsi dengan baik selama konsisten dalam implementasinya. Standar 568B lebih sering digunakan dalam instalasi komersial baru di Amerika Utara, sedangkan 568A lebih umum di Eropa dan beberapa instalasi pemerintah AS yang lebih lama. Penting untuk diingat bahwa pin 1 dan 2 digunakan untuk Transmit (TX), sedangkan pin 3 dan 6 digunakan untuk Receive (RX) pada koneksi Fast Ethernet (10/100 Mbps). Untuk Gigabit Ethernet (1000 Mbps), semua empat pasang kabel (pin 1-8) digunakan untuk transmisi dan penerimaan secara simultan, meskipun prinsip dasar penyilangan untuk kabel crossover tetap berlaku.\n\nMempertahankan pasangan pilinan (twisted pairs) hingga ke titik paling dekat dengan konektor RJ-45 adalah faktor krusial untuk menjaga integritas sinyal dan meminimalkan crosstalk serta interferensi elektromagnetik. Terlalu banyak untwisting pada ujung kabel sebelum crimping akan menyebabkan degradasi performa jaringan, terutama pada kecepatan tinggi. Meskipun banyak perangkat modern telah mendukung fitur Auto-MDIX (Automatic Medium-Dependent Interface Crossover) yang secara otomatis mendeteksi dan mengadaptasi jenis kabel (straight-through atau crossover) yang terhubung, pemahaman dan kemampuan untuk membuat kedua jenis kabel ini tetap merupakan keahlian fundamental bagi setiap teknisi jaringan. Hal ini memastikan kesiapan dalam menghadapi perangkat lama atau skenario khusus yang mungkin tidak mendukung Auto-MDIX.",
+  "topologi_desc": "Dalam praktikum ini, topologi jaringan yang digunakan relatif sederhana dan dirancang untuk memverifikasi fungsionalitas kabel UTP yang telah dibuat. Untuk pengujian kabel straight-through, kita akan menggunakan sebuah topologi point-to-point antara sebuah Personal Computer (PC) dengan sebuah perangkat Switch Ethernet. PC akan terhubung ke port FastEthernet (misalnya, Fa0/1) pada Switch menggunakan kabel UTP straight-through yang telah dicrimping. Hal ini mensimulasikan koneksi workstation umum ke infrastruktur jaringan kantor.\n\nSementara itu, untuk pengujian kabel crossover, topologi yang akan kita terapkan adalah koneksi langsung antara dua Personal Computer (PC1 dan PC2) tanpa melalui perangkat Switch. Masing-masing PC akan memiliki antarmuka FastEthernet (Fa0/0) yang terhubung menggunakan kabel UTP crossover. Segmentasi jaringan pada kedua topologi ini adalah flat network (single broadcast domain) tanpa konfigurasi routing, karena fokus utama kita adalah pada integritas koneksi fisik (Layer 1) dan dasar Layer 2. IP address akan dikonfigurasi secara statis pada masing-masing PC dalam subnet yang sama untuk memfasilitasi pengujian konektivitas dasar.",
   "addressing_table": [
     [
       "Perangkat",
@@ -91,49 +91,59 @@
       "Default Gateway"
     ],
     [
-      "PC-A",
-      "FastEthernet0",
-      "192.168.10.10",
+      "PC1 (Straight)",
+      "FastEthernet0/0",
+      "192.168.1.10",
+      "255.255.255.0",
+      "N/A"
+    ],
+    [
+      "PC2 (Crossover)",
+      "FastEthernet0/0",
+      "192.168.1.11",
       "255.255.255.0",
       "N/A"
     ],
     [
       "Switch1",
-      "VLAN 1 (Management)",
-      "192.168.10.1",
+      "VLAN1 (Management)",
+      "N/A",
+      "N/A",
+      "N/A"
+    ],
+    [
+      "PC A (Crossover)",
+      "FastEthernet0/0",
+      "192.168.1.20",
       "255.255.255.0",
       "N/A"
     ],
     [
-      "PC-B",
-      "FastEthernet0",
-      "192.168.20.1",
-      "255.255.255.0",
-      "N/A"
-    ],
-    [
-      "PC-C",
-      "FastEthernet0",
-      "192.168.20.2",
+      "PC B (Crossover)",
+      "FastEthernet0/0",
+      "192.168.1.21",
       "255.255.255.0",
       "N/A"
     ]
   ],
-  "skenario_desc": "Dalam lingkungan kerja seorang Network Engineer atau teknisi jaringan, kemampuan untuk membuat dan mengidentifikasi jenis kabel UTP adalah kompetensi dasar yang mutlak. Bayangkan Anda ditugaskan untuk melakukan instalasi jaringan di sebuah kantor baru. Anda perlu menghubungkan puluhan workstation ke switch, dan pada saat yang sama, Anda mungkin perlu melakukan transfer data cepat antar dua komputer secara langsung tanpa bergantung pada infrastruktur jaringan yang ada. Dalam situasi ini, pemahaman tentang kapan menggunakan kabel straight-through dan kapan menggunakan kabel crossover menjadi sangat krusial.<br/><br/>Skenario praktikum ini dirancang untuk mensimulasikan kebutuhan riil di lapangan. Pembuatan kabel straight-through akan melatih Anda dalam menyiapkan koneksi standar antara perangkat akhir (misalnya, komputer) dan perangkat perantara (seperti switch), yang merupakan tulang punggung hampir semua jaringan LAN. Sementara itu, pembuatan kabel crossover akan membekali Anda dengan keahlian untuk membangun koneksi ad-hoc antar perangkat sejenis, yang berguna untuk transfer data cepat, konfigurasi perangkat secara langsung, atau sebagai solusi sementara saat perangkat jaringan lain tidak tersedia. Melalui skenario ini, Anda akan tidak hanya membuat kabel, tetapi juga memahami logika di balik setiap jenis koneksi dan bagaimana menguji keandalannya.",
+  "skenario_desc": "Bayangkan Anda adalah seorang Network Engineer muda di sebuah perusahaan yang baru saja merelokasi kantor ke gedung baru. Tim Anda ditugaskan untuk menyiapkan seluruh infrastruktur jaringan fisik dari awal. Ini termasuk memasang kabel UTP dari setiap workstation ke switch di ruang server, serta menyiapkan beberapa koneksi langsung antar perangkat untuk kebutuhan khusus, seperti transfer data antar server sementara atau menghubungkan dua perangkat jaringan sejenis yang lebih tua. Tugas pertama Anda adalah membuat dan menguji kabel-kabel jaringan ini dengan standar kualitas yang tinggi.<br/><br/>Dalam skenario ini, Anda perlu memahami kapan harus menggunakan kabel straight-through dan kapan kabel crossover. Untuk workstation standar yang terhubung ke switch Cisco Catalyst yang sudah mendukung Auto-MDIX, kabel straight-through adalah pilihan yang paling umum dan efisien. Namun, Anda juga menemukan beberapa perangkat lama, seperti hub atau switch generasi pertama, yang tidak memiliki fitur Auto-MDIX, atau skenario di mana dua komputer harus berkomunikasi langsung tanpa melalui switch. Dalam kasus-kasus inilah kabel crossover menjadi sangat penting dan mutlak diperlukan untuk memastikan konektivitas.<br/><br/>Tujuan utama dari praktikum ini adalah untuk mensimulasikan tantangan nyata di lapangan. Anda tidak hanya akan belajar bagaimana secara fisik membuat kabel sesuai standar EIA/TIA 568A dan 568B, tetapi juga bagaimana menguji integritas setiap kabel yang Anda buat menggunakan LAN tester dan verifikasi fungsional dengan perintah 'ping' pada perangkat PC. Keterampilan ini sangat fundamental. Kesalahan kecil dalam crimping dapat menyebabkan masalah besar, seperti koneksi intermiten, penurunan kecepatan, atau bahkan kegagalan koneksi total, yang pada akhirnya akan berdampak pada produktivitas seluruh perusahaan. Oleh karena itu, presisi, ketelitian, dan pemahaman yang kuat terhadap standar adalah kunci kesuksesan dalam tugas ini.",
   "langkah_kerja": [
-    "<b>Persiapan Alat dan Bahan:</b> Siapkan semua alat (tang crimping, LAN tester, cutter/striping tool) dan bahan (kabel UTP, konektor RJ-45) di meja kerja Anda. Pastikan area kerja bersih dan tertata.",
-    "<b>Mengupas Isolasi Kabel:</b> Gunakan striping tool atau cutter untuk mengupas isolasi luar kabel UTP sepanjang ± 2-3 cm dari ujung kabel. Hati-hati jangan sampai melukai isolasi kabel bagian dalam (pilinan kawat).",
-    "<b>Meluruskan dan Memisahkan Kabel:</b> Setelah isolasi luar terkelupas, Anda akan melihat empat pasang kabel pilin. Luruskan setiap pilinan dan pisahkan kabel-kabel tersebut satu per satu.",
-    "<b>Mengurutkan Warna Kabel (Standard 568B untuk Kabel Straight-Through):</b> Urutkan kabel sesuai standar EIA/TIA-568B dari kiri ke kanan: Putih-Orange, Orange, Putih-Hijau, Biru, Putih-Biru, Hijau, Putih-Cokelat, Cokelat.",
-    "<b>Memotong Rata Ujung Kabel:</b> Setelah urutan benar dan kabel lurus, potong ujung kabel menggunakan tang crimping hingga rata dan rapi, dengan panjang sekitar 1.2 cm dari ujung isolasi luar yang terkupas. Pastikan semua kabel memiliki panjang yang sama.",
-    "<b>Memasukkan ke Konektor RJ-45:</b> Masukkan kabel yang sudah diurutkan dan dipotong rata ke dalam konektor RJ-45 secara perlahan. Pastikan setiap kabel masuk ke pin yang sesuai dan ujung isolasi luar kabel masuk sedikit ke dalam badan konektor (untuk kekuatan cengkeraman konektor). Periksa kembali urutan warna dari depan konektor untuk memastikan tidak ada yang tertukar.",
-    "<b>Melakukan Crimping:</b> Masukkan konektor RJ-45 yang sudah terisi kabel ke lubang crimping pada tang crimping RJ-45. Tekan tang crimping dengan kuat dan mantap hingga terdengar bunyi 'klik' yang menandakan pin-pin konektor sudah menancap dengan sempurna ke kabel. Lakukan ini untuk kedua ujung kabel.",
-    "<b>Membuat Kabel Crossover:</b> Ulangi langkah 2 sampai 7. Untuk ujung pertama gunakan standar 568A (Putih-Hijau, Hijau, Putih-Orange, Biru, Putih-Biru, Orange, Putih-Cokelat, Cokelat). Untuk ujung kedua gunakan standar 568B (Putih-Orange, Orange, Putih-Hijau, Biru, Putih-Biru, Hijau, Putih-Cokelat, Cokelat).",
-    "<b>Pengujian Menggunakan LAN Tester:</b> Sambungkan kedua ujung kabel yang telah di-crimping ke port pada LAN Tester (satu ujung ke port Master, satu ujung ke port Remote). Nyalakan LAN Tester dan amati indikator lampu LED. Pastikan semua lampu menyala secara berurutan dari 1 hingga 8 di kedua sisi (Master dan Remote) untuk kabel straight-through. Untuk kabel crossover, amati pola persilangan yang sesuai (misalnya, Master 1 ke Remote 3, Master 2 ke Remote 6, Master 3 ke Remote 1, Master 6 ke Remote 2)."
+    "<b>Persiapan Alat dan Bahan:</b> Siapkan semua alat (tang crimping, cable stripper, LAN tester) dan bahan (kabel UTP Cat5e/Cat6, konektor RJ-45) di meja kerja. Pastikan area kerja bersih dan tertata rapi.",
+    "<b>Pengupasan Isolasi Kabel:</b> Gunakan cable stripper atau pisau pada tang crimping untuk mengupas isolasi luar kabel UTP sekitar 2-3 cm dari ujung. Hati-hati agar tidak merusak isolasi atau inti kabel di dalamnya. Putar kabel perlahan dan tarik isolasi luar.",
+    "<b>Pemilahan dan Pelurusan Kabel:</b> Setelah isolasi luar terlepas, Anda akan melihat empat pasang kabel pilin. Pisahkan setiap pasangan dan luruskan setiap kawat tembaga secara individual. Pastikan tidak ada lekukan tajam atau kerusakan pada kawat.",
+    "<b>Pengurutan Kabel (Standar 568B untuk Straight-Through):</b> Susun kawat-kawat tembaga sesuai urutan warna standar EIA/TIA 568B dari kiri ke kanan: Putih-Oranye, Oranye, Putih-Hijau, Biru, Putih-Biru, Hijau, Putih-Coklat, Coklat. Pastikan urutan ini benar dan rapi.",
+    "<b>Pemotongan Ujung Kabel:</b> Setelah urutan warna benar dan rapi, pangkas semua ujung kawat secara rata dan tegak lurus menggunakan pemotong kabel pada tang crimping. Pastikan panjang kawat sekitar 1.2-1.5 cm dari ujung isolasi luar kabel.",
+    "<b>Pemasangan Konektor RJ-45:</b> Masukkan kawat-kawat yang sudah diurutkan ke dalam konektor RJ-45 secara perlahan. Pastikan setiap kawat masuk ke pin yang sesuai dan isolasi luar kabel masuk sedikit ke dalam konektor agar terkunci saat di-crimping. Pin emas pada konektor harus menghadap ke atas.",
+    "<b>Proses Crimping:</b> Masukkan konektor RJ-45 yang sudah terisi kabel ke dalam slot RJ-45 pada tang crimping. Tekan tang crimping dengan kuat dan mantap hingga terdengar bunyi 'klik' atau sampai tuas tang kembali ke posisi semula. Pastikan semua pin emas pada konektor menembus isolasi kawat dan menyentuh inti tembaga dengan baik.",
+    "<b>Pengulangan untuk Ujung Kedua (Straight-Through):</b> Ulangi langkah 2 hingga 7 untuk ujung kabel yang kedua dengan menggunakan urutan warna standar EIA/TIA 568B yang sama. Dengan demikian, Anda akan mendapatkan kabel straight-through.",
+    "<b>Pengujian Kabel Straight-Through dengan LAN Tester:</b> Sambungkan kedua ujung kabel straight-through ke port transmitter dan receiver pada LAN Tester. Nyalakan LAN Tester dan perhatikan urutan lampu indikator (1-8 dan G jika ada). Untuk kabel straight-through yang benar, lampu harus menyala secara berurutan dari 1 hingga 8 di kedua sisi LAN Tester secara bersamaan.",
+    "<b>Pembuatan Kabel Crossover:</b> Untuk membuat kabel crossover, ulangi langkah 2 hingga 7. Pada satu ujung kabel, gunakan standar EIA/TIA 568A (Putih-Hijau, Hijau, Putih-Oranye, Biru, Putih-Biru, Oranye, Putih-Coklat, Coklat). Pada ujung kabel yang lain, gunakan standar EIA/TIA 568B. Pastikan kedua ujung dikerjakan dengan rapi dan benar.",
+    "<b>Pengujian Kabel Crossover dengan LAN Tester:</b> Sambungkan kedua ujung kabel crossover ke LAN Tester. Nyalakan dan perhatikan urutan lampu indikator. Untuk kabel crossover yang benar, lampu akan menyala tidak berurutan pada kedua sisi, menunjukkan penyilangan pin sesuai standar (misalnya, lampu 1 di satu sisi menyala bersamaan dengan lampu 3 di sisi lain, lampu 2 dengan 6, dst.).",
+    "<b>Verifikasi Fungsional:</b> Setelah pengujian LAN Tester sukses, sambungkan kabel straight-through dari PC1 ke Switch1, dan kabel crossover dari PC A ke PC B. Konfigurasikan IP address pada PC-PC tersebut sesuai addressing table. Lakukan perintah 'ping' dari PC1 ke Default Gateway (jika ada) atau dari PC A ke PC B untuk memverifikasi konektivitas jaringan secara logis."
   ],
-  "commands": "# Konfigurasi IP Address pada PC-A (Kabel Straight-Through)<br/># Buka 'Control Panel' -> 'Network and Sharing Center' -> 'Change adapter settings'.<br/># Klik kanan pada 'Ethernet' atau 'Local Area Connection' -> 'Properties'.<br/># Pilih 'Internet Protocol Version 4 (TCP/IPv4)' -> 'Properties'.<br/># Pilih 'Use the following IP address:' dan masukkan:<br/># IP address: 192.168.10.10<br/># Subnet mask: 255.255.255.0<br/># Default Gateway: (Kosongkan atau biarkan kosong untuk skenario ini)<br/># Klik 'OK' dua kali untuk menyimpan pengaturan.<br/><br/># Konfigurasi IP Address pada PC-B (Kabel Crossover)<br/># Buka 'Control Panel' -> 'Network and Sharing Center' -> 'Change adapter settings'.<br/># Klik kanan pada 'Ethernet' atau 'Local Area Connection' -> 'Properties'.<br/># Pilih 'Internet Protocol Version 4 (TCP/IPv4)' -> 'Properties'.<br/># Pilih 'Use the following IP address:' dan masukkan:<br/># IP address: 192.168.20.1<br/># Subnet mask: 255.255.255.0<br/># Default Gateway: (Kosongkan)<br/># Klik 'OK' dua kali untuk menyimpan pengaturan.<br/><br/># Konfigurasi IP Address pada PC-C (Kabel Crossover)<br/># Buka 'Control Panel' -> 'Network and Sharing Center' -> 'Change adapter settings'.<br/># Klik kanan pada 'Ethernet' atau 'Local Area Connection' -> 'Properties'.<br/># Pilih 'Internet Protocol Version 4 (TCP/IPv4)' -> 'Properties'.<br/># Pilih 'Use the following IP address:' dan masukkan:<br/># IP address: 192.168.20.2<br/># Subnet mask: 255.255.255.0<br/># Default Gateway: (Kosongkan)<br/># Klik 'OK' dua kali untuk menyimpan pengaturan.<br/><br/># Mengecek konfigurasi IP Address (Command Prompt/Terminal)<br/>ipconfig<br/><br/># Menguji konektivitas (Command Prompt/Terminal)<br/># Dari PC-A ke Switch (jika Switch memiliki IP 192.168.10.1)<br/>ping 192.168.10.1<br/># Dari PC-B ke PC-C<br/>ping 192.168.20.2<br/># Dari PC-C ke PC-B<br/>ping 192.168.20.1",
-  "uji_coba_text": "Setelah kabel UTP selesai dibuat dan koneksi fisik telah terpasang sesuai topologi yang diinginkan, langkah selanjutnya adalah melakukan pengujian konektivitas secara menyeluruh. Pengujian awal menggunakan LAN Tester memberikan validasi fisik pada integritas kabel, memastikan tidak ada putus atau short circuit pada setiap pin. Namun, untuk memverifikasi konektivitas logis pada Layer 3 (Network Layer) dan kemampuan pengiriman data, kita akan menggunakan utilitas 'ping'.<br/><br/>Perintah 'ping' mengirimkan paket ICMP (Internet Control Message Protocol) 'Echo Request' ke alamat IP tujuan dan menunggu 'Echo Reply'. Respon dari perintah ping memberikan informasi vital mengenai status konektivitas, termasuk waktu respon (latency) dan jumlah paket yang hilang (packet loss). Jika semua paket berhasil diterima dengan waktu respon yang rendah, ini menunjukkan bahwa jalur komunikasi end-to-end melalui kabel yang dibuat telah berfungsi dengan baik. Sebaliknya, jika ada 'Request timed out' atau 'Destination Host Unreachable', ini mengindikasikan adanya masalah pada pengkabelan, konfigurasi IP, atau perangkat jaringan.",
-  "uji_coba_cmd": "C:\\Users\\User>ping 192.168.20.2<br/><br/>Pinging 192.168.20.2 with 32 bytes of data:<br/>Reply from 192.168.20.2: bytes=32 time<1ms TTL=128<br/>Reply from 192.168.20.2: bytes=32 time<1ms TTL=128<br/>Reply from 192.168.20.2: bytes=32 time<1ms TTL=128<br/>Reply from 192.168.20.2: bytes=32 time<1ms TTL=128<br/><br/>Ping statistics for 192.168.20.2:<br/>    Packets: Sent = 4, Received = 4, Lost = 0 (0% loss),<br/>Approximate round trip times in milli-seconds:<br/>    Minimum = 0ms, Maximum = 0ms, Average = 0ms",
+  "commands": "Berikut adalah contoh perintah yang dapat digunakan pada perangkat PC berbasis Windows untuk memverifikasi konfigurasi IP dan menguji konektivitas setelah kabel di-crimping:\n\n# Membuka Command Prompt (CMD) sebagai Administrator\n# Tekan tombol Windows + R, ketik 'cmd', lalu tekan Enter.\n\n# Memeriksa konfigurasi IP address pada PC\nC:\\Users\\User> ipconfig /all\n\n# Output yang diharapkan akan menampilkan detail antarmuka jaringan, termasuk:\n#   Ethernet adapter Ethernet:\n#      Connection-specific DNS Suffix  . : \n#      Description . . . . . . . . . . . : Realtek PCIe GbE Family Controller\n#      Physical Address. . . . . . . . . : 00-11-22-33-44-55\n#      DHCP Enabled. . . . . . . . . . . : No\n#      Autoconfiguration Enabled . . . . : Yes\n#      IPv4 Address. . . . . . . . . . . : 192.168.1.10(Preferred)\n#      Subnet Mask . . . . . . . . . . . : 255.255.255.0\n#      Default Gateway . . . . . . . . . : \n#      DNS Servers . . . . . . . . . . . : \n\n# Menguji konektivitas menggunakan perintah ping\n# Contoh: Ping dari PC A (192.168.1.20) ke PC B (192.168.1.21) menggunakan kabel crossover\nC:\\Users\\User> ping 192.168.1.21\n\n# Output yang diharapkan jika koneksi sukses:\n# Pinging 192.168.1.21 with 32 bytes of data:\n# Reply from 192.168.1.21: bytes=32 time<1ms TTL=128\n# Reply from 192.168.1.21: bytes=32 time<1ms TTL=128\n# Reply from 192.168.1.21: bytes=32 time<1ms TTL=128\n# Reply from 192.168.1.21: bytes=32 time<1ms TTL=128\n#\n# Ping statistics for 192.168.1.21:\n#    Packets: Sent = 4, Received = 4, Lost = 0 (0% loss),\n# Approximate round trip times in milli-seconds:\n#    Minimum = 0ms, Maximum = 0ms, Average = 0ms\n\n# Menguji konektivitas ke localhost (loopback address) - untuk memeriksa tumpukan TCP/IP lokal\nC:\\Users\\User> ping 127.0.0.1\n\n# Output yang diharapkan:\n# Pinging 127.0.0.1 with 32 bytes of data:\n# Reply from 127.0.0.1: bytes=32 time<1ms TTL=128\n# ... (dan seterusnya)\n\n# Memeriksa status antarmuka jaringan secara lebih detail (opsional)\nC:\\Users\\User> netsh interface ipv4 show interfaces\n",
+  "uji_coba_text": "Pengujian konektivitas adalah tahap krusial setelah proses crimping dan pembuatan kabel. Langkah pertama dan paling dasar adalah menggunakan <b>LAN Tester</b>. LAN Tester memiliki dua unit (master dan remote) yang disambungkan ke kedua ujung kabel. Ketika dihidupkan, ia akan mengirimkan sinyal listrik melalui setiap pin kabel secara berurutan (pin 1 hingga 8). Pada kabel straight-through yang benar, lampu indikator pada kedua unit (master dan remote) harus menyala secara berurutan dan bersamaan (misalnya, 1-1, 2-2, ..., 8-8). Jika ada kabel yang putus (open), short (korslet), atau salah urutan (crossed/reversed pairs), LAN Tester akan menampilkan pola lampu yang tidak sesuai, membantu mengidentifikasi masalah secara cepat. Untuk kabel crossover, pola lampu akan menunjukkan penyilangan pin yang benar (misalnya, 1-3, 2-6, 3-1, 6-2, dan seterusnya).\n\nSetelah pengujian fisik dengan LAN Tester sukses, verifikasi fungsional dilakukan menggunakan perintah <b>`ping`</b> dari Command Prompt (Windows) atau Terminal (Linux/macOS) pada perangkat PC yang terhubung. Pastikan kedua PC yang akan diuji konektivitasnya memiliki IP address statis dalam subnet yang sama. Jika kabel dan konfigurasi IP benar, perintah `ping` ke IP address PC tujuan akan menghasilkan balasan (`Reply from...`) dengan statistik waktu tempuh paket (RTT) dan Time To Live (TTL). Jika Anda mendapatkan pesan `Request timed out` atau `Destination Host Unreachable`, ini mengindikasikan adanya masalah, baik pada kabel, konfigurasi IP, atau driver network adapter. Analisis respons `ping` membantu memastikan bahwa paket data dapat ditransmisikan dan diterima antar perangkat melalui kabel yang telah dibuat.",
+  "uji_coba_cmd": "Berikut adalah contoh output terminal ketika pengujian konektivitas dilakukan dan berhasil:\n\n# Pengujian Kabel Straight-Through (PC1 ke Switch Port)\n# Pastikan PC1 sudah terhubung ke port Fa0/1 Switch1, dan Switch1 dalam kondisi aktif.\n# IP PC1: 192.168.1.10 /24\n# (Asumsikan Switch1 memiliki management IP 192.168.1.1 di VLAN1, jika tidak, ping ke IP perangkat lain di subnet yang sama)\n\nC:\\Users\\User> ping 192.168.1.1\n\nPinging 192.168.1.1 with 32 bytes of data:\nReply from 192.168.1.1: bytes=32 time<1ms TTL=255\nReply from 192.168.1.1: bytes=32 time<1ms TTL=255\nReply from 192.168.1.1: bytes=32 time<1ms TTL=255\nReply from 192.168.1.1: bytes=32 time<1ms TTL=255\n\nPing statistics for 192.168.1.1:\n    Packets: Sent = 4, Received = 4, Lost = 0 (0% loss),\nApproximate round trip times in milli-seconds:\n    Minimum = 0ms, Maximum = 0ms, Average = 0ms\n\n# Pengujian Kabel Crossover (PC A ke PC B)\n# Pastikan PC A (192.168.1.20 /24) terhubung langsung ke PC B (192.168.1.21 /24) dengan kabel crossover.\n# Lakukan ping dari PC A ke PC B:\n\nC:\\Users\\User> ping 192.168.1.21\n\nPinging 192.168.1.21 with 32 bytes of data:\nReply from 192.168.1.21: bytes=32 time<1ms TTL=128\nReply from 192.168.1.21: bytes=32 time<1ms TTL=128\nReply from 192.168.1.21: bytes=32 time<1ms TTL=128\nReply from 192.168.1.21: bytes=32 time<1ms TTL=128\n\nPing statistics for 192.168.1.21:\n    Packets: Sent = 4, Received = 4, Lost = 0 (0% loss),\nApproximate round trip times in milli-seconds:\n    Minimum = 0ms, Maximum = 0ms, Average = 0ms\n\n# Output show interfaces status (Contoh dari Switch Cisco jika terhubung)\n# Untuk verifikasi apakah port terdeteksi 'up' dan 'connected'\n# Switch# show interfaces status\n\n# Port       Name               Status       Vlan       Duplex  Speed Type\n# Fa0/1                          connected    1            a-full   a-100 10/100BaseTX\n# ...\n",
   "troubleshooting_table": [
     [
       "Gejala Masalah",
@@ -141,27 +151,27 @@
       "Tindakan Korektif"
     ],
     [
-      "LAN Tester tidak menyala sama sekali pada salah satu atau kedua ujung kabel.",
-      "Konektor RJ-45 tidak terpasang sempurna (belum ter-crimping dengan kuat) atau ada kabel yang putus di bagian dalam isolasi.",
-      "Periksa kembali proses crimping, pastikan tang crimping ditekan penuh. Jika perlu, potong dan crimping ulang konektor. Periksa integritas kabel secara visual."
+      "Tidak Ada Lampu Link pada NIC/Switch, LAN Tester Gagal",
+      "Kabel putus, crimping tidak sempurna (kawat tidak terkoneksi), salah standar pengkabelan, konektor RJ-45 rusak, port jaringan faulty.",
+      "Periksa ulang crimping di kedua ujung kabel, pastikan semua kawat tembaga menyentuh pin RJ-45. Cek urutan warna. Coba kabel lain yang sudah terbukti berfungsi. Ganti konektor RJ-45 jika rusak. Coba port switch/NIC lain."
     ],
     [
-      "LAN Tester menyala tetapi tidak berurutan (misal: Master 1 menyala, Remote tidak menyala atau menyala di pin yang salah).",
-      "Urutan warna kabel pada salah satu atau kedua ujung konektor RJ-45 tidak sesuai standar 568A/568B, atau ada kabel yang terputus sebagian (short circuit).",
-      "Lepaskan konektor, luruskan dan urutkan kembali kabel dengan teliti sesuai standar. Pastikan kabel masuk sepenuhnya ke dalam konektor hingga menyentuh pin tembaga sebelum di-crimping. Ulangi proses crimping."
+      "Koneksi Intermiten/Tidak Stabil, Packet Loss Tinggi",
+      "Crimping kurang rapat/longgar, isolasi kawat terkelupas, kabel terlalu panjang, terlalu banyak untwisting pada ujung kabel, interferensi elektromagnetik tinggi.",
+      "Periksa visual kerapatan crimping. Pastikan isolasi kabel tidak terkelupas. Potong dan crimp ulang ujung kabel. Batasi panjang kabel UTP hingga 100 meter. Hindari sumber interferensi (kabel listrik, mesin besar)."
     ],
     [
-      "Kabel sudah lulus uji LAN Tester, tetapi tidak ada link light di perangkat jaringan, atau ping gagal (Request timed out/Destination Host Unreachable).",
-      "Kesalahan pemilihan jenis kabel (misalnya, menggunakan straight-through untuk koneksi peer-to-peer tanpa Auto-MDIX). Konfigurasi IP Address pada PC tidak benar (IP Address, Subnet Mask). Driver Network Interface Card (NIC) bermasalah.",
-      "Pastikan jenis kabel yang digunakan sudah tepat sesuai koneksi (straight-through untuk PC-Switch, crossover untuk PC-PC). Verifikasi kembali konfigurasi IP Address, Subnet Mask pada perangkat. Periksa status driver NIC."
+      "Kecepatan Jaringan Lambat dari Yang Seharusnya (misal: 10Mbps bukan 100Mbps/1Gbps)",
+      "Kabel kualitas rendah (misal Cat5 untuk Gigabit), salah kategori kabel untuk kebutuhan, untwisting berlebihan, kerusakan internal pada kabel, auto-negotiation gagal.",
+      "Pastikan menggunakan kabel UTP Cat5e atau Cat6 untuk kecepatan Gigabit. Periksa pengaturan duplex dan speed pada NIC PC/Switch (pastikan auto-negotiation aktif atau set manual ke 'full-duplex, 1000Mbps'). Ganti kabel dengan yang berkualitas lebih tinggi. Pastikan untwisting minimal."
     ]
   ],
-  "tugas_mandiri": "Sebagai seorang praktisi Network Engineer yang handal, Anda ditantang untuk mengatasi skenario yang lebih kompleks. Buatlah studi kasus di mana Anda diminta untuk mengimplementasikan koneksi jaringan di sebuah mini-lab yang terdiri dari dua unit Switch lama (yang diketahui tidak memiliki fitur Auto-MDIX) dan tiga unit PC Client, serta satu unit Server. Buatlah dua buah kabel UTP jenis crossover untuk menghubungkan kedua Switch tersebut (Switch-to-Switch). Kemudian, buatlah tiga buah kabel UTP jenis straight-through untuk menghubungkan masing-masing PC Client ke Switch 1, dan satu kabel straight-through untuk menghubungkan Server ke Switch 2. Dokumentasikan seluruh langkah-langkah pembuatan dan pengujian setiap kabel, serta jelaskan secara rinci mengapa jenis kabel tersebut dipilih untuk masing-masing koneksi. Sertakan juga hasil pengujian ping dari PC Client ke Server dan antar PC Client.",
+  "tugas_mandiri": "Sebagai seorang praktisi jaringan, kemampuan untuk berinovasi dan memperluas pemahaman sangatlah penting. Untuk tugas mandiri ini, siswa diminta untuk tidak hanya mengulang pembuatan kabel, tetapi juga menerapkan konsep yang telah dipelajari dalam skenario yang lebih kompleks. Pertama, buatlah dua buah kabel UTP dengan panjang yang berbeda, yaitu satu kabel straight-through sepanjang 15 meter dan satu kabel crossover sepanjang 5 meter. Setelah itu, buktikan performa kedua kabel tersebut dengan melakukan uji transmisi file berukuran besar (misalnya, file video 2GB) antara dua PC menggunakan kedua jenis kabel tersebut. Catat waktu transfer data pada masing-masing kabel dan bandingkan hasilnya, sertakan analisis mengapa ada perbedaan (jika ada) dalam kecepatan transfer.\n\nSelain itu, kembangkan topologi pengujian Anda. Tambahkan minimal satu switch lagi dan dua perangkat klien (misalnya, PC) ke dalam topologi yang sudah ada. Buatlah koneksi antar switch menggunakan kabel crossover (jika switch lama) atau straight-through (jika switch modern dengan Auto-MDIX), dan koneksi klien ke switch menggunakan kabel straight-through yang Anda buat sendiri. Konfigurasikan IP address pada semua perangkat sehingga berada dalam subnet yang berbeda, dan kemudian coba lakukan ping antar subnet (dengan asumsi ada router atau perangkat Layer 3 yang mengizinkan routing). Dokumentasikan semua langkah-langkah yang Anda lakukan, hasil pengujian LAN Tester, output `ping`, serta analisis performa dan troubleshooting yang Anda lakukan dalam laporan praktikum yang komprehensif. Laporan ini harus mencakup kesimpulan yang mendalam tentang pentingnya pengkabelan yang benar dalam infrastruktur jaringan.",
   "evaluasi_questions": [
-    "Jelaskan perbedaan mendasar antara standar pengkabelan EIA/TIA-568A dan EIA/TIA-568B dari segi urutan warna dan implikasinya terhadap konektivitas jaringan.",
-    "Mengapa kabel UTP (Unshielded Twisted Pair) menggunakan pasangan kawat yang dipilin? Jelaskan secara teknis bagaimana mekanisme pilinan ini membantu dalam transmisi data.",
-    "Dalam kondisi seperti apa Anda akan memilih menggunakan kabel UTP straight-through, dan kapan Anda akan memilih kabel UTP crossover? Berikan contoh perangkat yang dihubungkan untuk setiap jenis kabel.",
-    "Misalkan Anda telah selesai membuat kabel UTP dan saat mengujinya dengan LAN Tester, lampu indikator pada pin 3 di modul Master menyala, tetapi pada modul Remote pin 3 tidak menyala, melainkan pin 6 yang menyala. Apa kemungkinan penyebab masalah ini dan bagaimana Anda akan memperbaikinya?",
-    "Selain LAN Tester, jelaskan metode pengujian konektivitas logis yang dapat Anda gunakan untuk memverifikasi fungsi kabel UTP yang telah dibuat. Bagaimana Anda menganalisis output dari pengujian tersebut untuk menentukan apakah kabel berfungsi dengan baik?"
+    "Jelaskan secara mendalam mengapa konsep 'twisted pair' pada kabel UTP sangat efektif dalam mengurangi interferensi elektromagnetik dan crosstalk, serta bagaimana hal ini berkontribusi pada integritas sinyal data.",
+    "Bandingkan dan kontraskan standar pengkabelan EIA/TIA 568A dan 568B. Jelaskan perbedaan urutan warna utama, kapan masing-masing standar ini digunakan, dan mengapa konsistensi dalam penggunaan standar sangat penting dalam instalasi jaringan profesional.",
+    "Analisis dan berikan contoh konkret kapan kita harus menggunakan kabel straight-through dan kapan kabel crossover. Jelaskan secara teknis bagaimana skema penyilangan pada kabel crossover memungkinkan komunikasi antar perangkat sejenis, serta bagaimana fitur Auto-MDIX pada perangkat modern memengaruhi kebutuhan akan kabel crossover.",
+    "Jika Anda menguji kabel UTP dengan LAN Tester dan mendapatkan pola lampu yang tidak beraturan (misalnya, lampu 1-3-5-7 menyala sementara 2-4-6-8 mati di satu sisi, dan sebaliknya di sisi lain), apa kemungkinan masalahnya dan bagaimana Anda akan melakukan troubleshooting untuk memperbaikinya?",
+    "Bagaimana kualitas proses crimping, seperti terlalu banyak untwisting pada ujung kabel atau pemasangan konektor yang longgar, dapat secara signifikan mempengaruhi performa jaringan, terutama pada kecepatan tinggi (Gigabit Ethernet)? Jelaskan dampak-dampak negatif yang mungkin terjadi dan langkah-langkah preventif untuk menghindarinya."
   ]
 }

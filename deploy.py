@@ -251,6 +251,9 @@ def deploy_to_vps():
         run_remote(ssh, "systemctl enable netlabs-ai", "14d. Enable service netlabs-ai")
         run_remote(ssh, "systemctl restart netlabs-ai", "14e. Restart service netlabs-ai")
 
+        # 14f. Jalankan re-indexing seluruh PDF ke Qdrant di VPS
+        run_remote(ssh, f"cd {AI_PROJECT_PATH} && venv/bin/python index_all_pdfs.py", "14f. Jalankan re-indexing offline di VPS")
+
         # 15. Tunggu sebentar lalu cek status
         import time as _time
         _time.sleep(3)

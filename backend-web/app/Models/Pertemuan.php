@@ -13,6 +13,7 @@ class Pertemuan extends Model
         'nomor_urut',
         'judul',
         'deskripsi',
+        'isi_materi',
         'semester',
         'warna_tema'
     ];

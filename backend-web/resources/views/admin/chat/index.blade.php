@@ -93,11 +93,36 @@
           </table>
         </div>
 
-        <div class="d-flex justify-content-between align-items-center mt-3">
+        <div class="d-flex justify-content-between align-items-center mt-3 flex-wrap gap-2">
           <div class="text-muted small">
             Menampilkan {{ $chatList->firstItem() ?? 0 }} - {{ $chatList->lastItem() ?? 0 }} dari {{ $chatList->total() }} data
           </div>
-          {{ $chatList->links() }}
+          @if($chatList->hasPages())
+            <nav>
+              <ul class="pagination mb-0">
+                {{-- Tombol Previous --}}
+                @if($chatList->onFirstPage())
+                  <li class="page-item disabled"><span class="page-link">&laquo;</span></li>
+                @else
+                  <li class="page-item"><a class="page-link" href="{{ $chatList->previousPageUrl() }}">&laquo;</a></li>
+                @endif
+
+                {{-- Nomor Halaman --}}
+                @foreach($chatList->getUrlRange(max(1, $chatList->currentPage() - 2), min($chatList->lastPage(), $chatList->currentPage() + 2)) as $page => $url)
+                  <li class="page-item {{ $page == $chatList->currentPage() ? 'active' : '' }}">
+                    <a class="page-link" href="{{ $url }}">{{ $page }}</a>
+                  </li>
+                @endforeach
+
+                {{-- Tombol Next --}}
+                @if($chatList->hasMorePages())
+                  <li class="page-item"><a class="page-link" href="{{ $chatList->nextPageUrl() }}">&raquo;</a></li>
+                @else
+                  <li class="page-item disabled"><span class="page-link">&raquo;</span></li>
+                @endif
+              </ul>
+            </nav>
+          @endif
         </div>
       </div>
     </div>

@@ -24,7 +24,7 @@ Route::middleware('auth:sanctum')->group(function () {
     // Materi & Pertemuan
     Route::get('/pertemuan', [MateriController::class, 'index']);
     Route::get('/pertemuan/{id}', [MateriController::class, 'show']);
-    Route::post('/pertemuan/{pertemuanId}/topik/{topikId}/selesai', [MateriController::class, 'tandaiTopikSelesai']);
+    Route::post('/pertemuan/{pertemuanId}/selesai', [MateriController::class, 'tandaiPertemuanSelesai']);
 
     // Kuis
     Route::get('/pertemuan/{id}/kuis', [KuisController::class, 'getSoalKuis']);

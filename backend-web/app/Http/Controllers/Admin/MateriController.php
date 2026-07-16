@@ -34,6 +34,7 @@ class MateriController extends Controller
             'nomor_urut' => 'required|integer|min:1',
             'judul' => 'required|string|max:150',
             'deskripsi' => 'nullable|string',
+            'isi_materi' => 'nullable|string',
             'semester' => 'required|in:1,2',
             'warna_tema' => 'nullable|string|max:7',
         ]);
@@ -59,6 +60,7 @@ class MateriController extends Controller
             'nomor_urut' => 'required|integer|min:1',
             'judul' => 'required|string|max:150',
             'deskripsi' => 'nullable|string',
+            'isi_materi' => 'nullable|string',
             'semester' => 'required|in:1,2',
             'warna_tema' => 'nullable|string|max:7',
         ]);

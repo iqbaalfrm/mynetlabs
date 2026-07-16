@@ -1,0 +1,161 @@
+{
+  "judul": "Modul 11: VLAN dan Trunking",
+  "subjudul": "Segmentasi Logis Jaringan Layer 2, Implementasi Trunking IEEE 802.1Q, dan Inter-VLAN Routing Router-on-a-Stick",
+  "tujuan": [
+    "Menganalisis dan memahami secara fundamental konsep segmentasi jaringan logis menggunakan Virtual Local Area Network (VLAN) untuk meningkatkan efisiensi, keamanan, dan skalabilitas dalam lingkungan jaringan yang kompleks.",
+    "Mengidentifikasi dan mengonfigurasi jenis-jenis port pada switch Layer 2, yaitu <i>access port</i> dan <i>trunk port</i>, serta menjelaskan perbedaan fungsionalitas dan implikasinya terhadap transmisi data antar-VLAN.",
+    "Menerapkan mekanisme enkapsulasi standar IEEE 802.1Q untuk memungkinkan beberapa VLAN berkomunikasi melalui satu tautan fisik (trunk link), serta memverifikasi integritas frame yang di-tag dan di-untag.",
+    "Mengonfigurasi dan memverifikasi implementasi Inter-VLAN Routing menggunakan metode <i>Router-on-a-Stick</i> pada perangkat router Cisco, termasuk pembuatan sub-interface dan penetapan alamat IP yang sesuai untuk setiap VLAN.",
+    "Melakukan pengujian komprehensif terhadap konektivitas antar-VLAN melalui perangkat router dan switch, serta menganalisis hasil pengujian untuk memastikan fungsionalitas segmentasi logis dan inter-VLAN routing berjalan sesuai dengan spesifikasi desain."
+  ],
+  "kompetensi_dasar": [
+    "KD 3.12 Menganalisis secara mendalam konsep dan prinsip kerja Virtual Local Area Network (VLAN), trunking IEEE 802.1Q, dan berbagai metode Inter-VLAN Routing dalam membangun arsitektur jaringan yang tersegmentasi.",
+    "KD 4.12 Mengonfigurasi, menguji, dan memverifikasi implementasi VLAN, trunking antar-switch, dan Inter-VLAN Routing menggunakan Router-on-a-Stick pada perangkat jaringan Cisco IOS."
+  ],
+  "alat_bahan": [
+    "PC/Laptop dengan spesifikasi minimal Intel Core i3 (atau setara), RAM 4GB, dan ruang penyimpanan kosong 500MB untuk mendukung kinerja simulator dan sistem operasi.",
+    "Software Simulator Cisco Packet Tracer versi terbaru (disarankan versi 8.2.x atau yang lebih baru) untuk melakukan praktikum konfigurasi dan simulasi jaringan.",
+    "Modul praktikum ini dan akses internet untuk referensi tambahan serta dokumentasi teknis.",
+    "Jaringan listrik yang stabil dan koneksi internet yang memadai jika diperlukan untuk unduhan perangkat lunak atau riset."
+  ],
+  "prasyarat": "Sebelum memulai praktikum ini, siswa diharapkan telah memiliki pemahaman dasar yang kuat tentang konsep jaringan komputer, termasuk model OSI Layer 2 dan Layer 3, fungsi dasar switch dan router, serta kemampuan untuk mengonfigurasi alamat IP statis pada perangkat akhir. Penguasaan dasar perintah CLI Cisco IOS untuk navigasi, konfigurasi mode, dan penyimpanan konfigurasi juga merupakan prasyarat mutlak agar praktikum dapat berjalan efektif dan siswa dapat fokus pada materi inti VLAN dan trunking tanpa terhambat oleh fundamental konfigurasi perangkat. Pemahaman tentang subnetting IP address juga sangat membantu dalam merancang skema pengalamatan untuk berbagai VLAN.",
+  "teori_1": "Dalam arsitektur jaringan modern, terutama di lingkungan perusahaan atau kampus, kebutuhan akan efisiensi, keamanan, dan skalabilitas menjadi sangat krusial. Salah satu solusi fundamental untuk mengatasi tantangan ini adalah melalui <b>Segmentasi Logis Jaringan</b>, yang diimplementasikan secara luas dengan teknologi <b>Virtual Local Area Network (VLAN)</b>. Secara historis, segmentasi jaringan awalnya dilakukan secara fisik menggunakan router atau switch Layer 3 untuk memecah domain broadcast, namun ini seringkali tidak fleksibel dan membutuhkan lebih banyak perangkat keras. Dengan munculnya VLAN pada pertengahan tahun 1990-an, khususnya setelah standarisasi IEEE 802.1Q, jaringan dapat disegmentasi secara logis pada satu atau lebih switch Layer 2, memungkinkan perangkat di lokasi fisik yang berbeda untuk berada dalam domain broadcast yang sama.<br/><br/><b>VLAN</b>, atau Jaringan Area Lokal Virtual, adalah metode untuk membagi satu domain broadcast fisik menjadi beberapa domain broadcast logis. Setiap VLAN membentuk domain broadcast tersendiri, yang berarti bahwa traffic broadcast yang berasal dari satu VLAN tidak akan menyebar ke VLAN lainnya. Hal ini secara signifikan mengurangi beban lalu lintas broadcast pada jaringan, meningkatkan kinerja keseluruhan, dan menyediakan isolasi keamanan antar grup pengguna. Misalnya, departemen Keuangan dapat ditempatkan pada VLAN terpisah dari departemen Pemasaran, bahkan jika komputer mereka terhubung ke switch fisik yang sama. Keuntungan utama dari VLAN meliputi peningkatan keamanan (isolasi traffic), pengurangan ukuran domain broadcast, peningkatan kinerja jaringan, fleksibilitas dalam desain jaringan (memindahkan workstation tanpa mengubah kabel), dan efisiensi pengelolaan sumber daya.<br/><br/>Untuk memungkinkan komunikasi antar-VLAN, kita memerlukan perangkat Layer 3, yaitu router atau switch Layer 3, karena VLAN secara intrinsik memisahkan domain broadcast, yang pada dasarnya adalah subnet IP yang berbeda. Konsep ini dikenal sebagai <b>Inter-VLAN Routing</b>. Sebelum adanya switch Layer 3, satu-satunya cara untuk melakukan Inter-VLAN Routing adalah dengan menggunakan router fisik terpisah yang terhubung ke setiap VLAN. Namun, metode ini boros port dan kurang efisien. Evolusi teknologi membawa kita pada konsep <b>Router-on-a-Stick</b>, sebuah metode di mana satu port fisik pada router dikonfigurasi dengan beberapa sub-interface, dan setiap sub-interface tersebut bertanggung jawab untuk me-route traffic ke dan dari satu VLAN tertentu. Ini sangat menghemat port fisik pada router dan menyederhanakan kabel.<br/><br/>Pada switch Layer 2, terdapat dua jenis port utama yang berkaitan dengan VLAN: <b>Access Port</b> dan <b>Trunk Port</b>. <i>Access port</i> adalah port yang hanya menjadi anggota satu VLAN tunggal dan digunakan untuk menghubungkan perangkat akhir seperti komputer, server, atau printer. Frame yang dikirim dari perangkat akhir melalui access port tidak di-tag dengan informasi VLAN. Sebaliknya, <i>trunk port</i> adalah port yang dapat membawa traffic dari beberapa VLAN secara bersamaan. Trunk port digunakan untuk menghubungkan switch ke switch lain, atau switch ke router, untuk memungkinkan komunikasi antar-VLAN di seluruh infrastruktur jaringan. Mekanisme yang digunakan untuk mengidentifikasi VLAN mana yang menjadi milik frame saat melewati trunk link adalah <b>Enkapsulasi IEEE 802.1Q</b>. Standar 802.1Q menambahkan tag 4-byte ke header frame Ethernet yang berisi identifikasi VLAN (VID). Switch yang menerima frame bertag akan mengetahui ke VLAN mana frame tersebut harus diteruskan, menjaga integritas segmentasi logis. Pemahaman mendalam tentang setiap komponen ini adalah kunci untuk merancang dan mengimplementasikan jaringan yang robust dan efisien.",
+  "teori_2_text": "Memahami perbedaan mendasar antara <i>access port</i> dan <i>trunk port</i> adalah esensial dalam konfigurasi VLAN yang efektif pada switch Layer 2. Meskipun keduanya adalah port pada switch, fungsi dan cara kerja mereka sangatlah berbeda, dirancang untuk tujuan konektivitas yang spesifik dalam sebuah arsitektur jaringan yang disegmentasi. Konfigurasi yang tidak tepat antara kedua jenis port ini dapat mengakibatkan kegagalan komunikasi antar perangkat atau bahkan menciptakan celah keamanan yang tidak diinginkan.<br/><br/><i>Access port</i> didesain untuk perangkat-perangkat endpoint yang hanya akan menjadi bagian dari satu VLAN tertentu. Ketika sebuah frame Ethernet masuk atau keluar dari <i>access port</i>, frame tersebut tidak membawa informasi tagging VLAN. Switch secara implisit mengasumsikan bahwa semua traffic pada port tersebut adalah milik VLAN yang telah dikonfigurasi secara eksplisit pada <i>access port</i> tersebut. Sebaliknya, <i>trunk port</i> adalah pintu gerbang yang memungkinkan traffic dari multiple VLAN untuk melewati satu tautan fisik. Ini dicapai melalui proses tagging menggunakan standar IEEE 802.1Q, yang secara transparan menambahkan dan menghapus tag VLAN pada setiap frame yang melewati tautan trunk. Tabel berikut akan menjelaskan perbedaan fungsional utama antara kedua jenis port ini.",
+  "teori_2_table": [
+    [
+      "Fitur",
+      "Access Port",
+      "Trunk Port",
+      "Enkapsulasi IEEE 802.1Q"
+    ],
+    [
+      "Tujuan",
+      "Menghubungkan perangkat akhir (PC, Server, Printer)",
+      "Menghubungkan Switch ke Switch atau Switch ke Router",
+      "Membubuhkan tag ID VLAN pada frame Ethernet"
+    ],
+    [
+      "Jumlah VLAN yang Dilewati",
+      "Hanya satu VLAN (VLAN akses)",
+      "Beberapa VLAN sekaligus (default: semua VLAN aktif)",
+      "Satu ID VLAN (VID) per frame"
+    ],
+    [
+      "Tagging Frame",
+      "Tidak melakukan tagging (traffic untagged)",
+      "Melakukan tagging (traffic tagged), kecuali untuk native VLAN",
+      "Menambahkan field 4-byte ke header frame"
+    ],
+    [
+      "Native VLAN",
+      "Tidak berlaku secara langsung",
+      "VLAN yang traffic-nya tidak di-tag pada trunk link (default VLAN 1)",
+      "Mengidentifikasi VLAN untuk traffic untagged pada trunk"
+    ],
+    [
+      "Contoh Konfigurasi",
+      "switchport mode access, switchport access vlan X",
+      "switchport mode trunk, switchport trunk encapsulation dot1q, switchport trunk allowed vlan X,Y,Z",
+      "Dilakukan secara otomatis pada trunk link jika mode dot1q diaktifkan"
+    ]
+  ],
+  "teori_2_extra": "Perbedaan fundamental antara <i>access port</i> dan <i>trunk port</i> terletak pada bagaimana mereka menangani identifikasi lalu lintas VLAN dan enkapsulasi frame. <i>Access port</i> secara inheren merupakan anggota dari satu VLAN tunggal, dan oleh karena itu, frame Ethernet yang melaluinya dianggap secara implisit milik VLAN tersebut tanpa perlu menambahkan tag khusus. Jika ada frame yang datang dari perangkat akhir ke <i>access port</i>, switch akan meneruskannya hanya kepada anggota lain dari VLAN yang sama. Ini memastikan isolasi antar-VLAN pada tingkat akses, mencegah lalu lintas dari satu segmen masuk ke segmen lain tanpa melewati perangkat Layer 3.<br/><br/>Di sisi lain, <i>trunk port</i> adalah kunci untuk mencapai fleksibilitas dan skalabilitas dalam desain VLAN. Dengan kemampuan untuk membawa lalu lintas dari berbagai VLAN melalui satu link fisik, trunk port meminimalkan kebutuhan akan banyak kabel fisik antara switch atau antara switch dan router. Mekanisme <b>IEEE 802.1Q</b> menjadi sangat penting di sini. Ketika sebuah frame dari VLAN tertentu melewati <i>trunk port</i>, switch akan menambahkan sebuah tag 802.1Q ke header frame tersebut, yang berisi ID VLAN (VID). Switch penerima yang juga dikonfigurasi sebagai <i>trunk port</i> akan membaca tag ini untuk menentukan VLAN asal frame tersebut dan kemudian menghapus tag tersebut sebelum meneruskan frame ke <i>access port</i> tujuan di VLAN yang sesuai. Konsep <i>native VLAN</i> pada trunk port juga penting: ini adalah VLAN yang traffic-nya akan melewati trunk link tanpa di-tag. Secara default, native VLAN adalah VLAN 1, tetapi dapat diubah untuk alasan keamanan atau desain jaringan. Penting untuk memastikan native VLAN cocok di kedua ujung trunk link untuk menghindari masalah konektivitas.",
+  "topologi_desc": "Topologi jaringan untuk praktikum ini akan terdiri dari satu Router Cisco, satu Switch Layer 2 Cisco, dan dua Host (PC). Router akan berperan sebagai titik Inter-VLAN Routing, sementara Switch Layer 2 akan bertanggung jawab untuk segmentasi logis menggunakan VLAN. Koneksi fisik antara perangkat-perangkat ini dirancang untuk menunjukkan implementasi <i>Router-on-a-Stick</i> dan konfigurasi port switch.<br/><br/>Secara spesifik, port <b>GigabitEthernet0/0</b> pada Router1 akan dihubungkan ke port <b>GigabitEthernet0/1</b> pada Switch1 menggunakan kabel Straight-Through. Link ini akan dikonfigurasi sebagai <i>trunk port</i> pada kedua sisi (secara logis untuk router melalui sub-interface), memungkinkan lalu lintas dari berbagai VLAN melaluinya. Dua Host PC, yaitu PC-A dan PC-B, masing-masing akan terhubung ke Switch1. PC-A akan terhubung ke port <b>FastEthernet0/2</b> pada Switch1, dan akan menjadi anggota VLAN 10. Sementara itu, PC-B akan terhubung ke port <b>FastEthernet0/3</b> pada Switch1, dan akan menjadi anggota VLAN 20. Semua koneksi antara PC dan Switch menggunakan kabel Straight-Through. Segmentasi logis ini akan memisahkan PC-A dan PC-B ke dalam domain broadcast yang berbeda, meskipun secara fisik mereka terhubung ke switch yang sama, dan Inter-VLAN Routing akan memungkinkan mereka untuk berkomunikasi.",
+  "addressing_table": [
+    [
+      "Perangkat",
+      "Interface",
+      "IP Address",
+      "Subnet Mask",
+      "Default Gateway"
+    ],
+    [
+      "PC-A",
+      "FastEthernet0",
+      "192.168.10.10",
+      "255.255.255.0",
+      "192.168.10.1"
+    ],
+    [
+      "PC-B",
+      "FastEthernet0",
+      "192.168.20.10",
+      "255.255.255.0",
+      "192.168.20.1"
+    ],
+    [
+      "Router1",
+      "GigabitEthernet0/0.10",
+      "192.168.10.1",
+      "255.255.255.0",
+      "N/A"
+    ],
+    [
+      "Router1",
+      "GigabitEthernet0/0.20",
+      "192.168.20.1",
+      "255.255.255.0",
+      "N/A"
+    ],
+    [
+      "Switch1",
+      "VLAN 1 (Management)",
+      "192.168.1.10",
+      "255.255.255.0",
+      "N/A (Optional)"
+    ]
+  ],
+  "skenario_desc": "Anda adalah seorang Network Engineer yang ditugaskan di sebuah perusahaan start-up yang sedang berkembang pesat. Perusahaan ini memiliki struktur departemen yang jelas: Departemen Teknis dan Departemen Pemasaran. Saat ini, semua karyawan terhubung ke satu switch Layer 2 tunggal, dan semua perangkat berada dalam satu domain broadcast yang besar. Hal ini mulai menimbulkan masalah kinerja karena tingginya lalu lintas broadcast, serta kekhawatiran keamanan karena tidak ada isolasi antara data sensitif Departemen Teknis dan lalu lintas umum Departemen Pemasaran. Manajemen meminta Anda untuk merancang dan mengimplementasikan solusi yang dapat memisahkan kedua departemen secara logis, meningkatkan keamanan, dan memungkinkan komunikasi antar-departemen hanya melalui jalur yang terkontrol.<br/><br/>Untuk memenuhi kebutuhan ini, Anda memutuskan untuk mengimplementasikan Virtual Local Area Network (VLAN). Departemen Teknis akan ditempatkan pada VLAN 10 dengan subnet 192.168.10.0/24, sementara Departemen Pemasaran akan ditempatkan pada VLAN 20 dengan subnet 192.168.20.0/24. Untuk memungkinkan kedua departemen ini tetap dapat berkomunikasi satu sama lain, misalnya untuk berbagi sumber daya atau berkoordinasi proyek, diperlukan Inter-VLAN Routing. Mengingat keterbatasan perangkat keras dan keinginan untuk efisiensi port, Anda memilih metode <i>Router-on-a-Stick</i>. Ini berarti satu port fisik pada router akan digunakan sebagai <i>trunk link</i>, yang akan membawa lalu lintas dari kedua VLAN dan melakukan proses routing antar-keduanya.<br/><br/>Dalam praktikum ini, Anda akan mempraktikkan langkah-langkah implementasi solusi ini. Anda akan mengonfigurasi Switch1 untuk membuat VLAN 10 dan VLAN 20, menetapkan port <i>access</i> untuk PC-A (Departemen Teknis) dan PC-B (Departemen Pemasaran) ke VLAN masing-masing, serta mengonfigurasi port <i>trunk</i> yang menghubungkan Switch1 ke Router1 menggunakan enkapsulasi IEEE 802.1Q. Selanjutnya, Anda akan mengonfigurasi Router1 dengan sub-interface untuk setiap VLAN, menetapkan gateway default yang sesuai, dan mengaktifkan Inter-VLAN Routing. Setelah semua konfigurasi selesai, Anda akan melakukan pengujian ekstensif untuk memastikan bahwa perangkat dalam VLAN yang sama dapat berkomunikasi, dan perangkat antar-VLAN dapat berkomunikasi melalui router, membuktikan bahwa segmentasi logis dan Inter-VLAN Routing telah berhasil diimplementasikan sesuai kebutuhan perusahaan.",
+  "langkah_kerja": [
+    "<b>Buat Topologi di Cisco Packet Tracer:</b> Seret dan letakkan satu Router (misal: Router 2911), satu Switch Layer 2 (misal: Switch 2960), dan dua PC (PC-A dan PC-B) ke area kerja.",
+    "<b>Hubungkan Perangkat Fisik:</b><br/>    *   Hubungkan Router1 GigabitEthernet0/0 ke Switch1 GigabitEthernet0/1 menggunakan kabel Straight-Through.<br/>    *   Hubungkan PC-A FastEthernet0 ke Switch1 FastEthernet0/2 menggunakan kabel Straight-Through.<br/>    *   Hubungkan PC-B FastEthernet0 ke Switch1 FastEthernet0/3 menggunakan kabel Straight-Through.",
+    "<b>Konfigurasi IP Address pada PC-A dan PC-B:</b> Klik PC-A, masuk ke Desktop > IP Configuration, masukkan IP 192.168.10.10, Subnet Mask 255.255.255.0, dan Default Gateway 192.168.10.1. Lakukan hal serupa untuk PC-B: IP 192.168.20.10, Subnet Mask 255.255.255.0, Default Gateway 192.168.20.1.",
+    "<b>Konfigurasi VLAN pada Switch1:</b> Masuk ke CLI Switch1, buat VLAN 10 dan VLAN 20, dan berikan nama yang sesuai.",
+    "<b>Asosiasikan Port ke VLAN (Access Port) pada Switch1:</b> Konfigurasi FastEthernet0/2 sebagai <i>access port</i> untuk VLAN 10 dan FastEthernet0/3 sebagai <i>access port</i> untuk VLAN 20. Pastikan status port aktif.",
+    "<b>Konfigurasi Trunk Port pada Switch1:</b> Konfigurasi GigabitEthernet0/1 sebagai <i>trunk port</i> yang menggunakan enkapsulasi 802.1Q dan mengizinkan VLAN 10 dan VLAN 20.",
+    "<b>Konfigurasi Router1 untuk Inter-VLAN Routing (Router-on-a-Stick):</b> Masuk ke CLI Router1.",
+    "<b>Aktifkan Interface Fisik Router1:</b> Aktifkan interface GigabitEthernet0/0.",
+    "<b>Buat Sub-interface untuk VLAN 10:</b> Buat sub-interface GigabitEthernet0/0.10, aktifkan enkapsulasi 802.1Q untuk VLAN 10, dan berikan IP address 192.168.10.1 dengan subnet mask 255.255.255.0.",
+    "<b>Buat Sub-interface untuk VLAN 20:</b> Buat sub-interface GigabitEthernet0/0.20, aktifkan enkapsulasi 802.1Q untuk VLAN 20, dan berikan IP address 192.168.20.1 dengan subnet mask 255.255.255.0.",
+    "<b>Verifikasi Konfigurasi pada Switch1:</b> Gunakan perintah `show vlan brief` dan `show interfaces trunk` untuk memverifikasi VLAN dan konfigurasi trunk.",
+    "<b>Verifikasi Konfigurasi pada Router1:</b> Gunakan perintah `show ip interface brief` dan `show running-config interface GigabitEthernet0/0` untuk memverifikasi sub-interface dan IP address."
+  ],
+  "commands": "# --- Konfigurasi Awal Global pada Router1 ---\nRouter>enable\nRouter#configure terminal\nRouter(config)#hostname Router1\nRouter1(config)#no ip domain lookup\nRouter1(config)#line con 0\nRouter1(config-line)#logging synchronous\nRouter1(config-line)#exit\nRouter1(config)#line vty 0 4\nRouter1(config-line)#logging synchronous\nRouter1(config-line)#login\nRouter1(config-line)#transport input all\nRouter1(config-line)#exit\nRouter1(config)#service password-encryption\n\n# --- Konfigurasi Interface Fisik GigabitEthernet0/0 pada Router1 ---\nRouter1(config)#interface GigabitEthernet0/0\nRouter1(config-if)#no shutdown\nRouter1(config-if)#no ip address # Interface fisik tidak perlu IP address karena akan menggunakan sub-interface\nRouter1(config-if)#exit\n\n# --- Konfigurasi Sub-interface untuk VLAN 10 pada Router1 ---\nRouter1(config)#interface GigabitEthernet0/0.10\nRouter1(config-subif)#description Gateway for VLAN 10 (Teknis)\nRouter1(config-subif)#encapsulation dot1Q 10 # Aktifkan enkapsulasi 802.1Q untuk VLAN ID 10\nRouter1(config-subif)#ip address 192.168.10.1 255.255.255.0\nRouter1(config-subif)#exit\n\n# --- Konfigurasi Sub-interface untuk VLAN 20 pada Router1 ---\nRouter1(config)#interface GigabitEthernet0/0.20\nRouter1(config-subif)#description Gateway for VLAN 20 (Pemasaran)\nRouter1(config-subif)#encapsulation dot1Q 20 # Aktifkan enkapsulasi 802.1Q untuk VLAN ID 20\nRouter1(config-subif)#ip address 192.168.20.1 255.255.255.0\nRouter1(config-subif)#exit\n\nRouter1(config)#end\nRouter1#copy running-config startup-config # Simpan konfigurasi Router1\nDestination filename [startup-config]? # Tekan Enter\n\n# --- Konfigurasi Awal Global pada Switch1 ---\nSwitch>enable\nSwitch#configure terminal\nSwitch(config)#hostname Switch1\nSwitch1(config)#no ip domain lookup\nSwitch1(config)#line con 0\nSwitch1(config-line)#logging synchronous\nSwitch1(config-line)#exit\nSwitch1(config)#line vty 0 15\nSwitch1(config-line)#logging synchronous\nSwitch1(config-line)#login\nSwitch1(config-line)#transport input all\nSwitch1(config-line)#exit\nSwitch1(config)#service password-encryption\n\n# --- Konfigurasi VLAN pada Switch1 ---\nSwitch1(config)#vlan 10\nSwitch1(config-vlan)#name Departemen_Teknis\nSwitch1(config-vlan)#exit\nSwitch1(config)#vlan 20\nSwitch1(config-vlan)#name Departemen_Pemasaran\nSwitch1(config-vlan)#exit\n\n# --- Konfigurasi Access Port untuk PC-A (VLAN 10) ---\nSwitch1(config)#interface FastEthernet0/2\nSwitch1(config-if)#description Connection to PC-A (VLAN 10)\nSwitch1(config-if)#switchport mode access\nSwitch1(config-if)#switchport access vlan 10\nSwitch1(config-if)#spanning-tree portfast # Opsional: mempercepat konvergensi port\nSwitch1(config-if)#no shutdown\nSwitch1(config-if)#exit\n\n# --- Konfigurasi Access Port untuk PC-B (VLAN 20) ---\nSwitch1(config)#interface FastEthernet0/3\nSwitch1(config-if)#description Connection to PC-B (VLAN 20)\nSwitch1(config-if)#switchport mode access\nSwitch1(config-if)#switchport access vlan 20\nSwitch1(config-if)#spanning-tree portfast # Opsional: mempercepat konvergensi port\nSwitch1(config-if)#no shutdown\nSwitch1(config-if)#exit\n\n# --- Konfigurasi Trunk Port GigabitEthernet0/1 pada Switch1 ---\nSwitch1(config)#interface GigabitEthernet0/1\nSwitch1(config-if)#description Trunk link to Router1\nSwitch1(config-if)#switchport mode trunk\nSwitch1(config-if)#switchport trunk encapsulation dot1q # Eksplisitkan enkapsulasi 802.1Q (jika diperlukan pada model tertentu)\nSwitch1(config-if)#switchport trunk allowed vlan 10,20 # Batasi VLAN yang diizinkan melintasi trunk\nSwitch1(config-if)#no shutdown\nSwitch1(config-if)#exit\n\nSwitch1(config)#end\nSwitch1#copy running-config startup-config # Simpan konfigurasi Switch1\nDestination filename [startup-config]? # Tekan Enter\n\n# --- Verifikasi Konfigurasi pada Switch1 ---\nSwitch1#show vlan brief\nSwitch1#show interfaces FastEthernet0/2 switchport\nSwitch1#show interfaces FastEthernet0/3 switchport\nSwitch1#show interfaces GigabitEthernet0/1 switchport\nSwitch1#show interfaces trunk\n\n# --- Verifikasi Konfigurasi pada Router1 ---\nRouter1#show ip interface brief\nRouter1#show running-config interface GigabitEthernet0/0",
+  "uji_coba_text": "Langkah pengujian konektivitas adalah fase krusial setelah implementasi konfigurasi. Ini memastikan bahwa semua konfigurasi VLAN, trunking, dan Inter-VLAN Routing telah berfungsi dengan benar sesuai dengan desain yang telah ditentukan. Pengujian harus dilakukan secara sistematis, dimulai dari konektivitas dalam VLAN yang sama, kemudian dilanjutkan dengan konektivitas antar-VLAN yang memerlukan peran router. Utilitas `ping` akan menjadi alat utama untuk memverifikasi end-to-end reachability, sementara perintah `traceroute` dapat digunakan untuk melihat jalur yang dilewati paket, terutama saat melintasi router.<br/><br/>Untuk pengujian, pertama-tama, coba `ping` dari PC-A (VLAN 10) ke Default Gateway-nya (192.168.10.1) pada Router1. Ini akan memverifikasi bahwa PC-A dapat mencapai sub-interface router yang sesuai untuk VLAN 10 melalui trunk link Switch1. Selanjutnya, coba `ping` dari PC-B (VLAN 20) ke Default Gateway-nya (192.168.20.1) pada Router1, untuk memverifikasi konektivitas VLAN 20 ke routernya. Setelah kedua pengujian gateway sukses, langkah terakhir dan paling penting adalah mencoba `ping` dari PC-A (192.168.10.10) ke PC-B (192.168.20.10), dan sebaliknya. Hasil `ping` yang sukses antara PC-A dan PC-B akan secara definitif mengonfirmasi bahwa Inter-VLAN Routing melalui Router-on-a-Stick telah berhasil diimplementasikan, karena traffic antar-VLAN harus melewati router untuk di-route. Selain itu, gunakan perintah `show ip interface brief` pada router dan `show vlan brief`, `show interfaces trunk` pada switch untuk secara visual memverifikasi status dan konfigurasi interface.",
+  "uji_coba_cmd": "# --- Uji coba Ping dari PC-A ke Default Gateway (Router1 - sub-interface .10) ---\nC:\\>ping 192.168.10.1\n\nPinging 192.168.10.1 with 32 bytes of data:\nReply from 192.168.10.1: bytes=32 time=1ms TTL=128\nReply from 192.168.10.1: bytes=32 time=1ms TTL=128\nReply from 192.168.10.1: bytes=32 time=1ms TTL=128\nReply from 192.168.10.1: bytes=32 time=1ms TTL=128\n\nPing statistics for 192.168.10.1:\n    Packets: Sent = 4, Received = 4, Lost = 0 (0% loss),\nApproximate round trip times in milli-seconds:\n    Minimum = 1ms, Maximum = 1ms, Average = 1ms\n\n# --- Uji coba Ping dari PC-B ke Default Gateway (Router1 - sub-interface .20) ---\nC:\\>ping 192.168.20.1\n\nPinging 192.168.20.1 with 32 bytes of data:\nReply from 192.168.20.1: bytes=32 time=1ms TTL=128\nReply from 192.168.20.1: bytes=32 time=1ms TTL=128\nReply from 192.168.20.1: bytes=32 time=1ms TTL=128\nReply from 192.168.20.1: bytes=32 time=1ms TTL=128\n\nPing statistics for 192.168.20.1:\n    Packets: Sent = 4, Received = 4, Lost = 0 (0% loss),\nApproximate round trip times in milli-seconds:\n    Minimum = 1ms, Maximum = 1ms, Average = 1ms\n\n# --- Uji coba Ping dari PC-A (VLAN 10) ke PC-B (VLAN 20) ---\nC:\\>ping 192.168.20.10\n\nPinging 192.168.20.10 with 32 bytes of data:\nReply from 192.168.20.10: bytes=32 time=2ms TTL=127\nReply from 192.168.20.10: bytes=32 time=2ms TTL=127\nReply from 192.168.20.10: bytes=32 time=2ms TTL=127\nReply from 192.168.20.10: bytes=32 time=2ms TTL=127\n\nPing statistics for 192.168.20.10:\n    Packets: Sent = 4, Received = 4, Lost = 0 (0% loss),\nApproximate round trip times in milli-seconds:\n    Minimum = 2ms, Maximum = 2ms, Average = 2ms\n\n# --- Uji coba Traceroute dari PC-A ke PC-B ---\nC:\\>tracert 192.168.20.10\n\nTracing route to 192.168.20.10 over a maximum of 30 hops\n\n  1     1 ms     1 ms     1 ms  192.168.10.1\n  2     2 ms     2 ms     2 ms  192.168.20.10\n\nTrace complete.\n\n# --- Verifikasi status interface pada Router1 ---\nRouter1#show ip interface brief\nInterface                  IP-Address      OK? Method Status                Protocol\nGigabitEthernet0/0         unassigned      YES unset  up                    up\nGigabitEthernet0/0.10      192.168.10.1    YES unset  up                    up\nGigabitEthernet0/0.20      192.168.20.1    YES unset  up                    up\nVlan1                      unassigned      YES unset  administratively down down\n\n# --- Verifikasi VLAN dan Trunk pada Switch1 ---\nSwitch1#show vlan brief\n\nVLAN Name                             Status    Ports\n---- -------------------------------- --------- -------------------------------\n1    default                          active    Gi0/2, Gi0/3, Gi0/4, Fa0/1, Fa0/4-24\n10   Departemen_Teknis                active    Fa0/2\n20   Departemen_Pemasaran             active    Fa0/3\n1002 fddi-default                     act/unsup\n1003 token-ring-default               act/unsup\n1004 fddinet-default                  act/unsup\n1005 trnet-default                  act/unsup\n\nSwitch1#show interfaces trunk\n\nPort        Mode         Encapsulation  Status        Native VLAN\nGi0/1       on           802.1q         trunking      1\n\nPort        Vlans allowed on trunk\nGi0/1       10,20\n\nPort        Vlans allowed and active in management domain\nGi0/1       10,20\n\nPort        Vlans in spanning tree forwarding state and not pruned\nGi0/1       10,20",
+  "troubleshooting_table": [
+    [
+      "Gejala Masalah",
+      "Kemungkinan Penyebab",
+      "Tindakan Korektif"
+    ],
+    [
+      "PC tidak dapat ping ke Gateway di VLAN yang sama (misal: PC-A ke 192.168.10.1)",
+      "Port access salah VLAN, port tidak aktif, atau IP address PC salah.",
+      "Pastikan `switchport access vlan X` sesuai, `no shutdown` pada port switch, dan konfigurasi IP PC benar."
+    ],
+    [
+      "PC dapat ping ke Gateway-nya, tetapi tidak bisa ping ke PC di VLAN lain (misal: PC-A ke PC-B)",
+      "Router-on-a-Stick belum dikonfigurasi dengan benar (sub-interface, enkapsulasi, IP), atau trunk link bermasalah.",
+      "Periksa `show ip interface brief` pada router (sub-interface `up/up`), `encapsulation dot1Q` pada sub-interface, dan `show interfaces trunk` pada switch."
+    ],
+    [
+      "Trunk link antara Switch dan Router tidak terbentuk (lampu indikator merah/oranye di Packet Tracer)",
+      "Salah konfigurasi `switchport mode trunk` pada switch atau `encapsulation dot1Q` pada sub-interface router, atau interface fisik router `shutdown`.",
+      "Pastikan `switchport mode trunk` di switch, `no shutdown` pada interface fisik dan sub-interface router, dan `encapsulation dot1Q` pada sub-interface router sesuai dengan VLAN ID."
+    ],
+    [
+      "Beberapa VLAN tidak bisa melewati trunk link, meskipun trunk sudah `up`",
+      "VLAN tersebut belum diizinkan pada trunk link di switch.",
+      "Gunakan perintah `switchport trunk allowed vlan add X,Y,Z` atau `switchport trunk allowed vlan all` pada interface trunk switch."
+    ]
+  ],
+  "tugas_mandiri": "Untuk memperdalam pemahaman Anda tentang segmentasi logis dan inter-VLAN routing, Anda diminta untuk mengembangkan topologi praktikum yang telah Anda kerjakan. Tambahkan satu departemen baru, yaitu Departemen HRD, yang akan ditempatkan pada VLAN 30 dengan subnet 192.168.30.0/24. Anda perlu menambahkan satu PC baru (PC-C) yang akan menjadi anggota VLAN 30. PC-C harus memiliki IP address 192.168.30.10 dan Default Gateway 192.168.30.1.<br/><br/>Lakukan konfigurasi lengkap yang diperlukan pada Switch1 untuk membuat VLAN 30 dan mengasosiasikan port yang sesuai sebagai <i>access port</i> untuk PC-C. Selanjutnya, pada Router1, Anda harus membuat sub-interface baru untuk VLAN 30 dan memberikan IP address yang sesuai sebagai Default Gateway untuk VLAN tersebut. Pastikan juga untuk memperbarui konfigurasi <i>trunk port</i> pada Switch1 agar VLAN 30 diizinkan untuk melewati link trunk. Setelah implementasi, lakukan pengujian konektivitas komprehensif, termasuk ping dari PC-C ke gateway-nya, dan ping dari PC-C ke PC-A, serta PC-C ke PC-B. Dokumentasikan semua langkah-langkah konfigurasi, hasil pengujian (termasuk output CLI), dan analisis masalah yang mungkin muncul dalam laporan praktikum Anda. Sertakan juga topologi jaringan yang diperbarui dengan skema pengalamatan lengkap.",
+  "evaluasi_questions": [
+    "Jelaskan secara komprehensif apa itu VLAN dan mengapa segmentasi jaringan menggunakan VLAN menjadi sangat penting dalam desain jaringan modern, terutama dari perspektif keamanan dan efisiensi?",
+    "Bandingkan dan kontraskan fungsi utama antara <i>access port</i> dan <i>trunk port</i> pada switch Layer 2. Sertakan penjelasan tentang peran standar IEEE 802.1Q dalam operasi <i>trunk port</i>.",
+    "Bagaimana prinsip kerja Inter-VLAN Routing dengan metode <i>Router-on-a-Stick</i>? Jelaskan bagaimana router dapat merutekan paket antar-VLAN hanya dengan satu koneksi fisik ke switch, dan apa keuntungan serta keterbatasannya dibandingkan metode lain?",
+    "Mengapa penting untuk memastikan konsistensi konfigurasi <i>native VLAN</i> pada kedua sisi trunk link? Jelaskan potensi masalah yang dapat timbul jika <i>native VLAN</i> tidak cocok.",
+    "Dalam skenario praktikum, jika PC-A (VLAN 10) tidak dapat melakukan ping ke PC-B (VLAN 20), langkah-langkah diagnostik apa saja yang akan Anda lakukan secara berurutan untuk mengidentifikasi dan menyelesaikan masalah tersebut? Sebutkan minimal tiga langkah diagnostik beserta perintah CLI yang relevan."
+  ]
+}

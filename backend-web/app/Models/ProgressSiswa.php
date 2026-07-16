@@ -13,6 +13,7 @@ class ProgressSiswa extends Model
 
     protected $fillable = [
         'siswa_id',
+        'pertemuan_id',
         'topik_id',
         'is_completed',
     ];

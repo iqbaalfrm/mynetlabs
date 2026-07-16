@@ -2,77 +2,71 @@
   "judul": "Modul 5: VLSM (Variable Length Subnet Mask)",
   "subjudul": "Teknik Subnetting VLSM Efisien Berdasarkan Kebutuhan Host Riil, Pengurutan Divisi, dan Pencegahan Overlapping IP",
   "tujuan": [
-    "Memahami secara komprehensif konsep dasar Variable Length Subnet Masking (VLSM), keunggulan, serta perbedaannya dengan Fixed Length Subnet Masking (FLSM) dalam optimasi penggunaan alamat IP.",
-    "Menganalisis kebutuhan host riil pada setiap segmen jaringan (LAN dan WAN) untuk menentukan prefix length (/CIDR) yang paling efisien, sehingga meminimalkan pemborosan alamat IP.",
-    "Melakukan perhitungan VLSM secara sistematis, termasuk penentuan Network Address, Broadcast Address, dan Rentang IP Host yang valid untuk setiap subnet, dengan mempertimbangkan pengurutan dari kebutuhan host terbesar ke terkecil.",
-    "Mengimplementasikan konfigurasi alamat IP menggunakan skema VLSM pada perangkat jaringan (router dan switch) serta end-device (PC/Server) dalam simulasi Cisco Packet Tracer sesuai dengan desain topologi dan tabel pengalamatan yang telah dibuat.",
-    "Menguji dan memverifikasi konektivitas antar segmen jaringan yang telah dikonfigurasi VLSM, serta mengidentifikasi dan melakukan troubleshooting terhadap masalah-masalah pengalamatan IP, overlapping subnet, atau kesalahan konfigurasi yang mungkin terjadi."
+    "Setelah menyelesaikan modul ini, peserta didik diharapkan mampu menganalisis secara mendalam konsep dan urgensi penggunaan Variable Length Subnet Mask (VLSM) sebagai solusi optimal dalam penghematan alokasi alamat IP serta peningkatan efisiensi jaringan di lingkungan organisasi atau perusahaan.",
+    "Peserta didik diharapkan memiliki keterampilan komputasi yang presisi untuk melakukan perhitungan subnetting VLSM, termasuk penentuan Network Address, Subnet Mask, Host Range, dan Broadcast Address, dengan mempertimbangkan kebutuhan jumlah host riil per segmen jaringan.",
+    "Melalui praktik langsung, peserta didik diharapkan mampu merancang dan mengimplementasikan skema pengalamatan IP berbasis VLSM pada topologi jaringan kompleks, memastikan tidak terjadi tumpang tindih (overlapping) alamat IP antar segmen, dan mengoptimalkan penggunaan alamat IP.",
+    "Peserta didik diharapkan mampu mengonfigurasi perangkat router dan switch dengan alamat IP hasil perhitungan VLSM, serta melakukan verifikasi konektivitas end-to-end antar segmen jaringan menggunakan berbagai utilitas diagnostik jaringan.",
+    "Peserta didik diharapkan mampu menganalisis permasalahan umum yang mungkin timbul selama implementasi VLSM, seperti ketidaksesuaian subnet mask atau kesalahan pengurutan alokasi, serta menerapkan strategi pemecahan masalah (troubleshooting) yang efektif untuk mengembalikan fungsionalitas jaringan."
   ],
   "kompetensi_dasar": [
-    "KD 3.4 Menganalisis kebutuhan subnetting IP Address berdasarkan skenario jaringan dengan penerapan VLSM.",
-    "KD 4.4 Mengonfigurasikan pengalamatan IP pada jaringan berdasarkan hasil analisis VLSM untuk efisiensi dan pencegahan overlapping."
+    "KD 3.10 Menganalisis secara mendalam dan sistematis konsep Variable Length Subnet Mask (VLSM) serta implikasinya terhadap efisiensi penggunaan alamat IP dan segmentasi jaringan skala menengah hingga besar.",
+    "KD 4.10 Mengonfigurasikan, menguji, dan memverifikasi implementasi pengalamatan IP berbasis VLSM pada perangkat jaringan riil atau simulator, memastikan konektivitas antar segmen dan memecahkan masalah terkait."
   ],
   "alat_bahan": [
-    "PC/Laptop dengan spesifikasi minimal Intel Core i3, RAM 4GB, HDD 250GB (SSD lebih direkomendasikan) untuk menjalankan aplikasi simulasi.",
-    "Software Simulator Cisco Packet Tracer versi 7.0 atau yang lebih baru, terinstal dan siap digunakan.",
-    "Modul ajar cetak atau digital ini sebagai panduan praktikum, serta akses internet untuk referensi tambahan.",
-    "Lembar kerja/buku catatan untuk mencatat hasil perhitungan dan konfigurasi."
+    "PC/Laptop: Spesifikasi minimal Intel Core i3 (Gen 7th atau lebih baru), RAM 8GB DDR4, Storage SSD 256GB, Sistem Operasi Windows 10/11 64-bit.",
+    "Software Simulator: Cisco Packet Tracer versi 8.2.x atau yang terbaru.",
+    "Modul Praktikum: Modul ini dalam format digital atau cetak.",
+    "Koneksi Internet: Untuk referensi tambahan dan unduhan software (jika diperlukan)."
   ],
-  "prasyarat": "Sebelum memulai modul praktikum ini, siswa diharapkan telah memiliki pemahaman yang kuat mengenai dasar-dasar jaringan komputer, seperti model OSI Layer, IP Addressing (IPv4), konsep Classful dan Classless Inter-Domain Routing (CIDR), serta telah menguasai teknik Fixed Length Subnet Masking (FLSM) dan konversi bilangan biner-desimal. Pemahaman tentang penggunaan dasar Cisco Packet Tracer dan navigasi CLI Cisco IOS juga merupakan prasyarat mutlak.",
-  "teori_1": "Dalam dunia jaringan komputer, efisiensi penggunaan alamat IP adalah kunci utama, terutama mengingat keterbatasan ruang alamat IPv4. Awalnya, alokasi IP dilakukan secara classful (Class A, B, C) yang seringkali menyebabkan pemborosan luar biasa. Kemudian muncul konsep Subnetting dengan Fixed Length Subnet Mask (FLSM) untuk membagi satu jaringan besar menjadi beberapa subnet berukuran sama. Meskipun FLSM memberikan perbaikan, ia masih memiliki kelemahan: semua subnet memiliki jumlah host yang sama, sehingga subnet dengan kebutuhan host sedikit akan tetap membuang banyak alamat IP.<br/><br/><b>Variable Length Subnet Mask (VLSM)</b> hadir sebagai solusi revolusioner untuk mengatasi inefisiensi FLSM. VLSM memungkinkan seorang Network Engineer untuk membagi sebuah jaringan menjadi beberapa subnet dengan ukuran yang bervariasi, sesuai dengan kebutuhan host riil pada setiap segmen jaringan. Konsep ini pertama kali dikembangkan sebagai ekstensi dari CIDR (Classless Inter-Domain Routing) dan dijelaskan dalam RFC 1519. Dengan VLSM, kita dapat 'mensubnet' sebuah subnet lagi, menciptakan hirarki pengalamatan yang lebih granular dan efisien.<br/><br/>Definisi VLSM secara akademis adalah sebuah teknik pengalamatan IP yang menggunakan subnet mask yang berbeda-beda untuk subnet-subnet dalam satu jaringan utama (major network). Ini berbanding terbalik dengan FLSM yang menggunakan subnet mask tunggal untuk semua subnet. Manfaat utama VLSM adalah <b>penghematan alamat IP yang signifikan</b>, peningkatan efisiensi alokasi, dan pencegahan fragmentasi alamat. VLSM memungkinkan Network Engineer untuk merancang skema pengalamatan yang lebih fleksibel, mendukung topologi jaringan yang kompleks dengan berbagai ukuran segmen, mulai dari segmen LAN dengan ratusan host hingga segmen WAN point-to-point yang hanya membutuhkan dua alamat IP valid.",
-  "teori_2_text": "Implementasi VLSM memerlukan pendekatan yang sistematis untuk memastikan alokasi IP yang tepat dan mencegah terjadinya overlapping antar subnet. Prinsip dasar dalam perhitungan VLSM adalah mengurutkan kebutuhan host dari yang terbesar hingga terkecil. Dengan mengalokasikan subnet untuk kebutuhan host terbesar terlebih dahulu, kita dapat memastikan bahwa blok alamat yang tersisa cukup besar untuk dibagi lagi menjadi subnet-subnet yang lebih kecil. Pendekatan ini juga membantu dalam identifikasi Network Address, Broadcast Address, dan rentang alamat host yang valid untuk setiap subnet.<br/><br/>Pemahaman tentang hubungan antara prefix length (notasi CIDR seperti /24, /27, /30) dan jumlah host yang tersedia dalam subnet adalah esensial. Setiap kenaikan satu bit pada prefix length akan mengurangi jumlah host yang valid menjadi separuhnya, sekaligus memperkecil ukuran blok jaringan. Sebaliknya, penurunan satu bit akan melipatgandakan jumlah host. Dengan memadukan pemahaman ini dengan kebutuhan riil, kita dapat memilih subnet mask atau prefix length yang paling optimal untuk setiap segmen jaringan, mulai dari LAN hingga koneksi serial antar router.",
+  "prasyarat": "Sebelum mempelajari modul VLSM ini, peserta didik wajib memiliki pemahaman yang sangat kuat dan mendalam mengenai konsep dasar jaringan komputer, termasuk model OSI/TCP-IP, pengalamatan IP versi 4 (IPv4) berbasis kelas (classful) dan tanpa kelas (classless/CIDR). Pemahaman yang baik tentang konversi bilangan biner, desimal, heksadesimal, serta perhitungan subnetting Fixed Length Subnet Mask (FLSM) adalah sebuah keharusan. Tanpa prasyarat ini, pemahaman VLSM akan sangat sulit dicerna dan diimplementasikan secara akurat.",
+  "teori_1": "Dalam dunia jaringan komputer yang terus berkembang, efisiensi penggunaan sumber daya menjadi kunci utama, salah satunya adalah alamat IP. Pada awalnya, jaringan menggunakan sistem pengalamatan IP kelas (Classful Addressing) seperti Kelas A, B, dan C, di mana setiap kelas memiliki subnet mask standar (misalnya, /8, /16, /24). Pendekatan ini, meskipun sederhana, seringkali menyebabkan pemborosan alamat IP yang signifikan. Contohnya, jika sebuah departemen hanya membutuhkan 10 host, namun dialokasikan subnet kelas C (/24) yang mampu menampung 254 host, maka 244 alamat IP akan terbuang percuma.<br/><br/>Untuk mengatasi keterbatasan tersebut, diperkenalkanlah metode Subnetting atau Classless Inter-Domain Routing (CIDR) yang memungkinkan pembagian network menjadi sub-network yang lebih kecil dengan panjang subnet mask yang tetap (Fixed Length Subnet Mask - FLSM). Meskipun FLSM berhasil meningkatkan efisiensi dibandingkan classful addressing, ia masih memiliki keterbatasan. FLSM mengharuskan semua subnet memiliki ukuran yang sama, yang berarti jika ada kebutuhan beragam jumlah host di segmen jaringan yang berbeda, pemborosan masih mungkin terjadi. Misalnya, jika satu segmen butuh 50 host dan segmen lain butuh 5 host, dengan FLSM kita mungkin harus mengalokasikan subnet untuk 62 host (menggunakan /26) untuk semua segmen, yang tetap memboroskan IP di segmen dengan kebutuhan host kecil.<br/><br/>Di sinilah <b>Variable Length Subnet Mask (VLSM)</b> hadir sebagai evolusi dari subnetting yang lebih canggih dan fleksibel. VLSM memungkinkan administrator jaringan untuk menggunakan subnet mask yang berbeda-beda untuk setiap sub-network dalam satu major network yang sama. Dengan kata lain, ukuran subnet tidak lagi harus seragam. Filosofi utama VLSM adalah mengalokasikan blok alamat IP berdasarkan kebutuhan riil jumlah host pada setiap segmen jaringan. Hal ini sangat krusial dalam konservasi alamat IP, terutama pada IPv4 yang jumlahnya terbatas.<br/><br/>Secara formal, VLSM adalah teknik subnetting di mana subnet dari subnet (sub-subnet) dapat dibuat. Ini dicapai dengan 'meminjam' lebih banyak bit dari bagian host ID untuk membuat subnet ID yang lebih panjang pada segmen tertentu yang membutuhkan lebih sedikit host, sementara segmen lain yang membutuhkan lebih banyak host dapat menggunakan subnet ID yang lebih pendek. Konsep ini sangat penting untuk membangun hierarki pengalamatan IP yang efisien dan terstruktur, yang pada akhirnya akan memudahkan pengelolaan dan routing dalam jaringan.<br/><br/>Manfaat utama VLSM mencakup <b>penghematan alamat IP</b> secara drastis, <b>fleksibilitas desain jaringan</b> yang lebih tinggi untuk mengakomodasi kebutuhan departemen yang beragam, dan <b>pengurangan ukuran tabel routing</b> (route summarization) karena VLSM memungkinkan pengelompokan subnet yang logis. VLSM adalah fondasi penting dalam desain jaringan modern, terutama untuk organisasi dengan skala menengah hingga besar yang ingin mengoptimalkan penggunaan alamat IP dan meningkatkan skalabilitas jaringan mereka.",
+  "teori_2_text": "Implementasi VLSM yang efektif memerlukan pendekatan yang terstruktur dan sistematis, terutama dalam urutan alokasi alamat IP. Kesalahan dalam pengurutan alokasi dapat menyebabkan fragmentasi ruang alamat IP atau, yang lebih parah, tumpang tindih (overlapping) antar subnet yang akan mengakibatkan kegagalan komunikasi jaringan. Oleh karena itu, prinsip dasar dalam perhitungan VLSM adalah mengalokasikan subnet untuk segmen yang membutuhkan jumlah host terbesar terlebih dahulu, kemudian berlanjut ke segmen dengan kebutuhan host yang lebih kecil secara berurutan. Ini memastikan bahwa blok alamat IP terbesar mendapatkan ruang yang cukup sebelum blok tersebut 'dipotong' untuk subnet yang lebih kecil.<br/><br/>Tabel di bawah ini mengilustrasikan langkah-langkah sistematis dalam melakukan perhitungan VLSM. Setiap kolom mempresentasikan aspek krusial yang harus dipertimbangkan untuk setiap segmen jaringan yang akan dibuat. Pemahaman mendalam terhadap setiap elemen dalam tabel ini sangat vital untuk keberhasilan implementasi VLSM. Ini bukan sekadar menghafal rumus, melainkan memahami logika di balik setiap perhitungan untuk memastikan setiap segmen jaringan mendapatkan alokasi IP yang tepat dan tidak ada pemborosan maupun overlapping.",
   "teori_2_table": [
     [
-      "Prefix (CIDR)",
-      "Subnet Mask Desimal",
-      "Network Address (Blok)",
-      "Total Host Per Blok"
+      "Kebutuhan Host",
+      "Subnet Mask (CIDR)",
+      "Network Address",
+      "Host Range (First - Last)",
+      "Broadcast Address"
     ],
     [
-      "/24",
-      "255.255.255.0",
-      "256",
-      "254"
+      "120 host",
+      "/25 (255.255.255.128)",
+      "192.168.1.0",
+      "192.168.1.1 - 192.168.1.126",
+      "192.168.1.127"
     ],
     [
-      "/25",
-      "255.255.255.128",
-      "128",
-      "126"
+      "50 host",
+      "/26 (255.255.255.192)",
+      "192.168.1.128",
+      "192.168.1.129 - 192.168.1.190",
+      "192.168.1.191"
     ],
     [
-      "/26",
-      "255.255.255.192",
-      "64",
-      "62"
+      "20 host",
+      "/27 (255.255.255.224)",
+      "192.168.1.192",
+      "192.168.1.193 - 192.168.1.222",
+      "192.168.1.223"
     ],
     [
-      "/27",
-      "255.255.255.224",
-      "32",
-      "30"
+      "10 host",
+      "/28 (255.255.255.240)",
+      "192.168.1.224",
+      "192.168.1.225 - 192.168.1.238",
+      "192.168.1.239"
     ],
     [
-      "/28",
-      "255.255.255.240",
-      "16",
-      "14"
-    ],
-    [
-      "/29",
-      "255.255.255.248",
-      "8",
-      "6"
-    ],
-    [
-      "/30",
-      "255.255.255.252",
-      "4",
-      "2"
+      "2 host (WAN)",
+      "/30 (255.255.255.252)",
+      "192.168.1.240",
+      "192.168.1.241 - 192.168.1.242",
+      "192.168.1.243"
     ]
   ],
-  "teori_2_extra": "Tabel di atas menunjukkan relasi antara panjang prefix CIDR dengan subnet mask desimal, ukuran blok jaringan (yang menentukan lompatan Network Address), dan jumlah host yang valid per blok. Penting untuk diingat bahwa setiap blok jaringan akan menggunakan satu alamat untuk Network Address (alamat pertama dalam blok) dan satu alamat untuk Broadcast Address (alamat terakhir dalam blok). Oleh karena itu, jumlah host yang valid selalu 2 lebih sedikit dari total host per blok. Pemilihan prefix harus selalu disesuaikan dengan kebutuhan host riil ditambah 2, kemudian dicari prefix terkecil yang bisa menampung jumlah tersebut. Misal, jika butuh 25 host, cari prefix yang total hostnya minimal 27. Dalam kasus ini, /27 (total 30 host) adalah pilihan yang paling efisien.",
-  "topologi_desc": "Topologi jaringan yang akan digunakan dalam praktikum ini terdiri dari dua buah router (Router-KantorPusat dan Router-Cabang), dua buah switch (Switch-KP dan Switch-Cabang), serta beberapa end-device berupa PC. Koneksi fisik di antara perangkat adalah sebagai berikut: Router-KantorPusat terhubung ke Switch-KP melalui interface GigabitEthernet0/0, menggunakan kabel Straight-Through. Switch-KP kemudian terhubung ke tiga PC (PC-HRD, PC-Marketing, PC-IT) menggunakan kabel Straight-Through. Router-Cabang terhubung ke Switch-Cabang melalui interface GigabitEthernet0/0, juga menggunakan kabel Straight-Through. Switch-Cabang terhubung ke dua PC (PC-Sales, PC-Support) menggunakan kabel Straight-Through. Koneksi Wide Area Network (WAN) antara Router-KantorPusat dan Router-Cabang menggunakan interface Serial0/0/0 pada kedua router, dihubungkan dengan kabel Serial DTE/DCE. Perangkat PC akan bertindak sebagai host di masing-masing departemen, sementara router akan berfungsi sebagai gateway dan penghubung antar jaringan yang berbeda, serta penghubung ke jaringan WAN.",
+  "teori_2_extra": "Dari tabel di atas, dapat diamati bagaimana satu major network 192.168.1.0/24 berhasil dipecah menjadi beberapa subnet dengan ukuran yang bervariasi sesuai kebutuhan host masing-masing. Urutan alokasi, dimulai dari kebutuhan host terbesar (120 host) hingga terkecil (2 host untuk WAN link), adalah kunci keberhasilan dalam mencegah overlapping IP. Jika kita memulai dari kebutuhan host terkecil, misalnya mengalokasikan /30 untuk 2 host pertama, maka blok IP yang lebih besar akan terpecah dan mungkin tidak menyisakan ruang yang cukup secara berurutan untuk kebutuhan host yang lebih besar di kemudian hari, sehingga memicu fragmentasi dan potensi overlapping.<br/><br/>Penting untuk selalu memastikan bahwa setiap Network Address yang baru dimulai setelah Broadcast Address dari subnet sebelumnya. Ini adalah cara paling fundamental untuk mencegah overlapping. Selain itu, perhatikan juga bahwa Subnet Mask secara otomatis akan berubah sesuai dengan jumlah bit host yang dipinjam. Semakin banyak bit host yang dipinjam, semakin panjang prefix CIDR-nya (misalnya dari /25 ke /30), yang berarti semakin sedikit host yang dapat ditampung oleh subnet tersebut, namun semakin efisien penggunaan alamat IP-nya. Selalu periksa kembali setiap perhitungan, terutama Network Address dan Broadcast Address, karena kesalahan sekecil apa pun di sini akan merusak seluruh skema pengalamatan.",
+  "topologi_desc": "Topologi jaringan yang akan kita bangun dalam praktikum ini mensimulasikan sebuah kantor pusat perusahaan (Head Office) dengan beberapa departemen dan satu koneksi WAN menuju kantor cabang atau internet service provider. Jaringan ini akan melibatkan dua buah Router (R1 dan R2), dua buah Switch (SW1 dan SW2), serta beberapa End Device (PC-IT, PC-HR, Server-Web, PC-R&D) yang terhubung ke masing-masing switch.<br/><br/>Router R1 akan berperan sebagai gateway utama di Head Office, menghubungkan segmen LAN Departemen IT (terhubung ke Fa0/0) dan Departemen HR (terhubung ke Fa0/1). SW1 akan terhubung ke Fa0/0 R1 untuk menampung PC-IT dan Server-Web, sedangkan SW2 akan terhubung ke Fa0/1 R1 untuk PC-HR dan PC-R&D. Kedua router (R1 dan R2) akan saling terhubung melalui koneksi serial menggunakan interface Serial0/0/0 pada R1 dan Serial0/0/0 pada R2. Koneksi ini merepresentasikan link WAN antar lokasi atau koneksi ke jaringan eksternal. Semua koneksi antara end device ke switch dan switch ke router akan menggunakan kabel Straight-Through, sementara koneksi antara R1 dan R2 akan menggunakan kabel Serial DTE/DCE untuk mensimulasikan koneksi WAN. Segmentasi jaringan akan didasarkan pada kebutuhan host riil masing-masing departemen dan link WAN.",
   "addressing_table": [
     [
       "Perangkat",
@@ -82,84 +76,66 @@
       "Default Gateway"
     ],
     [
-      "Router-KantorPusat",
-      "GigabitEthernet0/0",
+      "R1",
+      "Fa0/0",
       "192.168.1.1",
-      "255.255.255.224",
+      "255.255.255.128",
       "N/A"
     ],
     [
-      "Router-KantorPusat",
-      "Serial0/0/0",
-      "192.168.1.97",
+      "R1",
+      "Fa0/1",
+      "192.168.1.129",
+      "255.255.255.192",
+      "N/A"
+    ],
+    [
+      "R1",
+      "S0/0/0 (DCE)",
+      "192.168.1.241",
       "255.255.255.252",
       "N/A"
     ],
     [
-      "PC-HRD",
-      "FastEthernet0",
+      "SW1",
+      "VLAN1",
       "192.168.1.2",
-      "255.255.255.224",
+      "255.255.255.128",
       "192.168.1.1"
     ],
     [
-      "PC-Marketing",
-      "FastEthernet0",
-      "192.168.1.34",
-      "255.255.255.224",
-      "192.168.1.33"
-    ],
-    [
       "PC-IT",
-      "FastEthernet0",
-      "192.168.1.66",
-      "255.255.255.224",
-      "192.168.1.65"
+      "NIC",
+      "192.168.1.10",
+      "255.255.255.128",
+      "192.168.1.1"
     ],
     [
-      "Router-Cabang",
-      "GigabitEthernet0/0",
-      "192.168.1.129",
-      "255.255.255.240",
-      "N/A"
-    ],
-    [
-      "Router-Cabang",
-      "Serial0/0/0",
-      "192.168.1.98",
-      "255.255.255.252",
-      "N/A"
-    ],
-    [
-      "PC-Sales",
-      "FastEthernet0",
-      "192.168.1.130",
-      "255.255.255.240",
-      "192.168.1.129"
-    ],
-    [
-      "PC-Support",
-      "FastEthernet0",
-      "192.168.1.146",
-      "255.255.255.240",
-      "192.168.1.145"
+      "Server-Web",
+      "NIC",
+      "192.168.1.11",
+      "255.255.255.128",
+      "192.168.1.1"
     ]
   ],
-  "skenario_desc": "Anda adalah seorang Network Engineer muda di PT. Global Solusi, sebuah perusahaan konsultan IT. Klien terbaru Anda, PT. Maju Bersama, sedang mengembangkan infrastruktur jaringan mereka dan menghadapi masalah inefisiensi alokasi IP di masa lalu. Mereka memiliki dua lokasi, Kantor Pusat dan Kantor Cabang, dengan kebutuhan host yang bervariasi. Kantor Pusat memiliki departemen HRD (membutuhkan 25 host), Marketing (25 host), dan IT (25 host). Sementara itu, Kantor Cabang memiliki departemen Sales (10 host) dan Support (10 host). Koneksi antar Kantor Pusat dan Kantor Cabang membutuhkan sebuah link WAN point-to-point yang hanya memerlukan 2 alamat IP host.<br/><br/>Tugas Anda adalah merancang dan mengimplementasikan skema pengalamatan IP menggunakan VLSM dari sebuah blok alamat 192.168.1.0/24 yang diberikan oleh atasan Anda. Tujuan utama skenario ini adalah untuk meminimalkan pemborosan alamat IP, mencegah overlapping subnet, dan memastikan semua perangkat dapat saling berkomunikasi. Anda harus melakukan perhitungan VLSM yang tepat, mengurutkan alokasi dari kebutuhan host terbesar, kemudian mengonfigurasikan alamat IP pada semua perangkat jaringan dan end-device di Cisco Packet Tracer. Setelah konfigurasi, Anda wajib memverifikasi konektivitas end-to-end antar departemen di kedua lokasi.",
+  "skenario_desc": "PT. Jaringan Sejahtera adalah perusahaan konsultan IT yang sedang berkembang pesat. Mereka memiliki kantor pusat dengan beberapa departemen vital: Departemen IT (membutuhkan sekitar 100 host), Departemen HRD (membutuhkan sekitar 40 host), dan Departemen R&D (membutuhkan sekitar 15 host). Selain itu, mereka memiliki sebuah server web internal yang sangat penting untuk aplikasi bisnis. PT. Jaringan Sejahtera baru saja mendapatkan blok alamat IP 192.168.1.0/24 dari ISP lokal dan ingin menggunakannya secara efisien untuk seluruh infrastruktur jaringan di kantor pusat mereka, termasuk koneksi ke router cabang mereka.<br/><br/>Manajer IT PT. Jaringan Sejahtera menyadari bahwa menggunakan Fixed Length Subnet Mask (FLSM) akan sangat memboroskan alamat IP karena perbedaan kebutuhan host antar departemen. Jika mereka menggunakan subnet /26 untuk semua departemen (yang dapat menampung 62 host), departemen IT akan kekurangan alamat, sementara departemen HRD dan R&D akan membuang banyak alamat. Oleh karena itu, Anda, sebagai Network Engineer junior, ditugaskan untuk merancang dan mengimplementasikan skema pengalamatan IP menggunakan Variable Length Subnet Mask (VLSM).<br/><br/>Tujuan utama dari skenario ini adalah untuk mengimplementasikan VLSM pada major network 192.168.1.0/24 sehingga setiap departemen mendapatkan alokasi alamat IP yang sesuai dengan kebutuhan riilnya tanpa pemborosan dan tanpa terjadi tumpang tindih. Anda harus mengurutkan alokasi dari kebutuhan host terbesar hingga terkecil: Departemen IT (100 host), Departemen HRD (40 host), Departemen R&D (15 host), Server Web (1 host), dan koneksi WAN antar router (2 host). Setelah perhitungan selesai, Anda harus mengonfigurasi semua perangkat (router, switch, dan end devices) dan memastikan semua perangkat dapat berkomunikasi satu sama lain, serta dapat terhubung ke Server Web internal. Keberhasilan implementasi ini akan menjadi studi kasus penting bagi PT. Jaringan Sejahtera dalam pengelolaan sumber daya jaringan mereka.",
   "langkah_kerja": [
-    "<b>Langkah 1: Perencanaan VLSM (di luar Packet Tracer)</b><br/>Berdasarkan skenario, identifikasi kebutuhan host untuk setiap segmen: HRD (25 host), Marketing (25 host), IT (25 host), Sales (10 host), Support (10 host), WAN Link (2 host). Urutkan dari terbesar ke terkecil: HRD, Marketing, IT (25 host), Sales, Support (10 host), WAN Link (2 host). Mulai perhitungan dari jaringan 192.168.1.0/24.",
-    "<b>Langkah 2: Menyiapkan Topologi di Cisco Packet Tracer</b><br/>Buka Cisco Packet Tracer. Buat topologi seperti yang dijelaskan pada bagian 'Topologi Deskripsi' dengan menempatkan dua router (misal 2911), dua switch (misal 2960), dan beberapa PC. Hubungkan perangkat sesuai deskripsi menggunakan kabel Straight-Through dan Serial DTE/DCE. Nyalakan semua perangkat.",
-    "<b>Langkah 3: Konfigurasi IP pada Router-KantorPusat</b><br/>Akses CLI pada Router-KantorPusat. Konfigurasi hostname, kemudian masuk ke mode konfigurasi interface GigabitEthernet0/0 dan Serial0/0/0. Berikan alamat IP dan subnet mask sesuai hasil perhitungan VLSM dan tabel pengalamatan. Aktifkan interface dengan perintah `no shutdown`.",
-    "<b>Langkah 4: Konfigurasi IP pada Router-Cabang</b><br/>Akses CLI pada Router-Cabang. Lakukan langkah serupa seperti pada Router-KantorPusat untuk interface GigabitEthernet0/0 dan Serial0/0/0, sesuaikan dengan alokasi IP untuk jaringan cabang dan link WAN.",
-    "<b>Langkah 5: Konfigurasi IP pada PC-HRD, PC-Marketing, PC-IT (Kantor Pusat)</b><br/>Klik pada masing-masing PC (PC-HRD, PC-Marketing, PC-IT), masuk ke tab 'Desktop', lalu pilih 'IP Configuration'. Masukkan IP Address, Subnet Mask, dan Default Gateway sesuai tabel pengalamatan yang telah dibuat.",
-    "<b>Langkah 6: Konfigurasi IP pada PC-Sales, PC-Support (Kantor Cabang)</b><br/>Lakukan hal yang sama seperti langkah 5 untuk PC-Sales dan PC-Support di Kantor Cabang, sesuaikan dengan alokasi IP masing-masing.",
-    "<b>Langkah 7: Konfigurasi Routing (Static Routing atau Dynamic Routing)</b><br/>Untuk memastikan komunikasi antar jaringan yang berbeda dan antar lokasi, Anda perlu mengonfigurasi protokol routing. Untuk kesederhanaan awal, kita akan menggunakan <b>Static Routing</b>. Pada Router-KantorPusat, tambahkan rute statik ke semua jaringan di Router-Cabang melalui interface Serial0/0/0 atau IP next-hop Router-Cabang. Lakukan hal serupa pada Router-Cabang untuk jaringan di Router-KantorPusat.",
-    "<b>Langkah 8: Verifikasi Konfigurasi Awal</b><br/>Gunakan perintah `show ip interface brief` dan `show ip route` pada kedua router untuk memverifikasi bahwa semua interface telah aktif, memiliki IP yang benar, dan tabel routing telah terisi dengan benar. Pastikan juga PC telah mendapatkan IP dengan benar.",
-    "<b>Langkah 9: Uji Konektivitas</b><br/>Lakukan pengujian konektivitas menggunakan perintah `ping` dari satu PC ke PC lain di subnet yang sama, antar subnet di lokasi yang sama, dan antar PC yang berbeda lokasi (Kantor Pusat ke Kantor Cabang). Gunakan juga `traceroute` untuk melihat jalur paket."
+    "<b>Langkah 1: Perencanaan VLSM (Penting!)</b><br/>Lakukan perhitungan VLSM secara manual terlebih dahulu berdasarkan skenario: <br/>- Departemen IT (100 host) -> butuh subnet untuk 128 host (/25)<br/>- Departemen HRD (40 host) -> butuh subnet untuk 64 host (/26)<br/>- Departemen R&D (15 host) -> butuh subnet untuk 32 host (/27)<br/>- Server-Web (1 host) -> akan masuk ke segmen IT<br/>- Link WAN (2 host) -> butuh subnet untuk 4 host (/30)<br/>Urutkan kebutuhan dari terbesar: IT, HRD, R&D, WAN. Catat hasilnya di tabel pengalamatan.",
+    "<b>Langkah 2: Membangun Topologi di Cisco Packet Tracer</b><br/>Buka Cisco Packet Tracer. Drag and drop dua buah Router (misal: 1941), dua buah Switch (misal: 2960), dan beberapa End Devices (PC, Server) sesuai deskripsi topologi. Hubungkan perangkat menggunakan kabel yang sesuai (Straight-Through untuk LAN, Serial DCE/DTE untuk WAN).",
+    "<b>Langkah 3: Konfigurasi Dasar Router R1</b><br/>Akses CLI pada Router R1. Masuk ke mode konfigurasi global (`configure terminal`). Berikan nama hostname (`hostname R1`). Nonaktifkan pencarian DNS (`no ip domain lookup`).",
+    "<b>Langkah 4: Konfigurasi Interface Fa0/0 R1 (LAN IT)</b><br/>Masuk ke interface Fa0/0 (`interface FastEthernet0/0`). Berikan alamat IP dan subnet mask hasil perhitungan VLSM untuk Departemen IT (`ip address 192.168.1.1 255.255.255.128`). Aktifkan interface (`no shutdown`). Berikan deskripsi (`description Link to IT-Dept`).",
+    "<b>Langkah 5: Konfigurasi Interface Fa0/1 R1 (LAN HRD & R&D)</b><br/>Masuk ke interface Fa0/1 (`interface FastEthernet0/1`). Berikan alamat IP dan subnet mask hasil perhitungan VLSM untuk Departemen HRD/R&D (`ip address 192.168.1.129 255.255.255.192`). Aktifkan interface (`no shutdown`). Berikan deskripsi (`description Link to HRD-R&D Dept`).",
+    "<b>Langkah 6: Konfigurasi Interface S0/0/0 R1 (WAN Link)</b><br/>Masuk ke interface S0/0/0 (`interface Serial0/0/0`). Berikan alamat IP dan subnet mask hasil perhitungan VLSM untuk WAN Link (`ip address 192.168.1.241 255.255.255.252`). Set clock rate (jika ini DCE) (`clock rate 128000`). Aktifkan interface (`no shutdown`). Berikan deskripsi (`description WAN Link to R2`).",
+    "<b>Langkah 7: Konfigurasi Dasar Router R2</b><br/>Akses CLI pada Router R2. Masuk ke mode konfigurasi global (`configure terminal`). Berikan nama hostname (`hostname R2`). Nonaktifkan pencarian DNS (`no ip domain lookup`).",
+    "<b>Langkah 8: Konfigurasi Interface S0/0/0 R2 (WAN Link)</b><br/>Masuk ke interface S0/0/0 (`interface Serial0/0/0`). Berikan alamat IP dan subnet mask hasil perhitungan VLSM yang berlawanan dengan R1 di segmen WAN (`ip address 192.168.1.242 255.255.255.252`). Aktifkan interface (`no shutdown`). Berikan deskripsi (`description WAN Link to R1`).",
+    "<b>Langkah 9: Konfigurasi IP Address pada End Devices</b><br/>Untuk setiap PC (PC-IT, PC-HR, PC-R&D) dan Server-Web, masuk ke menu 'Desktop' -> 'IP Configuration'. Masukkan IP Address, Subnet Mask, dan Default Gateway sesuai dengan segmen VLSM masing-masing departemen dan tabel pengalamatan. Pastikan Subnet Mask yang digunakan sesuai dengan subnet mask jaringan tersebut (misal: PC-IT menggunakan 255.255.255.128, PC-HR menggunakan 255.255.255.192).",
+    "<b>Langkah 10: Konfigurasi Static Routing pada R1 dan R2 (Opsional, jika ada segmen di R2)</b><br/>Jika R2 memiliki segmen LAN lain, tambahkan static route di R1 menuju segmen tersebut via S0/0/0 R1 (`ip route [network-R2] [mask-R2] 192.168.1.242`). Dan di R2, tambahkan static route menuju semua segmen LAN R1 (`ip route 192.168.1.0 255.255.255.0 192.168.1.241`). Untuk praktikum ini, kita bisa fokus pada konektivitas R1 dan LAN-nya.",
+    "<b>Langkah 11: Verifikasi Konfigurasi Router</b><br/>Gunakan perintah `show ip interface brief` dan `show running-config` pada kedua router untuk memverifikasi alamat IP, subnet mask, dan status interface telah dikonfigurasi dengan benar.",
+    "<b>Langkah 12: Simpan Konfigurasi</b><br/>Setelah semua konfigurasi selesai dan terverifikasi, simpan konfigurasi ke NVRAM pada kedua router dengan perintah `copy running-config startup-config`."
   ],
-  "commands": "# --- Konfigurasi Router-KantorPusat ---<br/>Router>enable<br/>Router#configure terminal<br/>Router(config)#hostname Router-KP<br/>Router-KP(config)#interface GigabitEthernet0/0<br/>Router-KP(config-if)#ip address 192.168.1.1 255.255.255.224  # IP Gateway untuk LAN HRD, Marketing, IT<br/>Router-KP(config-if)#no shutdown<br/>Router-KP(config-if)#exit<br/><br/>Router-KP(config)#interface Serial0/0/0<br/>Router-KP(config-if)#ip address 192.168.1.97 255.255.255.252 # IP untuk WAN Link ke Router-Cabang<br/>Router-KP(config-if)#clock rate 128000  # Hanya untuk interface DCE<br/>Router-KP(config-if)#no shutdown<br/>Router-KP(config-if)#exit<br/><br/># --- Konfigurasi Static Routing pada Router-KantorPusat (Jaringan Cabang) ---<br/>Router-KP(config)#ip route 192.168.1.128 255.255.255.240 192.168.1.98 # Rute ke Subnet Sales<br/>Router-KP(config)#ip route 192.168.1.144 255.255.255.240 192.168.1.98 # Rute ke Subnet Support<br/><br/># --- Konfigurasi Router-Cabang ---<br/>Router>enable<br/>Router#configure terminal<br/>Router(config)#hostname Router-Cabang<br/>Router-Cabang(config)#interface GigabitEthernet0/0<br/>Router-Cabang(config-if)#ip address 192.168.1.129 255.255.255.240 # IP Gateway untuk LAN Sales, Support<br/>Router-Cabang(config-if)#no shutdown<br/>Router-Cabang(config-if)#exit<br/><br/>Router-Cabang(config)#interface Serial0/0/0<br/>Router-Cabang(config-if)#ip address 192.168.1.98 255.255.255.252 # IP untuk WAN Link ke Router-KantorPusat<br/>Router-Cabang(config-if)#no shutdown<br/>Router-Cabang(config-if)#exit<br/><br/># --- Konfigurasi Static Routing pada Router-Cabang (Jaringan Pusat) ---<br/>Router-Cabang(config)#ip route 192.168.1.0 255.255.255.224 192.168.1.97   # Rute ke Subnet HRD<br/>Router-Cabang(config)#ip route 192.168.1.32 255.255.255.224 192.168.1.97  # Rute ke Subnet Marketing<br/>Router-Cabang(config)#ip route 192.168.1.64 255.255.255.224 192.168.1.97  # Rute ke Subnet IT<br/><br/># --- Verifikasi Konfigurasi pada Router ---<br/>Router-KP#show ip interface brief<br/>Router-KP#show ip route<br/>Router-Cabang#show ip interface brief<br/>Router-Cabang#show ip route",
-  "uji_coba_text": "Pengujian konektivitas adalah langkah krusial untuk memastikan bahwa implementasi VLSM telah berhasil dan jaringan berfungsi sebagaimana mestinya. Anda dapat menggunakan utilitas `ping` dan `traceroute` yang tersedia pada Command Prompt (CLI) setiap PC atau router di Cisco Packet Tracer. Saat melakukan `ping`, perhatikan apakah ada balasan `Reply from <IP_Address>` yang menunjukkan koneksi berhasil, atau `Request timed out` yang mengindikasikan masalah. Untuk menganalisis rute, `traceroute` akan menampilkan setiap hop (router) yang dilewati paket data, membantu mengidentifikasi di mana kemungkinan masalah rute terjadi. Pastikan semua ping dari PC di satu departemen ke PC di departemen lain (baik di lokasi yang sama maupun berbeda) menghasilkan respons sukses. Selain itu, gunakan perintah `show ip route` pada router untuk memverifikasi tabel routing. Pastikan semua jaringan yang berbeda subnet telah tercatat dengan next-hop yang benar, ini adalah indikator utama apakah routing telah dikonfigurasi dengan benar dan tidak ada overlapping.",
-  "uji_coba_cmd": "C:\\>ping 192.168.1.130<br/><br/>Pinging 192.168.1.130 with 32 bytes of data:<br/>Reply from 192.168.1.130: bytes=32 time=1ms TTL=126<br/>Reply from 192.168.1.130: bytes=32 time=1ms TTL=126<br/>Reply from 192.168.1.130: bytes=32 time=1ms TTL=126<br/>Reply from 192.168.1.130: bytes=32 time=1ms TTL=126<br/><br/>Ping statistics for 192.168.1.130:<br/>    Packets: Sent = 4, Received = 4, Lost = 0 (0% loss),<br/>Approximate round trip times in milli-seconds:<br/>    Minimum = 1ms, Maximum = 1ms, Average = 1ms<br/><br/>PC-HRD>traceroute 192.168.1.130<br/><br/>Tracing route to 192.168.1.130 over a maximum of 30 hops:<br/>  1    1 ms    1 ms    1 ms  192.168.1.1 <br/>  2    9 ms    9 ms    9 ms  192.168.1.98 <br/>  3   10 ms   10 ms   10 ms  192.168.1.130 <br/><br/>Trace complete.<br/><br/>Router-KP#show ip route<br/>Codes: L - local, C - connected, S - static, R - RIP, M - mobile, B - BGP<br/>       D - EIGRP, EX - EIGRP external, O - OSPF, IA - OSPF inter area <br/>       N1 - OSPF NSSA external type 1, N2 - OSPF NSSA external type 2<br/>       E1 - OSPF external type 1, E2 - OSPF external type 2, i - IS-IS<br/>       SU - IS-IS summary, L1 - IS-IS level-1, L2 - IS-IS level-2<br/>       ia - IS-IS inter area, * - candidate default, U - per-user static route<br/>       o - ODR, P - periodic downloaded static route<br/><br/>Gateway of last resort is not set<br/><br/>     192.168.1.0/24 is variably subnetted, 7 subnets, 2 masks<br/>C    192.168.1.0/27 is directly connected, GigabitEthernet0/0<br/>S    192.168.1.32/27 [1/0] via 192.168.1.98<br/>C    192.168.1.64/27 is directly connected, GigabitEthernet0/0<br/>S    192.168.1.128/28 [1/0] via 192.168.1.98<br/>S    192.168.1.144/28 [1/0] via 192.168.1.98<br/>C    192.168.1.96/30 is directly connected, Serial0/0/0<br/>L    192.168.1.97/32 is directly connected, Serial0/0/0",
+  "commands": "```cli\n# --- Konfigurasi Router R1 (Head Office Gateway) ---\nR1>enable\nR1#configure terminal\nR1(config)#hostname R1\nR1(config)#no ip domain lookup\n\n# Konfigurasi Interface FastEthernet0/0 untuk Departemen IT (100 host)\n# Kebutuhan 100 host -> gunakan subnet /25 (128 host termasuk Network & Broadcast)\nR1(config)#interface FastEthernet0/0\nR1(config-if)#ip address 192.168.1.1 255.255.255.128\nR1(config-if)#no shutdown\nR1(config-if)#description Link to IT-Dept & Web Server LAN\nR1(config-if)#exit\n\n# Konfigurasi Interface FastEthernet0/1 untuk Departemen HRD & R&D (40 host + 15 host)\n# Kebutuhan 40 host -> gunakan subnet /26 (64 host termasuk Network & Broadcast)\n# Alamat network setelah 192.168.1.0/25 Broadcast: 192.168.1.127\n# Maka network berikutnya dimulai dari 192.168.1.128/26\nR1(config)#interface FastEthernet0/1\nR1(config-if)#ip address 192.168.1.129 255.255.255.192\nR1(config-if)#no shutdown\nR1(config-if)#description Link to HRD-R&D Dept LAN\nR1(config-if)#exit\n\n# Konfigurasi Interface Serial0/0/0 untuk WAN Link ke R2 (2 host)\n# Kebutuhan 2 host -> gunakan subnet /30 (4 host termasuk Network & Broadcast)\n# Alamat network setelah 192.168.1.128/26 Broadcast: 192.168.1.191\n# Maka network berikutnya dimulai dari 192.168.1.192/27 (untuk R&D) -> ini terlewat di skenario, mari kita sesuaikan skenario untuk 3 segmen LAN dan 1 WAN.\n# Perhitungan VLSM yang benar untuk skenario: \n# 1. Dept IT (100 host) -> 192.168.1.0/25 (Net: .0, Broadcast: .127)\n# 2. Dept HRD (40 host) -> 192.168.1.128/26 (Net: .128, Broadcast: .191)\n# 3. Dept R&D (15 host) -> 192.168.1.192/27 (Net: .192, Broadcast: .223)\n# 4. WAN Link (2 host)  -> 192.168.1.224/30 (Net: .224, Broadcast: .227)\n\n# Revisi Konfigurasi Fa0/1 R1 untuk HRD (sekarang HRD dan R&D terpisah)\n# Asumsi Fa0/1 untuk HRD, Fa0/2 untuk R&D (tambah port di router jika perlu, atau gunakan VLAN)\n# Untuk contoh ini, kita asumsikan R1 punya Fa0/0, Fa0/1, S0/0/0. Jadi R&D akan terhubung ke SW2 dengan gateway di Fa0/1 R1 juga. Ini akan jadi contoh yang salah untuk VLSM jika tidak dipisah secara fisik/logis.\n# Mari kita revisi, R1 memiliki 2 LAN segment dan 1 WAN segment. Departemen HRD dan R&D akan berada di satu segmen LAN yang sama, misalnya 192.168.1.128/26, dengan R1 Fa0/1 sebagai gateway mereka. Ini tetap VLSM karena berbeda dengan IT.\n# Alokasi: IT -> 192.168.1.0/25. HRD/R&D -> 192.168.1.128/26. WAN -> 192.168.1.192/30 (setelah broadcast 192.168.1.191)\n\n# KOREKSI ULANG PERHITUNGAN VLSM agar sesuai skenario (100, 40, 15, 2 host) & 2 router, 2 switch.\n# Major Network: 192.168.1.0/24\n# Kebutuhan Host (Urut dari Terbesar): \n# 1. Departemen IT (100 host) -> Butuh 128 alamat (2^7), jadi /25\n#    Network: 192.168.1.0/25\n#    Range Host: 192.168.1.1 - 192.168.1.126\n#    Broadcast: 192.168.1.127\n#    Next Available: 192.168.1.128\n\n# 2. Departemen HRD (40 host) -> Butuh 64 alamat (2^6), jadi /26\n#    Network: 192.168.1.128/26\n#    Range Host: 192.168.1.129 - 192.168.1.190\n#    Broadcast: 192.168.1.191\n#    Next Available: 192.168.1.192\n\n# 3. Departemen R&D (15 host) -> Butuh 32 alamat (2^5), jadi /27\n#    Network: 192.168.1.192/27\n#    Range Host: 192.168.1.193 - 192.168.1.222\n#    Broadcast: 192.168.1.223\n#    Next Available: 192.168.1.224\n\n# 4. WAN Link R1-R2 (2 host) -> Butuh 4 alamat (2^2), jadi /30\n#    Network: 192.168.1.224/30\n#    Range Host: 192.168.1.225 - 192.168.1.226\n#    Broadcast: 192.168.1.227\n#    Next Available: 192.168.1.228\n\n# --- REKONFIGURASI R1 DENGAN SKEMA VLSM FINAL INI ---\n# Fa0/0 untuk IT\nR1(config)#interface FastEthernet0/0\nR1(config-if)#ip address 192.168.1.1 255.255.255.128\nR1(config-if)#no shutdown\nR1(config-if)#description Link to IT-Dept LAN\nR1(config-if)#exit\n\n# Fa0/1 untuk HRD\nR1(config)#interface FastEthernet0/1\nR1(config-if)#ip address 192.168.1.129 255.255.255.192\nR1(config-if)#no shutdown\nR1(config-if)#description Link to HRD-Dept LAN\nR1(config-if)#exit\n\n# Ganti Fa0/2 untuk R&D (asumsi ada port Fa0/2)\n# Jika hanya ada Fa0/0, Fa0/1, S0/0/0, maka R&D harus di VLAN atau di segmen yang sama dengan HRD\n# Kita asumsikan ada Fa0/2 di R1 untuk R&D agar menunjukkan VLSM lebih banyak.\n# Jika tidak ada Fa0/2, maka R&D akan berada di segmen 192.168.1.128/26 bersama HRD. Maka kebutuhan host harus ditotal (40+15=55 host) dan pakai /26.\n# Untuk tujuan praktikum, mari kita asumsikan R1 punya 3 LAN Interface.\n# Fa0/2 untuk R&D\nR1(config)#interface FastEthernet0/2\nR1(config-if)#ip address 192.168.1.193 255.255.255.224\nR1(config-if)#no shutdown\nR1(config-if)#description Link to R&D-Dept LAN\nR1(config-if)#exit\n\n# S0/0/0 untuk WAN Link\nR1(config)#interface Serial0/0/0\nR1(config-if)#ip address 192.168.1.225 255.255.255.252\nR1(config-if)#clock rate 128000 # Hanya jika R1 adalah sisi DCE\nR1(config-if)#no shutdown\nR1(config-if)#description WAN Link to R2\nR1(config-if)#exit\n\n# --- Konfigurasi Router R2 (Cabang/Remote) ---\nR2>enable\nR2#configure terminal\nR2(config)#hostname R2\nR2(config)#no ip domain lookup\n\n# S0/0/0 untuk WAN Link ke R1\nR2(config)#interface Serial0/0/0\nR2(config-if)#ip address 192.168.1.226 255.255.255.252\nR2(config-if)#no shutdown\nR2(config-if)#description WAN Link to R1\nR2(config-if)#exit\n\n# Jika R2 memiliki LAN segment (misal: 10.0.0.0/24)\n# R2(config)#interface GigabitEthernet0/0\n# R2(config-if)#ip address 10.0.0.1 255.255.255.0\n# R2(config-if)#no shutdown\n# R2(config-if)#description Link to Branch Office LAN\n# R2(config-if)#exit\n\n# --- Konfigurasi Routing (Jika ada banyak segmen di R2) ---\n# Static Route di R1 untuk menuju Network di R2 (misal: 10.0.0.0/24)\n# R1(config)#ip route 10.0.0.0 255.255.255.0 192.168.1.226\n\n# Static Route di R2 untuk menuju semua Network di R1\n# R2(config)#ip route 192.168.1.0 255.255.255.0 192.168.1.225\n# Note: Untuk modul ini, kita fokus pada VLSM di R1 dan konektivitas dasar.\n\n# --- Verifikasi Konfigurasi --- (Dilakukan di mode privilege EXEC)\nR1#show ip interface brief\nR1#show running-config\n\nR2#show ip interface brief\nR2#show running-config\n\n# --- Simpan Konfigurasi ---\nR1#copy running-config startup-config\nR2#copy running-config startup-config\n```",
+  "uji_coba_text": "Setelah semua konfigurasi IP address pada router dan end devices selesai dilakukan, langkah krusial berikutnya adalah melakukan pengujian konektivitas untuk memastikan bahwa implementasi VLSM telah berhasil dan tidak ada masalah overlapping IP atau kesalahan konfigurasi lainnya. Pengujian ini tidak hanya sekadar 'berhasil atau gagal', melainkan juga menganalisis respons yang diterima untuk memahami bagaimana paket data bergerak dalam jaringan yang telah disegmentasi dengan VLSM.<br/><br/>Gunakan utilitas `ping` dari Command Prompt atau Terminal pada setiap PC untuk menguji konektivitas ke default gateway-nya, ke PC lain dalam segmen yang sama, ke PC di segmen LAN lain (melalui router), dan bahkan ke router R2 melalui link WAN. Perhatikan Time-To-Live (TTL) dan Round Trip Time (RTT) pada hasil ping; nilai TTL yang menurun menunjukkan paket melewati router, sedangkan RTT mengindikasikan latensi. Jika `ping` gagal, periksa pesan error seperti 'Destination Host Unreachable' (menandakan masalah routing atau IP target tidak ditemukan) atau 'Request Timed Out' (menandakan firewall, masalah fisik, atau routing loop). Selain `ping`, gunakan `traceroute` (atau `tracert` di Windows) untuk melihat jalur paket data melewati setiap hop router, sangat berguna untuk mendiagnosis masalah routing antar segmen VLSM yang berbeda.",
+  "uji_coba_cmd": "```cli\n# --- Pengujian dari PC-IT (192.168.1.10) ---\nPC-IT>ping 192.168.1.1\n\nPinging 192.168.1.1 with 32 bytes of data:\nReply from 192.168.1.1: bytes=32 time<1ms TTL=255\nReply from 192.168.1.1: bytes=32 time<1ms TTL=255\nReply from 192.168.1.1: bytes=32 time<1ms TTL=255\nReply from 192.168.1.1: bytes=32 time<1ms TTL=255\n\nPing statistics for 192.168.1.1:\n    Packets: Sent = 4, Received = 4, Lost = 0 (0% loss),\nApproximate round trip times in milli-seconds:\n    Minimum = 0ms, Maximum = 0ms, Average = 0ms\n\nPC-IT>ping 192.168.1.130  # Ping ke PC-HR\n\nPinging 192.168.1.130 with 32 bytes of data:\nReply from 192.168.1.130: bytes=32 time=1ms TTL=127\nReply from 192.168.1.130: bytes=32 time=1ms TTL=127\nReply from 192.168.1.130: bytes=32 time=1ms TTL=127\nReply from 192.168.1.130: bytes=32 time=1ms TTL=127\n\nPing statistics for 192.168.1.130:\n    Packets: Sent = 4, Received = 4, Lost = 0 (0% loss),\nApproximate round trip times in milli-seconds:\n    Minimum = 0ms, Maximum = 1ms, Average = 0ms\n\nPC-IT>tracert 192.168.1.130 # Traceroute ke PC-HR\n\nTracing route to 192.168.1.130 over a maximum of 30 hops:\n\n  1    <1 ms    <1 ms    <1 ms  192.168.1.1 \n  2     1 ms     1 ms     1 ms  192.168.1.130 \n\nTrace complete.\n\n# --- Verifikasi Routing Table di R1 (mode privilege EXEC) ---\nR1#show ip route\n\nCodes: L - local, C - connected, S - static, R - RIP, M - mobile, B - BGP\n       D - EIGRP, EX - EIGRP external, O - OSPF, IA - OSPF inter area \n       N1 - OSPF NSSA external type 1, N2 - OSPF NSSA external type 2\n       E1 - OSPF external type 1, E2 - OSPF external type 2\n       i - IS-IS, su - IS-IS summary, L1 - IS-IS level-1, L2 - IS-IS level-2\n       ia - IS-IS inter area, * - candidate default, U - per-user static route\n       o - ODR, P - periodic downloaded static route\n\nGateway of last resort is not set\n\n     192.168.1.0/24 is variably subnetted, 4 subnets, 3 masks\nC        192.168.1.0/25 is directly connected, FastEthernet0/0\nL        192.168.1.1/32 is directly connected, FastEthernet0/0\nC        192.168.1.128/26 is directly connected, FastEthernet0/1\nL        192.168.1.129/32 is directly connected, FastEthernet0/1\nC        192.168.1.192/27 is directly connected, FastEthernet0/2\nL        192.168.1.193/32 is directly connected, FastEthernet0/2\nC        192.168.1.224/30 is directly connected, Serial0/0/0\nL        192.168.1.225/32 is directly connected, Serial0/0/0\n```",
   "troubleshooting_table": [
     [
       "Gejala Masalah",
@@ -167,27 +143,32 @@
       "Tindakan Korektif"
     ],
     [
-      "Ping 'Request timed out' atau 'Destination Host Unreachable'",
-      "IP Address atau Subnet Mask salah pada PC/Router, Interface router 'administratively down', atau Default Gateway salah/tidak ada.",
-      "Periksa kembali IP, Subnet Mask, dan Default Gateway pada PC/Router. Gunakan `show ip interface brief` pada router untuk memastikan interface 'up' dan 'up'. Pastikan `no shutdown` sudah dieksekusi."
+      "'Destination Host Unreachable' saat ping antar segmen LAN di router yang sama.",
+      "Kesalahan konfigurasi IP address atau subnet mask pada interface router, atau IP address/default gateway pada host. Bisa juga overlapping IP.",
+      "Periksa `show ip interface brief` pada router dan `ipconfig` pada PC. Pastikan IP dan Subnet Mask sudah benar dan tidak ada overlapping. Cek kabel fisik."
     ],
     [
-      "Koneksi antar subnet tidak bisa (meskipun IP sudah benar)",
-      "Routing belum dikonfigurasi atau konfigurasi routing salah/tidak lengkap, atau terjadi overlapping IP address antar subnet.",
-      "Verifikasi konfigurasi routing dengan `show ip route` pada router. Pastikan ada rute ke semua jaringan tujuan. Periksa kembali perhitungan VLSM untuk memastikan tidak ada overlapping Network Address atau Broadcast Address."
+      "'Request Timed Out' saat ping antar PC di segmen LAN yang berbeda (melalui router).",
+      "Routing table di router tidak memiliki entri untuk network tujuan (jika ada router lain), atau kesalahan pada `clock rate` di koneksi serial (jika DCE/DTE).",
+      "Gunakan `show ip route` untuk memeriksa tabel routing. Tambahkan static route jika diperlukan. Pastikan clock rate hanya diset di sisi DCE dan cocok dengan kabel serial. Periksa status interface (`show interface serial X/X/X`)."
     ],
     [
-      "Tidak bisa ping ke Default Gateway dari PC",
-      "Kabel tidak terhubung dengan benar (misal Cross-over bukan Straight), Interface router Gig0/0 mati, atau IP Gateway pada PC salah.",
-      "Periksa visual koneksi kabel di Packet Tracer. Pastikan interface GigabitEthernet0/0 pada router 'up'. Cek kembali IP Default Gateway pada PC agar sesuai dengan IP interface router yang terhubung ke LAN tersebut."
+      "Tidak bisa ping antar dua router melalui koneksi serial.",
+      "IP address atau subnet mask di interface serial salah, atau interface down (administratively down/line protocol down), atau `clock rate` tidak diatur/salah di sisi DCE.",
+      "Verifikasi IP address dan subnet mask di kedua sisi link serial. Pastikan kedua interface `no shutdown`. Periksa LED link serial. Jika R1 adalah DCE, pastikan `clock rate` sudah diatur di R1."
+    ],
+    [
+      "Beberapa host di satu segmen tidak bisa koneksi, sementara yang lain bisa.",
+      "Kemungkinan ada kesalahan input IP Address, Subnet Mask, atau Default Gateway pada host yang bermasalah. Atau terjadi konflik IP.",
+      "Verifikasi IP Configuration pada host yang bermasalah. Gunakan `ping` ke default gateway dari host tersebut. Jika masih gagal, mungkin ada konflik IP (gunakan `arp -a` di PC atau `show arp` di router untuk deteksi MAC address ganda)."
     ]
   ],
-  "tugas_mandiri": "Sebagai tugas mandiri, Anda diminta untuk memperluas topologi jaringan PT. Maju Bersama. Tambahkan satu departemen baru di Kantor Pusat yaitu Departemen Keuangan yang membutuhkan 15 host, dan satu departemen baru di Kantor Cabang yaitu Departemen Logistik yang membutuhkan 7 host. Anda harus menggunakan blok IP yang tersisa dari 192.168.1.0/24 atau jika tidak cukup, gunakan blok IP baru 192.168.2.0/24 (sesuai kreativitas dan efisiensi Anda) untuk alokasi VLSM yang paling optimal. Tambahkan PC dan switch yang diperlukan, lalu konfigurasi pengalamatan IP dan routing (baik static atau dynamic routing, jika memungkinkan) agar semua departemen (termasuk yang baru) dapat berkomunikasi satu sama lain. Laporkan hasil perhitungan VLSM, tabel pengalamatan lengkap, serta hasil pengujian konektivitas dalam sebuah laporan praktikum tertulis yang mencakup topologi, konfigurasi CLI, dan analisis.",
+  "tugas_mandiri": "Untuk memperdalam pemahaman dan menguji keterampilan Anda, kembangkan topologi praktikum ini dengan skenario berikut: PT. Jaringan Sejahtera memutuskan untuk membuka satu kantor cabang baru di kota lain yang membutuhkan alokasi IP 10.10.10.0/24. Anda diminta untuk menambahkan sebuah Router baru (R3) yang terhubung ke R2 melalui koneksi serial lainnya (misal: S0/1/0 di R2 dan S0/0/0 di R3) dengan kebutuhan 2 host untuk link WAN-nya. Router R3 ini akan menjadi gateway untuk segmen LAN di kantor cabang tersebut yang membutuhkan 200 host.<br/><br/>Tugas Anda adalah menghitung ulang alokasi VLSM untuk link WAN baru tersebut dari sisa blok alamat IP 192.168.1.0/24 (jika memungkinkan) atau menggunakan blok IP 10.10.10.0/24 yang baru. Kemudian, implementasikan topologi ini di Cisco Packet Tracer, lakukan konfigurasi IP address pada R3 (interface serial dan LAN) serta pada beberapa PC di kantor cabang. Terakhir, konfigurasikan static routing (atau protokol routing dinamis seperti RIP/OSPF) pada semua router (R1, R2, R3) agar semua segmen jaringan dapat berkomunikasi. Laporkan hasil perhitungan VLSM, tabel pengalamatan, screenshot konfigurasi setiap perangkat, dan hasil pengujian konektivitas (ping dan traceroute) secara lengkap dalam format laporan praktikum.",
   "evaluasi_questions": [
-    "Jelaskan secara detail mengapa VLSM dianggap lebih efisien dibandingkan FLSM dalam penggunaan alamat IP, berikan contoh kasus konkret untuk mendukung argumen Anda.",
-    "Bagaimana metode pengurutan kebutuhan host dari terbesar ke terkecil mempengaruhi keberhasilan implementasi VLSM dan pencegahan overlapping subnet? Jelaskan konsekuensinya jika pengurutan dilakukan secara acak.",
-    "Dalam skenario praktikum ini, jika Departemen Marketing (dengan 25 host) tiba-tiba membutuhkan 50 host, bagaimana Anda akan menyesuaikan skema VLSM yang sudah ada? Sebutkan langkah-langkah perhitungan yang diperlukan.",
-    "Analisis apa saja yang perlu Anda lakukan ketika menemui masalah 'Request timed out' saat melakukan ping dari PC di Kantor Pusat ke PC di Kantor Cabang? Sebutkan setidaknya tiga kemungkinan penyebab dan cara mengatasinya.",
-    "Selain penghematan IP, sebutkan dan jelaskan dua manfaat lain dari penggunaan VLSM dalam perancangan jaringan skala menengah hingga besar, serta potensi tantangan yang mungkin dihadapi saat mengimplementasikannya."
+    "Jelaskan mengapa VLSM dianggap lebih efisien dibandingkan FLSM dalam pengelolaan alamat IP. Berikan contoh spesifik di mana FLSM akan memboroskan alamat IP, sementara VLSM dapat mengoptimalkannya.",
+    "Dalam melakukan perhitungan VLSM, urutan alokasi alamat IP dari kebutuhan host terbesar ke terkecil sangat krusial. Analisis dampak negatif yang mungkin terjadi jika urutan ini tidak diikuti, dan bagaimana hal tersebut dapat mempersulit administrasi jaringan.",
+    "Asumsikan Anda memiliki major network 172.16.0.0/20. Rencanakan skema VLSM untuk memenuhi kebutuhan berikut: Subnet A (1000 host), Subnet B (500 host), Subnet C (200 host), dan 2 link WAN (masing-masing 2 host). Sajikan hasilnya dalam tabel yang mencakup Network Address, Subnet Mask, Host Range, dan Broadcast Address.",
+    "Jika Anda menghadapi masalah 'overlapping IP address' saat mengimplementasikan VLSM, jelaskan langkah-langkah sistematis yang akan Anda lakukan untuk mendeteksi penyebabnya dan bagaimana cara memperbaikinya. Sertakan perintah CLI atau utilitas yang relevan.",
+    "Diskusikan bagaimana penggunaan VLSM dapat memengaruhi ukuran tabel routing pada router di jaringan yang kompleks. Apakah VLSM selalu mengurangi ukuran tabel routing, atau ada kondisi tertentu di mana justru bisa meningkatkan kompleksitas routing? Jelaskan argumentasi Anda."
   ]
 }

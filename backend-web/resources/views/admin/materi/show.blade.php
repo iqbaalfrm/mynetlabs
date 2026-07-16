@@ -56,7 +56,7 @@
         <ul class="nav nav-tabs" id="detailTab" role="tablist">
           <li class="nav-item" role="presentation">
             <button class="nav-link active" id="topik-tab" data-bs-toggle="tab" data-bs-target="#topik" type="button" role="tab">
-              <i class="ti-book tab-icon"></i> Topik Materi
+              <i class="ti-book tab-icon"></i> Isi Materi
             </button>
           </li>
           <li class="nav-item" role="presentation">
@@ -72,38 +72,22 @@
         </ul>
 
         <div class="tab-content mt-3" id="detailTabContent">
-          <!-- Tab 1: Topik Materi -->
+          <!-- Tab 1: Isi Materi -->
           <div class="tab-pane fade show active" id="topik" role="tabpanel">
             <div class="d-flex justify-content-between align-items-center mb-3">
-              <h5 class="mb-0">Daftar Topik</h5>
-              <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#modalTopik">
-                <i class="ti-plus"></i> Tambah Topik
-              </button>
+              <h5 class="mb-0">Materi Pembelajaran</h5>
+              <a href="{{ route('admin.materi.edit', $pertemuan->id) }}" class="btn btn-primary btn-sm">
+                <i class="ti-pencil"></i> Edit Isi Materi
+              </a>
             </div>
 
-            @forelse($pertemuan->topikMateris as $topik)
-              <div class="topik-item">
-                <div class="d-flex justify-content-between">
-                  <div>
-                    <strong>#{{ $topik->urutan ?? '-' }} {{ $topik->judul }}</strong>
-                    @if($topik->file_materi)
-                      <a href="{{ asset('storage/'.$topik->file_materi) }}" target="_blank" class="badge bg-info ms-2">
-                        <i class="ti-download"></i> File
-                      </a>
-                    @endif
-                  </div>
-                  <div>
-                    <a href="{{ route('admin.topik.edit', $topik->id) }}" class="btn btn-outline-secondary btn-sm"><i class="ti-pencil"></i></a>
-                    <button class="btn btn-outline-danger btn-sm" onclick="deleteTopik({{ $topik->id }}, '{{ addslashes($topik->judul) }}')">
-                      <i class="ti-trash"></i>
-                    </button>
-                  </div>
-                </div>
-                <p class="text-muted small mt-1 mb-0">{{ Str::limit($topik->isi_materi, 150) }}</p>
-              </div>
-            @empty
-              <div class="text-center py-4 text-muted">Belum ada topik materi. Tambahkan sekarang.</div>
-            @endforelse
+            <div class="p-4 border rounded bg-light" style="white-space: pre-wrap; line-height: 1.6; font-size: 14px; max-height: 500px; overflow-y: auto;">
+              @if($pertemuan->isi_materi)
+                {{ $pertemuan->isi_materi }}
+              @else
+                <div class="text-center text-muted py-4">Belum ada isi materi pembelajaran. Klik tombol <strong>Edit Isi Materi</strong> untuk menambahkan materi.</div>
+              @endif
+            </div>
           </div>
 
           <!-- Tab 2: Modul PDF -->
@@ -203,46 +187,6 @@
   </div>
 </div>
 
-<!-- Modal Tambah Topik -->
-<div class="modal fade" id="modalTopik" tabindex="-1">
-  <div class="modal-dialog modal-lg">
-    <div class="modal-content">
-      <form action="{{ route('admin.topik.store', $pertemuan->id) }}" method="POST" enctype="multipart/form-data">
-        @csrf
-        <div class="modal-header">
-          <h5 class="modal-title">Tambah Topik Materi</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-        </div>
-        <div class="modal-body">
-          <div class="mb-3">
-            <label class="form-label">Judul</label>
-            <input type="text" name="judul" class="form-control" required>
-          </div>
-          <div class="mb-3">
-            <label class="form-label">Urutan</label>
-            <input type="number" name="urutan" class="form-control" value="{{ $pertemuan->topikMateris->max('urutan') + 1 ?? 1 }}">
-          </div>
-          <div class="mb-3">
-            <label class="form-label">Deskripsi</label>
-            <textarea name="deskripsi" class="form-control" rows="2"></textarea>
-          </div>
-          <div class="mb-3">
-            <label class="form-label">Isi Materi</label>
-            <textarea name="isi_materi" class="form-control" rows="6" required></textarea>
-          </div>
-          <div class="mb-3">
-            <label class="form-label">File Materi (PDF/PPT/DOC)</label>
-            <input type="file" name="file_materi" class="form-control" accept=".pdf,.ppt,.pptx,.doc,.docx">
-          </div>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-light" data-bs-dismiss="modal">Batal</button>
-          <button type="submit" class="btn btn-primary">Simpan</button>
-        </div>
-      </form>
-    </div>
-  </div>
-</div>
 
 <!-- Modal PDF Viewer -->
 <div class="modal fade pdf-viewer-modal" id="modalPdfViewer" tabindex="-1">

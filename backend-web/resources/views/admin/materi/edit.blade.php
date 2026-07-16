@@ -22,9 +22,14 @@
             @error('judul')<div class="invalid-feedback">{{ $message }}</div>@enderror
           </div>
           <div class="mb-3">
-            <label class="form-label">Deskripsi</label>
-            <textarea name="deskripsi" class="form-control @error('deskripsi') is-invalid @enderror" rows="3">{{ old('deskripsi', $pertemuan->deskripsi) }}</textarea>
+            <label class="form-label">Deskripsi Singkat (Poin Utama)</label>
+            <textarea name="deskripsi" class="form-control @error('deskripsi') is-invalid @enderror" rows="2">{{ old('deskripsi', $pertemuan->deskripsi) }}</textarea>
             @error('deskripsi')<div class="invalid-feedback">{{ $message }}</div>@enderror
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Isi Materi Pembelajaran</label>
+            <textarea name="isi_materi" class="form-control @error('isi_materi') is-invalid @enderror" rows="10" placeholder="Tuliskan isi materi lengkap di sini..." required>{{ old('isi_materi', $pertemuan->isi_materi) }}</textarea>
+            @error('isi_materi')<div class="invalid-feedback">{{ $message }}</div>@enderror
           </div>
           <div class="mb-3">
             <label class="form-label">Semester</label>

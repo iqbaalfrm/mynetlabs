@@ -26,7 +26,7 @@ class ChatController extends Controller
             $query->where('sender', $request->sender);
         }
 
-        $chatList = $query->latest()->paginate(50);
+        $chatList = $query->latest()->paginate(15)->appends($request->query());
         $siswaList = User::where('role', 'siswa')->get();
         $pertemuanList = Pertemuan::orderBy('nomor_urut')->get();
 

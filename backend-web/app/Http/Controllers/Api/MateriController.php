@@ -5,9 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\Pertemuan;
 use App\Models\ProgressSiswa;
-use App\Models\TopikMateri;
 use App\Http\Resources\PertemuanResource;
-use App\Http\Resources\TopikMateriResource;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Exception;
@@ -22,31 +20,24 @@ class MateriController extends Controller
         try {
             $siswa = $request->user();
 
-            $topikSelesaiIds = [];
+            // Ambil daftar pertemuan_id yang sudah ditandai selesai oleh siswa
+            $pertemuanSelesaiIds = [];
             if ($siswa && $siswa->role === 'siswa') {
-                $topikSelesaiIds = ProgressSiswa::where('siswa_id', $siswa->id)
+                $pertemuanSelesaiIds = ProgressSiswa::where('siswa_id', $siswa->id)
+                    ->whereNotNull('pertemuan_id')
                     ->where('is_completed', true)
-                    ->pluck('topik_id')
+                    ->pluck('pertemuan_id')
                     ->toArray();
             }
 
             $pertemuans = Pertemuan::orderBy('semester')
                 ->orderBy('nomor_urut')
-                ->withCount('topikMateris as total_topik')
                 ->with(['modulPdfs' => fn($q) => $q->latest()->limit(1)])
                 ->get();
 
-            $pertemuans->map(function ($p) use ($siswa, $topikSelesaiIds) {
-                $totalTopik = $p->total_topik;
-
-                $topikSelesai = 0;
-                if ($siswa && $siswa->role === 'siswa') {
-                    $topikSelesai = $p->topikMateris()
-                        ->whereIn('id', $topikSelesaiIds)
-                        ->count();
-                }
-
-                $p->progress = $totalTopik > 0 ? round($topikSelesai / $totalTopik, 2) : 0;
+            $pertemuans->map(function ($p) use ($siswa, $pertemuanSelesaiIds) {
+                // Progress bersifat binary: 0 (belum selesai) atau 1 (sudah selesai)
+                $p->progress = in_array($p->id, $pertemuanSelesaiIds) ? 1.0 : 0.0;
                 $p->status_indexing = $p->modulPdfs->first()?->status_indexing ?? 'pending';
                 return $p;
             });
@@ -65,14 +56,13 @@ class MateriController extends Controller
     }
 
     // GET /api/pertemuan/{id}
-    // Detail satu pertemuan beserta daftar topik materinya.
+    // Detail satu pertemuan beserta isi materi langsung.
     public function show(Request $request, $id)
     {
         try {
             $siswa = $request->user();
 
             $pertemuan = Pertemuan::with([
-                'topikMateris',
                 'modulPdfs' => fn($q) => $q->latest()->limit(1)
             ])->find($id);
 
@@ -82,22 +72,16 @@ class MateriController extends Controller
                 ], 404);
             }
 
-            $topikIds = $pertemuan->topikMateris->pluck('id');
-
-            // Ambil daftar topik yang sudah diselesaikan siswa
-            $topikSelesaiIds = [];
+            // Cek apakah siswa sudah menandai pertemuan ini sebagai selesai
+            $isCompleted = false;
             if ($siswa && $siswa->role === 'siswa') {
-                $topikSelesaiIds = ProgressSiswa::where('siswa_id', $siswa->id)
-                    ->whereIn('topik_id', $topikIds)
+                $isCompleted = ProgressSiswa::where('siswa_id', $siswa->id)
+                    ->where('pertemuan_id', $pertemuan->id)
                     ->where('is_completed', true)
-                    ->pluck('topik_id')
-                    ->toArray();
+                    ->exists();
             }
 
-            $pertemuan->topikMateris->map(function ($t) use ($topikSelesaiIds) {
-                $t->is_completed = in_array($t->id, $topikSelesaiIds);
-                return $t;
-            });
+            $pertemuan->progress = $isCompleted ? 1.0 : 0.0;
 
             return response()->json([
                 'message' => 'Detail pertemuan berhasil dimuat.',
@@ -112,9 +96,9 @@ class MateriController extends Controller
         }
     }
 
-    // POST /api/pertemuan/{pertemuanId}/topik/{topikId}/selesai
-    // Tandai satu topik materi sebagai sudah dibaca/selesai oleh siswa.
-    public function tandaiTopikSelesai(Request $request, $pertemuanId, $topikId)
+    // POST /api/pertemuan/{pertemuanId}/selesai
+    // Tandai satu pertemuan sebagai sudah dibaca/selesai oleh siswa.
+    public function tandaiPertemuanSelesai(Request $request, $pertemuanId)
     {
         try {
             $siswa = $request->user();
@@ -125,27 +109,25 @@ class MateriController extends Controller
                 ], 403);
             }
 
-            $topik = TopikMateri::where('id', $topikId)
-                ->where('pertemuan_id', $pertemuanId)
-                ->first();
+            $pertemuan = Pertemuan::find($pertemuanId);
 
-            if (!$topik) {
+            if (!$pertemuan) {
                 return response()->json([
-                    'message' => 'Topik materi tidak ditemukan.',
+                    'message' => 'Pertemuan tidak ditemukan.',
                 ], 404);
             }
 
             // Gunakan updateOrCreate agar idempoten
             ProgressSiswa::updateOrCreate(
-                ['siswa_id' => $siswa->id, 'topik_id' => $topikId],
+                ['siswa_id' => $siswa->id, 'pertemuan_id' => $pertemuanId],
                 ['is_completed' => true]
             );
 
             return response()->json([
-                'message' => 'Topik berhasil ditandai selesai.',
+                'message' => 'Pertemuan berhasil ditandai selesai.',
             ], 200);
         } catch (Exception $e) {
-            Log::error('Error saat menandai topik selesai: ' . $e->getMessage());
+            Log::error('Error saat menandai pertemuan selesai: ' . $e->getMessage());
             return response()->json([
                 'message' => 'Gagal memperbarui progress belajar.',
                 'error' => config('app.debug') ? $e->getMessage() : null

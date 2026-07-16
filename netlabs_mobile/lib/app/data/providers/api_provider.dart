@@ -120,8 +120,8 @@ class ApiProvider extends GetxController {
     return await _dio.get('/pertemuan/$id');
   }
 
-  Future<Response> tandaiTopikSelesai(int pertemuanId, int topikId) async {
-    return await _dio.post('/pertemuan/$pertemuanId/topik/$topikId/selesai');
+  Future<Response> tandaiPertemuanSelesai(int pertemuanId) async {
+    return await _dio.post('/pertemuan/$pertemuanId/selesai');
   }
 
   // ============ KUIS ============

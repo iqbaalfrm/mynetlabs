@@ -177,9 +177,9 @@ class MateriView extends GetView<MateriController> {
                 SizedBox(height: isActive ? 12 : 10),
                 Row(
                   children: [
-                    const Icon(Icons.layers_rounded, size: 12, color: NetlabsTheme.textMuted),
+                    const Icon(Icons.description_rounded, size: 12, color: NetlabsTheme.textMuted),
                     const SizedBox(width: 4),
-                    Text("${item['topik_count']} Topik", style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w600, color: NetlabsTheme.textSecondary)),
+                    const Text("Materi Pembelajaran", style: TextStyle(fontSize: 11, fontWeight: FontWeight.w600, color: NetlabsTheme.textSecondary)),
                   ],
                 ),
                 const SizedBox(height: 16),

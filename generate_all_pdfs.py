@@ -169,10 +169,9 @@ def dapatkan_konten_ai(outline):
             return json.load(f)
 
     print(f"   [API] Meminta Google Gemini AI menyusun modul: {outline['judul']} ...")
-    
     prompt = f"""
 Anda adalah seorang Guru SMK Jurusan TKJ (Teknik Komputer & Jaringan) senior dan Praktisi Network Engineer bersertifikasi CCNA.
-Tugas Anda adalah menulis konten modul praktikum yang sangat lengkap, padat materi, akademis, dan bernada mendidik untuk:
+Tugas Anda adalah menulis konten modul praktikum yang sangat lengkap, padat materi, akademis, mendalam, dan bernada mendidik untuk:
 Topik Modul: {outline["topik"]}
 Judul Modul: {outline["judul"]}
 File Name: {outline["file_name"]}
@@ -182,25 +181,25 @@ Format keluaran harus berupa objek JSON dengan struktur kunci berikut:
   "judul": "Modul X: ...",
   "subjudul": "Subjudul yang menggambarkan isi materi...",
   "tujuan": [
-    "Tujuan 1 (jelaskan secara detail, formal, dan akademis)",
+    "Tujuan 1 (jelaskan secara detail, formal, dan akademis, minimal 2-3 kalimat)",
     "Tujuan 2...",
     "Tujuan 3...",
     "Tujuan 4...",
     "Tujuan 5..."
   ],
   "kompetensi_dasar": [
-    "KD Pengetahuan (misal: KD 3.X Menganalisis...)",
-    "KD Keterampilan (misal: KD 4.X Mengonfigurasikan...)"
+    "KD Pengetahuan (misal: KD 3.X Menganalisis secara mendalam tentang...)",
+    "KD Keterampilan (misal: KD 4.X Mengonfigurasikan, menguji, dan memverifikasi...)"
   ],
   "alat_bahan": [
-    "Alat 1 (PC/Laptop dengan spesifikasi tertentu)",
+    "Alat 1 (PC/Laptop dengan spesifikasi tertentu secara detail)",
     "Alat 2 (Software Simulator Cisco Packet Tracer versi terbaru)",
     "Alat 3 (Modul/Internet)",
     "Alat 4..."
   ],
-  "prasyarat": "Penjelasan prasyarat materi/pemahaman dasar yang harus dimiliki siswa sebelum mempelajari modul ini...",
-  "teori_1": "Penjelasan teori dasar bagian 1 yang sangat mendalam dan panjang (minimal 3-4 paragraf padat). Gunakan tag HTML seperti <br/> dan <b> untuk penekanan/formatting penting. Harus berisi latar belakang sejarah, definisi terminologi secara fiqh muamalah jika ada hubungan (atau formal akademis jaringan), konsep utama, dan klasifikasinya. Panjang teks antara 250 - 300 kata.",
-  "teori_2_text": "Penjelasan teori dasar bagian 2 (minimal 2 paragraf padat, panjang sekitar 150-200 kata) sebagai pengantar tabel teknis di bawahnya.",
+  "prasyarat": "Penjelasan prasyarat materi/pemahaman dasar yang harus dimiliki siswa sebelum mempelajari modul ini (minimal 2-3 kalimat panjang)...",
+  "teori_1": "Penjelasan teori dasar bagian 1 yang sangat mendalam, detail, dan panjang (minimal 4-5 paragraf padat). Gunakan tag HTML seperti <br/> dan <b> untuk penekanan/formatting penting. Harus berisi latar belakang sejarah, definisi terminologi secara formal akademis jaringan, konsep utama, dan klasifikasinya secara mendalam. Panjang teks minimal 450 - 550 kata.",
+  "teori_2_text": "Penjelasan teori dasar bagian 2 (minimal 2 paragraf padat, panjang sekitar 200-250 kata) yang secara khusus mengantarkan dan menjelaskan tabel teknis di bawahnya.",
   "teori_2_table": [
     ["Kolom 1 (Header)", "Kolom 2 (Header)", "Kolom 3 (Header)", "Kolom 4 (Header)"],
     ["Baris 1 Kolom 1", "Baris 1 Kolom 2", "Baris 1 Kolom 3", "Baris 1 Kolom 4"],
@@ -208,8 +207,8 @@ Format keluaran harus berupa objek JSON dengan struktur kunci berikut:
     ["Baris 3 ...", "...", "...", "..."],
     ["Baris 4 ...", "...", "...", "..."]
   ],
-  "teori_2_extra": "Penjelasan teknis tambahan/catatan penting di bawah tabel teori (minimal 1 paragraf panjang sekitar 100 kata).",
-  "topologi_desc": "Deskripsi terperinci mengenai topologi jaringan yang digunakan, koneksi fisik port switch/router (misalnya Fa0/1, Gig0/0), dan jenis kabel (Straight/Cross/Serial).",
+  "teori_2_extra": "Penjelasan teknis tambahan/catatan penting dan analisis mendalam di bawah tabel teori (minimal 2 paragraf panjang sekitar 200-250 kata).",
+  "topologi_desc": "Deskripsi terperinci mengenai topologi jaringan yang digunakan, koneksi fisik port switch/router (misalnya Fa0/1, Gig0/0), jenis kabel (Straight/Cross/Serial), serta penjelasan logis segmentasi jaringannya (minimal 2 paragraf, panjang sekitar 150-200 kata).",
   "addressing_table": [
     ["Perangkat", "Interface", "IP Address", "Subnet Mask", "Default Gateway"],
     ["Host1", "...", "...", "...", "..."],
@@ -217,9 +216,9 @@ Format keluaran harus berupa objek JSON dengan struktur kunci berikut:
     ["Router1", "...", "...", "...", "..."],
     ["Switch1", "...", "...", "...", "..."]
   ],
-  "skenario_desc": "Skenario lengkap dan cerita/studi kasus di lapangan mengapa topologi ini dibangun, dan apa tujuan/kasus operasional nyata yang ingin dicapai oleh praktikan (minimal 2 paragraf padat, sekitar 150 kata).",
+  "skenario_desc": "Skenario lengkap dan cerita/studi kasus di lapangan mengapa topologi ini dibangun, dan apa tujuan/kasus operasional nyata yang ingin dicapai oleh praktikan (minimal 3 paragraf padat, panjang sekitar 300-350 kata).",
   "langkah_kerja": [
-    "Langkah 1 (Jelaskan secara detail tindakan pengerjaan dan verifikasi visual pada simulator)",
+    "Langkah 1 (Jelaskan secara detail tindakan pengerjaan, menu yang harus diklik, dan verifikasi visual pada simulator)",
     "Langkah 2...",
     "Langkah 3...",
     "Langkah 4...",
@@ -227,20 +226,23 @@ Format keluaran harus berupa objek JSON dengan struktur kunci berikut:
     "Langkah 6...",
     "Langkah 7...",
     "Langkah 8...",
-    "Langkah 9..."
+    "Langkah 9...",
+    "Langkah 10...",
+    "Langkah 11...",
+    "Langkah 12..."
   ],
-  "commands": "Kumpulan baris perintah CLI Cisco IOS atau perintah sistem operasi terkait yang lengkap dengan komentar penjelasan (gunakan tanda # di awal baris komentar). Buat panjang dan detail.",
-  "uji_coba_text": "Penjelasan rinci mengenai tata cara pengujian konektivitas (seperti utilitas ping, traceroute, atau show commands) dan bagaimana menganalisis respon paket data.",
-  "uji_coba_cmd": "Simulasi output terminal ketika pengujian sukses dilakukan (misal output utility ping atau show ip route).",
+  "commands": "Kumpulan baris perintah CLI Cisco IOS atau perintah sistem operasi terkait yang sangat lengkap dengan komentar penjelasan (gunakan tanda # di awal baris komentar). Buat sangat panjang, berurutan, detail, dan mencakup semua skenario konfigurasi dari awal sampai selesai.",
+  "uji_coba_text": "Penjelasan rinci mengenai tata cara pengujian konektivitas (seperti utilitas ping, traceroute, atau show commands) dan bagaimana menganalisis respon paket data (minimal 2 paragraf, panjang sekitar 200-250 kata).",
+  "uji_coba_cmd": "Simulasi output terminal ketika pengujian sukses dilakukan (misal output utility ping lengkap dengan statistik RTT dan TTL, atau output show ip route secara detail).",
   "troubleshooting_table": [
     ["Gejala Masalah (Header)", "Kemungkinan Penyebab (Header)", "Tindakan Korektif (Header)"],
     ["Gejala 1", "Penyebab 1", "Solusi/Tindakan 1"],
     ["Gejala 2", "Penyebab 2", "Solusi/Tindakan 2"],
     ["Gejala 3", "Penyebab 3", "Solusi/Tindakan 3"]
   ],
-  "tugas_mandiri": "Tantangan tugas mandiri individu berbobot untuk memperluas topologi praktikum (misal menambah 2 client dengan aturan VLAN tertentu atau konfigurasi ACL baru) yang wajib dilaporkan dalam bentuk laporan praktikum.",
+  "tugas_mandiri": "Tantangan tugas mandiri individu berbobot untuk memperluas topologi praktikum (misal menambah 2 client dengan aturan VLAN tertentu atau konfigurasi routing baru) yang wajib dilaporkan dalam bentuk laporan praktikum (minimal 2 paragraf, panjang sekitar 200-250 kata).",
   "evaluasi_questions": [
-    "Pertanyaan analisis kritis 1 tentang konsep praktikum",
+    "Pertanyaan analisis kritis 1 tentang konsep praktikum (tipe esai analisis)",
     "Pertanyaan analisis kritis 2...",
     "Pertanyaan analisis kritis 3...",
     "Pertanyaan analisis kritis 4...",
@@ -252,12 +254,12 @@ Catatan penting:
 - Gunakan Bahasa Indonesia formal yang baku (sesuai PUEBI/EYD) dan terminologi jaringan komputer yang tepat.
 - Pastikan semua penjelasan diisi dengan detail teknis nyata (misal port FastEthernet0/1, GigabitEthernet0/0, dll.), bukan penjelasan generik atau kosong.
 - Konten harus sangat padat dan mendalam agar modul terlihat bernilai akademis tinggi dan menyerupai modul buatan guru/instruktur profesional.
-- Batasi jumlah baris pada tabel teori dan tabel pengalamatan agar tidak melebihi batas tinggi halaman A4 (masing-masing tabel maksimal 5-6 baris).
+- Batasi jumlah baris pada tabel teori (maksimal 5-6 baris), tabel pengalamatan (maksimal 5-6 baris), dan tabel troubleshooting (maksimal 4 baris) agar pas di halaman masing-masing dan tidak meluber.
 - Kembalikan HANYA JSON objek yang valid sesuai dengan spesifikasi di atas. Jangan tambahkan penjelasan pembuka atau penutup di luar objek JSON tersebut. Jangan dibungkus dengan markdown ```json.
 """
 
     # Coba beberapa model jika terjadi rate limit (bypassing pool quota)
-    models_to_try = ["gemini-2.5-flash", "gemini-1.5-flash"]
+    models_to_try = ["gemini-2.5-flash", "gemini-2.5-pro"]
     current_model_idx = 0
 
     # Coba hingga 6 kali jika ada kegagalan parsing JSON atau kuota terlampaui
@@ -404,69 +406,48 @@ def buat_modul_pdf(data, file_name):
     elements.append(Paragraph("<b>LABORATORIUM JARINGAN KOMPUTER NETLABS</b>", style_cover_footer))
     elements.append(PageBreak())
 
-    # ================= HALAMAN 2: TATA TERTIB & K3 =================
-    elements.append(Paragraph("TATA TERTIB & KESELAMATAN KERJA LABORATORIUM JARINGAN", style_judul_halaman))
-    elements.append(Spacer(1, 0.2 * cm))
+    # ================= HALAMAN 2: TATA TERTIB LAB, K3 & PERSIAPAN =================
+    elements.append(Paragraph("TATA TERTIB LAB, K3 & PERSIAPAN PRAKTIKUM", style_judul_halaman))
+    elements.append(Spacer(1, 0.15 * cm))
     elements.append(Paragraph(
         "Demi kenyamanan, keamanan, dan keselamatan seluruh praktikan di Laboratorium Jaringan Komputer NetLabs, "
         "berikut adalah tata tertib dan aturan keselamatan kerja yang wajib ditaati:",
         style_body
     ))
-    elements.append(Paragraph("<b>1. Perilaku Umum Praktikan:</b>", style_heading))
+    elements.append(Paragraph("<b>1. Tata Tertib & Keselamatan Kerja Laboratorium Jaringan:</b>", style_heading))
     elements.append(Paragraph(
-        "• Praktikan wajib hadir 10 menit sebelum waktu praktikum dimulai.<br/>"
-        "• Dilarang keras membawa makanan, minuman, atau senjata tajam ke dalam ruang laboratorium.<br/>"
-        "• Menjaga kebersihan meja kerja dan merapikan kembali kursi setelah selesai praktikum.<br/>"
-        "• Dilarang memindahkan atau mengambil komponen hardware tanpa izin tertulis dari instruktur lab.",
+        "• Praktikan wajib hadir 10 menit sebelum praktikum dimulai. Dilarang keras membawa makanan/minuman ke lab.<br/>"
+        "• Periksa semua kabel daya sebelum menyalakan PC/Router. Jangan menyentuh kelistrikan dengan tangan basah.<br/>"
+        "• Jika tercium bau terbakar, segera matikan tombol power pusat dan laporkan kepada pengawas/guru.<br/>"
+        "• Gunakan simulator Cisco Packet Tracer sesuai petunjuk. Dilarang mengubah alamat IP PC utama laboratorium.",
         style_body
     ))
-    elements.append(Paragraph("<b>2. Keselamatan Kerja & Kelistrikan:</b>", style_heading))
-    elements.append(Paragraph(
-        "• Periksa semua kabel daya dan kabel jaringan sebelum menyalakan PC atau perangkat Router/Switch.<br/>"
-        "• Jangan menyentuh soket listrik dengan tangan basah atau menggunakan kabel daya yang terkelupas.<br/>"
-        "• Jika terjadi percikan api atau tercium bau terbakar, segera matikan tombol power pusat dan laporkan kepada pengawas.<br/>"
-        "• Pastikan grounding pada instalasi listrik laboratorium berfungsi dengan baik guna menghindari sengatan listrik statis.",
-        style_body
-    ))
-    elements.append(Paragraph("<b>3. Etika Penggunaan Software & Lisensi:</b>", style_heading))
-    elements.append(Paragraph(
-        "• Dilarang menginstal software bajakan atau program yang tidak relevan dengan praktikum (seperti game).<br/>"
-        "• Gunakan emulator atau simulator (Cisco Packet Tracer/GNS3) sesuai dengan petunjuk pengerjaan langkah praktis.<br/>"
-        "• Dilarang mengubah alamat IP atau konfigurasi jaringan komputer utama laboratorium tanpa persetujuan instruktur.",
-        style_body
-    ))
-    elements.append(Spacer(1, 0.3 * cm))
-    elements.append(Paragraph("<i>Pelanggaran terhadap aturan di atas akan dikenai sanksi berupa pengurangan nilai praktikum hingga larangan mengikuti praktikum selanjutnya.</i>", style_catatan))
-    elements.append(PageBreak())
-
-    # ================= HALAMAN 3: TUJUAN & ALAT BAHAN =================
-    elements.append(Paragraph("TUJUAN PRAKTIKUM & PERSIAPAN ALAT / BAHAN", style_judul_halaman))
-    elements.append(Spacer(1, 0.2 * cm))
+    elements.append(Spacer(1, 0.15 * cm))
     
-    elements.append(Paragraph("<b>1. Tujuan Instruksional Khusus (TIK):</b>", style_heading))
+    elements.append(Paragraph("<b>2. Tujuan Instruksional Khusus (TIK):</b>", style_heading))
     tujuan_p = "<br/>".join([f"• {t}" for t in data["tujuan"]])
     elements.append(Paragraph(tujuan_p, style_body))
     
-    elements.append(Paragraph("<b>2. Kompetensi Dasar (KD) Terkait:</b>", style_heading))
+    elements.append(Paragraph("<b>3. Kompetensi Dasar (KD) Terkait:</b>", style_heading))
     kd_p = "<br/>".join([f"• {k}" for k in data["kompetensi_dasar"]])
     elements.append(Paragraph(kd_p, style_body))
     
-    elements.append(Paragraph("<b>3. Alat dan Bahan Praktikum:</b>", style_heading))
+    elements.append(Paragraph("<b>4. Alat dan Bahan Praktikum:</b>", style_heading))
     alat_p = "<br/>".join([f"• [ ] {a}" for a in data["alat_bahan"]])
     elements.append(Paragraph(alat_p, style_body))
     
-    elements.append(Spacer(1, 0.3 * cm))
-    elements.append(Paragraph("<b>Prasyarat Teori:</b>", style_heading))
+    elements.append(Spacer(1, 0.15 * cm))
+    elements.append(Paragraph("<b>5. Prasyarat Teori:</b>", style_heading))
     elements.append(Paragraph(data["prasyarat"], style_body))
     elements.append(PageBreak())
 
-    # ================= HALAMAN 4: TEORI DASAR I =================
+    # ================= HALAMAN 3: TEORI DASAR I =================
     elements.append(Paragraph("TEORI DASAR I — KONSEP DAN MODEL TEKNOLOGI", style_judul_halaman))
     elements.append(Spacer(1, 0.2 * cm))
     elements.append(Paragraph(data["teori_1"], style_body))
     elements.append(PageBreak())
 
-    # ================= HALAMAN 5: TEORI DASAR II =================
+    # ================= HALAMAN 4: TEORI DASAR II =================
     elements.append(Paragraph("TEORI DASAR II — ARSITEKTUR TEKNIS DAN DATA", style_judul_halaman))
     elements.append(Spacer(1, 0.2 * cm))
     elements.append(Paragraph(data["teori_2_text"], style_body))
@@ -505,8 +486,8 @@ def buat_modul_pdf(data, file_name):
       
     elements.append(PageBreak())
 
-    # ================= HALAMAN 6: TOPOLOGI & SKENARIO =================
-    elements.append(Paragraph("TOPOLOGI JARINGAN DAN SKENARIO PRAKTIKUM", style_judul_halaman))
+    # ================= HALAMAN 5: TOPOLOGI & SKENARIO =================
+    elements.append(Paragraph("TOPOLOGI JARINGAN DAN SKENARIO KASUS", style_judul_halaman))
     elements.append(Spacer(1, 0.2 * cm))
     elements.append(Paragraph("<b>1. Deskripsi Topologi Jaringan:</b>", style_heading))
     elements.append(Paragraph(data["topologi_desc"], style_body))
@@ -545,7 +526,7 @@ def buat_modul_pdf(data, file_name):
     elements.append(Paragraph(data["skenario_desc"], style_body))
     elements.append(PageBreak())
 
-    # ================= HALAMAN 7: PROSEDUR KONFIGURASI =================
+    # ================= HALAMAN 6: PROSEDUR KONFIGURASI =================
     elements.append(Paragraph("PROSEDUR KONFIGURASI LANGKAH DEMI LANGKAH", style_judul_halaman))
     elements.append(Spacer(1, 0.2 * cm))
     
@@ -562,7 +543,7 @@ def buat_modul_pdf(data, file_name):
       
     elements.append(PageBreak())
 
-    # ================= HALAMAN 8: UJI COBA & TROUBLESHOOTING =================
+    # ================= HALAMAN 7: UJI COBA & TROUBLESHOOTING =================
     elements.append(Paragraph("PROSEDUR UJI COBA DAN TROUBLESHOOTING", style_judul_halaman))
     elements.append(Spacer(1, 0.2 * cm))
     
@@ -601,9 +582,9 @@ def buat_modul_pdf(data, file_name):
     elements.append(t_tb)
     elements.append(PageBreak())
 
-    # ================= HALAMAN 9: LEMBAR EVALUASI =================
-    elements.append(Paragraph("TUGAS MANDIRI DAN PERTANYAAN EVALUASI", style_judul_halaman))
-    elements.append(Spacer(1, 0.2 * cm))
+    # ================= HALAMAN 8: EVALUASI & PENILAIAN =================
+    elements.append(Paragraph("TUGAS MANDIRI, EVALUASI & PENILAIAN", style_judul_halaman))
+    elements.append(Spacer(1, 0.1 * cm))
     
     elements.append(Paragraph("<b>1. Tugas Mandiri Praktikan:</b>", style_heading))
     elements.append(Paragraph(data["tugas_mandiri"], style_body))
@@ -611,20 +592,14 @@ def buat_modul_pdf(data, file_name):
     elements.append(Paragraph("<b>2. Pertanyaan Evaluasi Jaringan:</b>", style_heading))
     for idx, q in enumerate(data["evaluasi_questions"]):
         elements.append(Paragraph(f"{idx+1}. {q}", style_body))
-        elements.append(Spacer(1, 0.05 * cm))
+        elements.append(Spacer(1, 0.04 * cm))
       
-    elements.append(Spacer(1, 0.3 * cm))
-    elements.append(Paragraph("<i>Petunjuk Laporan: Kerjakan Tugas Mandiri di atas secara individu. Ambil screenshot topologi dan hasil ping, kemudian lampirkan pada Laporan Praktikum yang dikumpulkan minggu depan.</i>", style_catatan))
-    elements.append(PageBreak())
-
-    # ================= HALAMAN 10: LEMBAR PENILAIAN =================
-    elements.append(Paragraph("LEMBAR PENILAIAN PRAKTIKUM GURU/INSTRUKTUR", style_judul_halaman))
+    elements.append(Spacer(1, 0.15 * cm))
+    elements.append(Paragraph("<i>Petunjuk Laporan: Kerjakan Tugas Mandiri secara individu. Ambil screenshot topologi dan hasil ping, lampirkan pada Laporan Praktikum.</i>", style_catatan))
     elements.append(Spacer(1, 0.2 * cm))
-    elements.append(Paragraph(
-        "Halaman ini digunakan oleh instruktur atau guru pengampu untuk mencatat skor pencapaian "
-        "praktikan berdasarkan kriteria penilaian kinerja yang telah ditentukan di bawah ini.",
-        style_body
-    ))
+    
+    # Lembar Penilaian
+    elements.append(Paragraph("<b>3. Lembar Penilaian Guru / Instruktur:</b>", style_heading))
     
     penilaian_data = [
         ["No", "Aspek Penilaian", "Bobot", "Skor (0-100)", "Nilai Akhir (Skor x Bobot)"],
@@ -641,25 +616,25 @@ def buat_modul_pdf(data, file_name):
         formatted_row = []
         for col_idx, col in enumerate(row):
             if row_idx == 0:
-                p_style = ParagraphStyle("PnHeader", parent=style_body, fontName="Helvetica-Bold", alignment=TA_CENTER, textColor=HexColor("#ffffff"), fontSize=8.5)
+                p_style = ParagraphStyle("PnHeader", parent=style_body, fontName="Helvetica-Bold", alignment=TA_CENTER, textColor=HexColor("#ffffff"), fontSize=8)
             else:
-                p_style = ParagraphStyle("PnCell", parent=style_body, fontSize=8.5, leading=11, fontName="Helvetica-Bold" if row_idx == len(penilaian_data)-1 else "Helvetica")
+                p_style = ParagraphStyle("PnCell", parent=style_body, fontSize=8, leading=10, fontName="Helvetica-Bold" if row_idx == len(penilaian_data)-1 else "Helvetica")
             formatted_row.append(Paragraph(col, p_style))
         formatted_pn.append(formatted_row)
       
-    t_pn = Table(formatted_pn, colWidths=[1*cm, 7.5*cm, 2*cm, 2.5*cm, 3*cm])
+    t_pn = Table(formatted_pn, colWidths=[0.8*cm, 7.5*cm, 1.8*cm, 2.4*cm, 3.5*cm])
     t_pn.setStyle(TableStyle([
         ('BACKGROUND', (0,0), (-1,0), HexColor("#0d47a1")),
         ('ALIGN', (0,0), (-1,-1), 'CENTER'),
         ('VALIGN', (0,0), (-1,-1), 'MIDDLE'),
         ('GRID', (0,0), (-1,-1), 0.5, HexColor("#bdbdbd")),
         ('BACKGROUND', (0,-1), (-1,-1), HexColor("#e3f2fd")),
-        ('TOPPADDING', (0,0), (-1,-1), 5),
-        ('BOTTOMPADDING', (0,0), (-1,-1), 5),
+        ('TOPPADDING', (0,0), (-1,-1), 3),
+        ('BOTTOMPADDING', (0,0), (-1,-1), 3),
     ]))
     elements.append(t_pn)
   
-    elements.append(Spacer(1, 1.2 * cm))
+    elements.append(Spacer(1, 0.4 * cm))
   
     # Signature Blocks
     sig_data = [
@@ -671,7 +646,7 @@ def buat_modul_pdf(data, file_name):
     t_sig.setStyle(TableStyle([
         ('ALIGN', (0,0), (-1,-1), 'CENTER'),
         ('VALIGN', (0,0), (-1,-1), 'BOTTOM'),
-        ('BOTTOMPADDING', (0,1), (-1,1), 8),
+        ('BOTTOMPADDING', (0,1), (-1,1), 4),
     ]))
     elements.append(t_sig)
 

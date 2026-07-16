@@ -58,7 +58,7 @@ class DetailMateriView extends GetView<DetailMateriController> {
                 )),
             const SizedBox(height: 40),
             
-            // Topics List (Reader UI)
+            // Materi Content Card
             Obx(() {
               if (controller.isLoading.value) {
                 return const Center(
@@ -69,55 +69,124 @@ class DetailMateriView extends GetView<DetailMateriController> {
                 );
               }
               
-              return ListView.builder(
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                itemCount: controller.daftarTopik.length,
-                itemBuilder: (context, index) {
-                  var topik = controller.daftarTopik[index];
-                  bool isCompleted = topik['is_completed'] as bool;
-                  return _buildLessonCard(topik, index, isCompleted);
-                },
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Container(
+                    width: double.infinity,
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(24),
+                      boxShadow: [
+                        BoxShadow(
+                          color: const Color(0xFF0F172A).withOpacity(0.02),
+                          blurRadius: 16,
+                          offset: const Offset(0, 8),
+                        ),
+                      ],
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.all(24),
+                      child: controller.isiMateri.value.trim().isEmpty
+                          ? const Center(
+                              child: Padding(
+                                padding: EdgeInsets.all(24.0),
+                                child: Text(
+                                  "Materi belum diunggah oleh guru.",
+                                  style: TextStyle(
+                                    color: NetlabsTheme.textSecondary,
+                                    fontSize: 14.5,
+                                  ),
+                                ),
+                              ),
+                            )
+                          : _buildFormattedText(controller.isiMateri.value),
+                    ),
+                  ),
+                  const SizedBox(height: 24),
+                  
+                  // Status Selesai Dibaca Banner / Button
+                  if (controller.isKuisEnabled.value)
+                    Container(
+                      width: double.infinity,
+                      padding: const EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        color: NetlabsTheme.success.withAlpha(20),
+                        borderRadius: BorderRadius.circular(16),
+                        border: Border.all(color: NetlabsTheme.success.withAlpha(50), width: 0.5),
+                      ),
+                      child: const Row(
+                        children: [
+                          Icon(Icons.check_circle_rounded, color: NetlabsTheme.success, size: 20),
+                          SizedBox(width: 12),
+                          Expanded(
+                            child: Text(
+                              "Anda telah selesai membaca materi ini. Kuis evaluasi sekarang aktif!",
+                              style: TextStyle(
+                                fontSize: 13,
+                                fontWeight: FontWeight.bold,
+                                color: NetlabsTheme.success,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    )
+                  else
+                    ElevatedButton.icon(
+                      onPressed: () => controller.tandaiSelesai(),
+                      icon: const Icon(Icons.check_circle_outline_rounded, size: 20, color: Colors.white),
+                      label: const Text(
+                        "Tandai Selesai Dibaca",
+                        style: TextStyle(fontSize: 15, fontWeight: FontWeight.w700, color: Colors.white),
+                      ),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: NetlabsTheme.success,
+                        minimumSize: const Size(double.infinity, 52),
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                        elevation: 0,
+                      ),
+                    ),
+                  const SizedBox(height: 20),
+                  
+                  // Evaluation Button
+                  AnimatedContainer(
+                    duration: const Duration(milliseconds: 300),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(16),
+                      boxShadow: controller.isKuisEnabled.value
+                          ? [BoxShadow(color: NetlabsTheme.primary.withAlpha(50), blurRadius: 20, offset: const Offset(0, 8))]
+                          : [],
+                    ),
+                    child: ElevatedButton(
+                      onPressed: controller.isKuisEnabled.value
+                          ? () {
+                              Get.toNamed(Routes.QUIZ, arguments: {
+                                'pertemuan_id': controller.pertemuanId,
+                              });
+                            }
+                          : null,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: NetlabsTheme.primary,
+                        disabledBackgroundColor: NetlabsTheme.border,
+                        minimumSize: const Size(double.infinity, 56),
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                        elevation: 0,
+                      ),
+                      child: Text(
+                        "Mulai Kuis Evaluasi",
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w800,
+                          letterSpacing: 0.5,
+                          color: controller.isKuisEnabled.value ? Colors.white : NetlabsTheme.textMuted,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
               );
             }),
-            
-            const SizedBox(height: 20),
-            
-            // Evaluation Button
-            Obx(() => AnimatedContainer(
-              duration: const Duration(milliseconds: 300),
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(16),
-                boxShadow: controller.isKuisEnabled.value
-                    ? [BoxShadow(color: NetlabsTheme.primary.withAlpha(50), blurRadius: 20, offset: const Offset(0, 8))]
-                    : [],
-              ),
-              child: ElevatedButton(
-                onPressed: controller.isKuisEnabled.value
-                    ? () {
-                        Get.toNamed(Routes.QUIZ, arguments: {
-                          'pertemuan_id': controller.pertemuanId,
-                        });
-                      }
-                    : null,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: NetlabsTheme.primary,
-                  disabledBackgroundColor: NetlabsTheme.border,
-                  minimumSize: const Size(double.infinity, 56),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-                  elevation: 0,
-                ),
-                child: Text(
-                  "Mulai Kuis Evaluasi",
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w800,
-                    letterSpacing: 0.5,
-                    color: controller.isKuisEnabled.value ? Colors.white : NetlabsTheme.textMuted,
-                  ),
-                ),
-              ),
-            )),
             const SizedBox(height: 100), // Space for FAB
           ],
         ),
@@ -150,78 +219,6 @@ class DetailMateriView extends GetView<DetailMateriController> {
             style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 14),
           ),
         ),
-      ),
-    );
-  }
-
-  // Smooth Lesson Card
-  Widget _buildLessonCard(Map<String, dynamic> topik, int index, bool isCompleted) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 32),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(24),
-        boxShadow: [
-          BoxShadow(
-            color: const Color(0xFF0F172A).withOpacity(0.02),
-            blurRadius: 16,
-            offset: const Offset(0, 8),
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Card Header with Done Indicator
-          InkWell(
-            onTap: () => controller.toggleCompleteTopik(index),
-            borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
-            child: Padding(
-              padding: const EdgeInsets.all(24),
-              child: Row(
-                children: [
-                  AnimatedContainer(
-                    duration: const Duration(milliseconds: 300),
-                    width: 28,
-                    height: 28,
-                    decoration: BoxDecoration(
-                      color: isCompleted ? NetlabsTheme.success.withAlpha(25) : NetlabsTheme.surface,
-                      shape: BoxShape.circle,
-                      border: Border.all(
-                        color: isCompleted ? NetlabsTheme.success : NetlabsTheme.border,
-                        width: isCompleted ? 0 : 1.5,
-                      ),
-                    ),
-                    child: isCompleted
-                        ? const Icon(Icons.check_rounded, size: 16, color: NetlabsTheme.success)
-                        : null,
-                  ),
-                  const SizedBox(width: 16),
-                  Expanded(
-                    child: Text(
-                      topik['judul'] as String,
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w700,
-                        color: isCompleted ? NetlabsTheme.textSecondary : NetlabsTheme.dark,
-                        decoration: isCompleted ? TextDecoration.lineThrough : null,
-                        decorationColor: NetlabsTheme.border,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-          
-          const Divider(height: 1, color: NetlabsTheme.surface),
-          
-          // Card Body with Advanced Text Formatting
-          Padding(
-            padding: const EdgeInsets.all(24),
-            child: _buildFormattedText(topik['isi'] as String),
-          ),
-        ],
       ),
     );
   }

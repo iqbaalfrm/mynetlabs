@@ -1,78 +1,78 @@
 {
   "judul": "Modul 2: Model Referensi OSI & TCP/IP",
-  "subjudul": "Memahami Arsitektur Jaringan, Perbandingan Protokol, dan Mekanisme Enkapsulasi Data untuk Komunikasi Efektif",
+  "subjudul": "Mengkaji dan Menganalisis Arsitektur Jaringan, Proses Enkapsulasi Data, dan Perbandingan Protokol",
   "tujuan": [
-    "Memahami dan menjelaskan secara komprehensif struktur serta fungsi dari tujuh lapisan pada Model Referensi OSI (Open Systems Interconnection) dan empat lapisan pada Model TCP/IP (Transmission Control Protocol/Internet Protocol).",
-    "Menganalisis perbedaan fundamental dan persamaan antara Model Referensi OSI dengan Model TCP/IP, termasuk kelebihan dan kekurangan masing-masing dalam konteks implementasi jaringan modern.",
-    "Mengidentifikasi protokol-protokol kunci yang beroperasi pada setiap lapisan Model OSI dan TCP/IP, serta menjelaskan peran spesifiknya dalam memfasilitasi komunikasi data antar perangkat.",
-    "Mengilustrasikan dan menjelaskan proses enkapsulasi dan dekapsulasi data yang terjadi pada setiap lapisan model referensi, serta peran PDU (Protocol Data Unit) dalam proses transmisi.",
-    "Menerapkan konsep OSI dan TCP/IP dalam analisis trafik jaringan sederhana menggunakan simulator Cisco Packet Tracer, guna memvisualisasikan alur data dan proses komunikasi antar host."
+    "Setelah menyelesaikan modul ini, peserta didik diharapkan mampu menjelaskan secara komprehensif konsep dasar, fungsi, dan karakteristik dari setiap lapisan pada model referensi OSI (Open Systems Interconnection) dengan akurat dan sistematis, mencakup perannya dalam komunikasi data.",
+    "Peserta didik diharapkan mampu menganalisis struktur dan fungsi dari model arsitektur protokol TCP/IP (Transmission Control Protocol/Internet Protocol) secara mendalam, termasuk bagaimana setiap lapisan berkontribusi pada konektivitas dan pertukaran informasi di jaringan global.",
+    "Peserta didik diharapkan mampu membandingkan dan mengidentifikasi persamaan serta perbedaan esensial antara model referensi OSI dan TCP/IP, baik dari segi jumlah lapisan, penamaan, maupun fungsionalitas inti, sehingga memahami konteks penggunaan masing-masing model dalam industri.",
+    "Peserta didik diharapkan mampu mendemonstrasikan dan menjelaskan proses enkapsulasi (penambahan header/trailer) dan dekapsulasi (penghapusan header/trailer) data pada setiap lapisan model OSI dan TCP/IP, serta mengidentifikasi PDU (Protocol Data Unit) yang terbentuk pada tahapan tersebut.",
+    "Peserta didik diharapkan mampu mengidentifikasi protokol-protokol utama yang beroperasi pada setiap lapisan model OSI dan TCP/IP, serta menjelaskan peran spesifik protokol-protokol tersebut dalam mendukung komunikasi data yang efisien dan andal di lingkungan jaringan."
   ],
   "kompetensi_dasar": [
-    "KD 3.10 Menganalisis cara kerja berbagai model referensi jaringan (OSI dan TCP/IP).",
-    "KD 4.10 Mengidentifikasi proses komunikasi data pada jaringan berdasarkan model referensi OSI dan TCP/IP."
+    "KD 3.1 Menganalisis secara mendalam model referensi OSI dan TCP/IP serta fungsi protokol pada setiap lapisan untuk memahami dasar-dasar interkoneksi jaringan.",
+    "KD 4.1 Menyajikan hasil analisis perbandingan model referensi OSI dan TCP/IP serta menerapkan prinsip enkapsulasi dan dekapsulasi data dalam skenario komunikasi jaringan sederhana menggunakan simulator."
   ],
   "alat_bahan": [
-    "PC/Laptop dengan spesifikasi minimal Intel Core i3 (atau setara), RAM 4GB, dan kapasitas penyimpanan bebas minimal 10GB.",
-    "Software Simulator Cisco Packet Tracer versi terbaru (disarankan 8.x atau lebih tinggi) terinstal.",
-    "Modul ajar cetak/digital dan akses internet untuk referensi tambahan.",
-    "Kabel UTP Straight-Through dan Cross-Over (konseptual, relevan untuk pemahaman fisik)."
+    "PC/Laptop dengan spesifikasi minimum Prosesor Intel Core i3 generasi 8 atau AMD Ryzen 3, RAM 8GB, SSD 256GB, dan sistem operasi Windows 10/11 64-bit.",
+    "Software Simulator Cisco Packet Tracer versi terbaru (disarankan versi 8.x ke atas) untuk simulasi jaringan dan observasi PDU (Protocol Data Unit).",
+    "Modul ajar digital ini dan akses internet untuk referensi tambahan (dokumentasi RFC, artikel teknis, dll.).",
+    "Aplikasi web browser (Google Chrome/Mozilla Firefox) untuk mengakses sumber daya online."
   ],
-  "prasyarat": "Peserta didik diharapkan telah memiliki pemahaman dasar tentang konsep jaringan komputer, seperti definisi jaringan, perangkat jaringan dasar (switch, router, PC), dan dasar-dasar pengalamatan IP (IP Address, Subnet Mask). Kemampuan dasar dalam mengoperasikan sistem operasi Windows/Linux juga merupakan prasyarat penting untuk menjalankan simulator dan melakukan konfigurasi.",
-  "teori_1": "Dalam dunia jaringan komputer yang kompleks, diperlukan sebuah kerangka kerja standar untuk memahami dan mengatur bagaimana perangkat-perangkat berkomunikasi. Dua model referensi yang paling fundamental dan luas digunakan adalah <b>Model Referensi OSI (Open Systems Interconnection)</b> dan <b>Model TCP/IP (Transmission Control Protocol/Internet Protocol)</b>.<br/><br/>Model OSI dikembangkan oleh International Organization for Standardization (ISO) pada tahun 1984, bertujuan untuk menyediakan kerangka arsitektur yang generik dan vendor-independen. Tujuan utamanya adalah memungkinkan interoperabilitas antar sistem yang berbeda dari berbagai vendor, dengan memecah proses komunikasi menjadi tujuh lapisan yang terpisah secara logis. Setiap lapisan memiliki fungsi spesifik dan berkomunikasi hanya dengan lapisan di atas dan di bawahnya. Pendekatan berlapis ini memudahkan pengembangan, pemecahan masalah, dan standardisasi protokol.<br/><br/>Tujuh lapisan OSI secara berurutan dari atas ke bawah (lapisan aplikasi hingga fisik) adalah: <b>Application</b> (Lapisan 7), <b>Presentation</b> (Lapisan 6), <b>Session</b> (Lapisan 5), <b>Transport</b> (Lapisan 4), <b>Network</b> (Lapisan 3), <b>Data Link</b> (Lapisan 2), dan <b>Physical</b> (Lapisan 1). Setiap lapisan bertanggung jawab atas aspek komunikasi yang berbeda, mulai dari antarmuka pengguna hingga transmisi bit fisik melalui media. Pemahaman mendalam tentang setiap lapisan ini krusial untuk menganalisis alur data dan mendiagnosis masalah jaringan secara efektif, sebuah keahlian esensial bagi praktisi jaringan bersertifikasi CCNA.<br/><br/>Secara historis, model OSI adalah upaya akademis untuk standarisasi yang sempurna, namun dalam praktiknya, model TCP/IP yang dikembangkan oleh Departemen Pertahanan AS lebih dulu diadopsi secara luas di internet karena sifatnya yang lebih ringkas dan implementatif.",
-  "teori_2_text": "Model TCP/IP, yang menjadi dasar internet modern, merupakan model yang lebih pragmatis dan terimplementasi langsung dalam sistem operasi dan perangkat jaringan. Berbeda dengan OSI yang bersifat teoritis dan terdiri dari tujuh lapisan, TCP/IP hanya memiliki empat lapisan. Meskipun demikian, fungsionalitas yang disediakan oleh kedua model memiliki banyak kesamaan, bahkan seringkali tumpang tindih dalam tugasnya. Model TCP/IP lebih ringkas karena beberapa lapisan OSI digabungkan menjadi satu di TCP/IP.<br/><br/>Keempat lapisan TCP/IP dari atas ke bawah adalah: <b>Application</b>, <b>Transport</b>, <b>Internet</b>, dan <b>Network Access</b>. Model ini secara fundamental mendefinisikan bagaimana data dikemas, dialamatkan, ditransmisikan, dan diterima melalui jaringan, menjadikannya arsitektur yang sangat kuat untuk komunikasi data global.",
+  "prasyarat": "Sebelum mempelajari modul ini, peserta didik diharapkan telah memiliki pemahaman dasar mengenai konsep jaringan komputer, termasuk definisi jaringan lokal (LAN) dan jaringan luas (WAN), serta konsep dasar pengalamatan IP (IP Addressing) dan subnetting. Pemahaman tentang perangkat keras jaringan seperti hub, switch, dan router juga akan sangat membantu dalam memvisualisasikan alur komunikasi data antar lapisan.",
+  "teori_1": "Dalam dunia jaringan komputer yang kompleks, pemahaman tentang bagaimana data bergerak dari satu titik ke titik lain adalah krusial. Untuk menyederhanakan kompleksitas ini, para ahli jaringan mengembangkan model referensi yang membagi proses komunikasi menjadi beberapa lapisan. Dua model yang paling dominan dan sering menjadi rujukan adalah <b>Model Referensi OSI (Open Systems Interconnection)</b> dan <b>Model TCP/IP (Transmission Control Protocol/Internet Protocol)</b>.<br/><br/>Model OSI dikembangkan oleh <i>International Organization for Standardization (ISO)</i> pada akhir tahun 1970-an dan dipublikasikan pada tahun 1984. Tujuannya adalah untuk menyediakan standar universal yang memungkinkan sistem komputer dari berbagai vendor untuk berkomunikasi satu sama lain, mendorong interoperabilitas, dan mengatasi masalah fragmentasi yang ada pada saat itu. Model OSI bersifat konseptual dan deskriptif, membagi fungsi komunikasi jaringan menjadi tujuh lapisan yang terpisah dan berurutan secara hirarkis, yaitu Physical, Data Link, Network, Transport, Session, Presentation, dan Application. Setiap lapisan memiliki fungsi spesifik dan berinteraksi hanya dengan lapisan di atas dan di bawahnya. Ini merupakan pendekatan modular yang memudahkan pengembangan protokol dan perangkat jaringan.<br/><br/>Sementara itu, model TCP/IP muncul lebih dahulu, dikembangkan oleh <i>Defense Advanced Research Projects Agency (DARPA)</i> di Amerika Serikat pada tahun 1970-an sebagai bagian dari proyek ARPANET, cikal bakal internet. Model TCP/IP ini lebih bersifat praktis dan implementatif karena langsung menjadi dasar dari protokol-protokol yang digunakan di Internet. Awalnya, model TCP/IP memiliki empat lapisan: Network Access (atau Link), Internet, Transport, dan Application. Beberapa interpretasi modern terkadang memecah lapisan Network Access menjadi Physical dan Data Link, sehingga terlihat mirip dengan lapisan terbawah OSI.<br/><br/>Meskipun keduanya memiliki tujuan yang sama – memungkinkan komunikasi data – terdapat perbedaan filosofis dan struktural yang mendasar. OSI lebih fokus pada standardisasi fungsionalitas di setiap lapisan, menjadikannya alat yang sangat baik untuk pembelajaran dan diagnosis masalah. Di sisi lain, TCP/IP adalah arsitektur yang lebih ringkas, efisien, dan telah teruji dalam skala global, menjadikannya standar de facto untuk komunikasi internet. Mempelajari kedua model ini memberikan fondasi yang kuat bagi setiap praktisi jaringan untuk memahami bagaimana aplikasi berinteraksi dengan media fisik, dan bagaimana data diproses di setiap tahapan perjalanannya.",
+  "teori_2_text": "Kedua model referensi, OSI dan TCP/IP, meskipun memiliki perbedaan dalam struktur dan jumlah lapisan, secara fundamental menggambarkan fungsi-fungsi yang serupa dalam proses komunikasi data. Perbandingan antara keduanya sangat penting untuk memahami konteks dan relevansi masing-masing dalam industri jaringan modern. Model OSI sering digunakan sebagai alat bantu pedagogis dan diagnostik yang sangat baik karena detail lapisannya yang granular, memungkinkan identifikasi masalah pada lapisan spesifik dengan lebih mudah.\r\n\r\nSebaliknya, model TCP/IP, dengan jumlah lapisannya yang lebih sedikit dan orientasi yang lebih praktis, adalah fondasi operasional dari Internet itu sendiri. Memahami bagaimana lapisan-lapisan ini saling berhubungan dan protokol apa yang beroperasi pada setiap lapisan adalah kunci untuk menguasai arsitektur jaringan. Tabel di bawah ini menyajikan perbandingan antara kedua model, menyoroti fungsi utama dan contoh protokol yang beroperasi pada lapisan-lapisan yang setara.",
   "teori_2_table": [
     [
-      "Lapisan OSI",
-      "Lapisan TCP/IP",
+      "Lapisan OSI (7 Lapisan)",
       "Fungsi Utama",
-      "PDU Contoh"
+      "Lapisan TCP/IP (4/5 Lapisan)",
+      "Protokol Contoh"
     ],
     [
       "7. Application",
-      "Application",
       "Menyediakan antarmuka untuk aplikasi jaringan",
-      "Data"
+      "4. Application",
+      "HTTP, HTTPS, FTP, SMTP, DNS, DHCP, Telnet"
     ],
     [
       "6. Presentation",
-      "Application",
-      "Representasi data, enkripsi, kompresi",
-      "Data"
+      "Format data, enkripsi, kompresi",
+      "4. Application",
+      "JPEG, MPEG, ASCII, TLS, SSL"
     ],
     [
       "5. Session",
-      "Application",
       "Mengelola sesi komunikasi antar aplikasi",
-      "Data"
+      "4. Application",
+      "NetBIOS, RPC, Sockets (API)"
     ],
     [
       "4. Transport",
-      "Transport",
-      "Segmentasi data, keandalan (TCP) / efisiensi (UDP)",
-      "Segment (TCP), Datagram (UDP)"
+      "Segmentasi, kontrol aliran, keandalan pengiriman",
+      "3. Transport",
+      "TCP, UDP, SCTP"
     ],
     [
       "3. Network",
-      "Internet",
-      "Pengalamatan logis (IP), routing paket",
-      "Packet"
+      "Routing, pengalamatan logis (IP Address)",
+      "2. Internet",
+      "IP, ICMP, ARP, RARP"
     ],
     [
       "2. Data Link",
-      "Network Access",
-      "Pengalamatan fisik (MAC), kontrol akses media",
-      "Frame"
+      "Pengalamatan fisik (MAC Address), framing, kontrol akses media",
+      "1. Network Access (atau Link)",
+      "Ethernet, PPP, Frame Relay, Wi-Fi"
     ],
     [
       "1. Physical",
-      "Network Access",
-      "Transmisi bit melalui media fisik",
-      "Bits"
+      "Transmisi bit fisik, spesifikasi media",
+      "1. Network Access (atau Link)",
+      "Kabel UTP, Fiber Optic, Bluetooth, RS-232"
     ]
   ],
-  "teori_2_extra": "Proses krusial dalam komunikasi data jaringan adalah <b>enkapsulasi</b> dan <b>dekapsulasi</b>. Enkapsulasi adalah penambahan informasi header (dan trailer pada Data Link) pada data saat data bergerak dari lapisan atas ke lapisan bawah. Setiap lapisan menambahkan PDU (Protocol Data Unit) spesifiknya. Misalnya, data dari lapisan Aplikasi menjadi segment di lapisan Transport, paket di lapisan Network, dan frame di lapisan Data Link. Sebaliknya, <b>dekapsulasi</b> adalah proses pelepasan header/trailer saat data bergerak dari lapisan bawah ke lapisan atas di perangkat penerima, hingga kembali menjadi data asli yang dapat dibaca aplikasi. Proses ini memastikan bahwa setiap lapisan dapat memproses informasi yang relevan dengannya dan meneruskan data bersih ke lapisan berikutnya.",
-  "topologi_desc": "Topologi yang akan digunakan adalah jaringan sederhana dengan satu router, satu switch, dan dua host (PC). Router R1 akan berfungsi sebagai gerbang utama, menghubungkan segmen LAN ke dunia luar (simulasi internet atau segmen jaringan lain). Switch S1 akan menjadi penghubung internal di segmen LAN, menyediakan konektivitas untuk Host-A dan Host-B. Koneksi dari Router R1 ke Switch S1 akan menggunakan port GigabitEthernet0/0 pada R1 dan port FastEthernet0/1 pada S1, dihubungkan dengan kabel Straight-Through. Host-A akan terhubung ke Switch S1 melalui port FastEthernet0/2, dan Host-B ke Switch S1 melalui port FastEthernet0/3, keduanya menggunakan kabel Straight-Through. Konfigurasi ini merepresentasikan jaringan LAN tipikal yang terhubung ke sebuah router.",
+  "teori_2_extra": "Dari tabel perbandingan di atas, terlihat jelas bahwa lapisan teratas model OSI (Application, Presentation, Session) digabungkan menjadi satu lapisan Application pada model TCP/IP. Hal ini menunjukkan pendekatan TCP/IP yang lebih pragmatis, di mana fungsi-fungsi ini sering kali diimplementasikan bersamaan dalam aplikasi tunggal. Lapisan Transport dan Network pada kedua model memiliki fungsi yang sangat mirip, yakni segmentasi/keandalan data dan routing/pengalamatan logis. Perbedaan signifikan lainnya adalah pada lapisan terbawah; model OSI memisahkan fungsi fisik dan data link, sedangkan TCP/IP menggabungkannya dalam lapisan Network Access, meskipun seringkali dalam implementasi modern, fungsi ini tetap ditangani oleh standar seperti Ethernet yang memiliki sub-lapisan MAC dan LLC yang setara dengan OSI Data Link.\r\n\r\nKonsep penting yang harus dipahami adalah <b>Enkapsulasi dan Dekapsulasi Data</b>. Ketika data aplikasi bergerak dari lapisan atas ke bawah (pengirim), setiap lapisan menambahkan header atau trailer (metadata) miliknya sendiri di sekitar PDU (Protocol Data Unit) dari lapisan atasnya. Misalnya, data dari lapisan Application akan diberi header TCP (menjadi segmen) di lapisan Transport, kemudian segmen tersebut diberi header IP (menjadi paket) di lapisan Network, dan paket tersebut diberi header serta trailer Ethernet (menjadi frame) di lapisan Data Link. Proses ini disebut enkapsulasi. Sebaliknya, saat data diterima oleh host tujuan, proses dekapsulasi terjadi: setiap lapisan akan menghapus header/trailer-nya sendiri dan meneruskan sisa PDU ke lapisan di atasnya hingga mencapai aplikasi di lapisan tertinggi. Pemahaman ini krusial untuk menganalisis dan memecahkan masalah komunikasi jaringan.",
+  "topologi_desc": "Untuk memvisualisasikan proses komunikasi data dan konsep model referensi OSI/TCP/IP, kita akan menggunakan topologi jaringan sederhana yang terdiri dari dua PC klien, satu switch Ethernet, dan satu router. PC-1 (Client A) dan PC-2 (Client B) akan berada dalam segmen jaringan lokal yang berbeda, dihubungkan melalui sebuah switch L2 ke router, dan router akan bertindak sebagai perangkat inter-network untuk meneruskan paket antar segmen. <br/><br/>Secara fisik, PC-1 akan terhubung ke port FastEthernet0/1 pada Switch-1, dan PC-2 akan terhubung ke port FastEthernet0/2 pada Switch-1. Switch-1 kemudian akan terhubung ke port GigabitEthernet0/0 pada Router-1. Router-1 akan memiliki dua interface GigabitEthernet (GigabitEthernet0/0 dan GigabitEthernet0/1), masing-masing terhubung ke segmen jaringan yang berbeda (sub-interface atau VLAN). Koneksi antara PC ke switch menggunakan kabel straight-through, begitu pula dari switch ke router. Topologi ini memungkinkan kita mengamati bagaimana data dikemas (enkapsulasi) dan dibuka kemasannya (dekapsulasi) saat melintasi berbagai perangkat dan lapisan, terutama saat sebuah paket harus melewati batas jaringan lokal dan ditangani oleh router.",
   "addressing_table": [
     [
       "Perangkat",
@@ -82,49 +82,52 @@
       "Default Gateway"
     ],
     [
-      "Router1",
-      "GigabitEthernet0/0",
-      "192.168.10.1",
-      "255.255.255.0",
-      "N/A"
-    ],
-    [
-      "Switch1",
-      "VLAN 1 (Management)",
-      "192.168.10.2",
-      "255.255.255.0",
-      "192.168.10.1"
-    ],
-    [
-      "Host-A",
+      "PC-1",
       "FastEthernet0",
       "192.168.10.10",
       "255.255.255.0",
       "192.168.10.1"
     ],
     [
-      "Host-B",
+      "PC-2",
       "FastEthernet0",
-      "192.168.10.11",
+      "192.168.20.10",
       "255.255.255.0",
-      "192.168.10.1"
+      "192.168.20.1"
+    ],
+    [
+      "Router-1",
+      "GigabitEthernet0/0",
+      "192.168.10.1",
+      "255.255.255.0",
+      "N/A"
+    ],
+    [
+      "Router-1",
+      "GigabitEthernet0/1",
+      "192.168.20.1",
+      "255.255.255.0",
+      "N/A"
     ]
   ],
-  "skenario_desc": "Dalam sebuah skenario perusahaan startup 'Teknik Juara', Anda sebagai praktisi Network Engineer diminta untuk membangun infrastruktur jaringan dasar yang memungkinkan komunikasi antar karyawan dan akses ke sumber daya eksternal. Tujuan utama Anda adalah memastikan bahwa setiap workstation (direpresentasikan oleh Host-A dan Host-B) dapat berkomunikasi satu sama lain di dalam jaringan lokal (LAN) dan juga dapat mengakses 'internet' melalui router R1. Ini merupakan langkah awal yang krusial untuk operasional harian perusahaan, mulai dari berbagi file hingga akses aplikasi berbasis web.<br/><br/>Modul ini tidak hanya fokus pada konfigurasi teknis semata, tetapi juga untuk membantu Anda memahami bagaimana data mengalir di balik layar, dari aplikasi hingga medium fisik, sesuai dengan model OSI dan TCP/IP. Dengan memahami proses enkapsulasi dan dekapsulasi, Anda dapat menganalisis lebih dalam mengapa sebuah komunikasi berhasil atau gagal, dan bagaimana setiap lapisan protokol berkontribusi pada integritas dan keandalan transmisi data. Skenario ini akan memberikan gambaran nyata aplikasi dari teori model referensi dalam pembangunan jaringan yang fungsional dan terstruktur.",
+  "skenario_desc": "Dalam skenario praktikum ini, Anda sebagai seorang Network Engineer muda diwajibkan untuk memahami secara mendalam bagaimana komunikasi data terjadi pada setiap lapisan model referensi OSI dan TCP/IP. Studi kasus kita adalah sebuah perusahaan dengan dua departemen, Departemen A dan Departemen B, yang masing-masing memiliki jaringan lokal terpisah (LAN) dan dihubungkan oleh sebuah router pusat. PC-1 mewakili klien di Departemen A, sedangkan PC-2 mewakili klien di Departemen B. <br/><br/>Tujuan utama Anda adalah untuk mengobservasi secara langsung proses enkapsulasi dan dekapsulasi data ketika PC-1 berusaha berkomunikasi dengan PC-2 menggunakan protokol HTTP (misalnya, mengakses server web virtual) dan ICMP (ping). Ini akan membantu Anda melihat bagaimana data aplikasi dari PC-1 'dibungkus' dengan header dan trailer protokol dari setiap lapisan saat bergerak ke bawah melalui tumpukan protokol, melintasi switch dan router, hingga akhirnya 'dibuka' kembali saat mencapai PC-2.<br/><br/>Anda akan diminta untuk menganalisis PDU (Protocol Data Unit) pada setiap hop jaringan (PC-1, Switch-1, Router-1, PC-2) menggunakan fitur simulasi pada Cisco Packet Tracer. Observasi ini akan memberikan pemahaman praktis tentang bagaimana segmen TCP/UDP, paket IP, dan frame Ethernet terbentuk, dan bagaimana informasi pengalamatan logis (IP Address) dan fisik (MAC Address) digunakan oleh perangkat yang berbeda di lapisan yang berbeda untuk memastikan data sampai ke tujuan yang benar. Dengan demikian, Anda dapat mengaitkan teori model OSI/TCP/IP dengan implementasi dunia nyata dan mengidentifikasi peran spesifik setiap lapisan dalam memfasilitasi komunikasi antar jaringan.",
   "langkah_kerja": [
-    "Buka aplikasi Cisco Packet Tracer dan buat topologi jaringan sesuai deskripsi di atas. Tambahkan satu Router (misal 2911), satu Switch (misal 2960), dua PC (Host-A dan Host-B).",
-    "Hubungkan Router R1 (GigabitEthernet0/0) ke Switch S1 (FastEthernet0/1) menggunakan kabel Straight-Through. Verifikasi lampu indikator port akan berubah hijau setelah beberapa saat (spanning-tree).",
-    "Hubungkan Host-A (FastEthernet0) ke Switch S1 (FastEthernet0/2) menggunakan kabel Straight-Through. Lakukan hal yang sama untuk Host-B (FastEthernet0) ke Switch S1 (FastEthernet0/3).",
-    "Konfigurasi IP Address pada Host-A: Klik Host-A > Desktop > IP Configuration. Masukkan IP Address, Subnet Mask, dan Default Gateway sesuai Addressing Table. Tutup jendela.",
-    "Konfigurasi IP Address pada Host-B: Lakukan langkah yang sama seperti Host-A sesuai Addressing Table.",
-    "Konfigurasi IP Address pada Interface Router R1: Klik Router R1 > CLI. Masuk ke mode konfigurasi global, lalu konfigurasi interface GigabitEthernet0/0 dengan IP Address dan Subnet Mask sesuai Addressing Table. Jangan lupa aktifkan interface dengan perintah `no shutdown`.",
-    "Verifikasi status interface Router R1: Dari mode privileged EXEC, gunakan perintah `show ip interface brief` untuk memastikan interface GigabitEthernet0/0 sudah 'up' dan 'up'.",
-    "Verifikasi konektivitas internal LAN: Dari Command Prompt Host-A, coba `ping 192.168.10.11` (Host-B) dan `ping 192.168.10.1` (Router R1). Amati hasilnya.",
-    "Gunakan fitur Simulation Mode di Packet Tracer: Beralih ke Simulation Mode, lalu kirim PDU sederhana (misal, ping) dari Host-A ke Host-B. Amati bagaimana paket bergerak antar lapisan dan perangkat, serta perhatikan detail PDU pada setiap lapisan saat dienkapsulasi dan didekapsulasi."
+    "<b>Langkah 1: Membangun Topologi Jaringan.</b> Buka Cisco Packet Tracer, letakkan dua perangkat 'End Devices' (PC-1, PC-2), satu 'Switch' (2960 Series), dan satu 'Router' (1941 Series). Hubungkan PC-1 ke Switch-1 FastEthernet0/1 menggunakan kabel Straight-Through. Hubungkan PC-2 ke Switch-1 FastEthernet0/2 menggunakan kabel Straight-Through. Hubungkan Switch-1 FastEthernet0/24 ke Router-1 GigabitEthernet0/0 menggunakan kabel Straight-Through.",
+    "<b>Langkah 2: Mengonfigurasi Pengalamatan IP pada PC.</b> Klik PC-1, masuk ke tab 'Desktop' > 'IP Configuration'. Atur IP Address: 192.168.10.10, Subnet Mask: 255.255.255.0, Default Gateway: 192.168.10.1. Lakukan hal yang sama untuk PC-2: IP Address: 192.168.20.10, Subnet Mask: 255.255.255.0, Default Gateway: 192.168.20.1.",
+    "<b>Langkah 3: Mengonfigurasi Router-1.</b> Klik Router-1, masuk ke tab 'CLI'. Lakukan konfigurasi interface GigabitEthernet0/0 dan GigabitEthernet0/1 sesuai addressing table.",
+    "<b>Langkah 4: Verifikasi Konektivitas Awal (Local).</b> Dari PC-1, buka 'Command Prompt', ping 192.168.10.1 (gateway Router-1). Pastikan hasilnya 'Reply'. Lakukan hal yang sama dari PC-2, ping 192.168.20.1.",
+    "<b>Langkah 5: Beralih ke Mode Simulasi.</b> Pada bagian bawah kanan jendela Packet Tracer, klik tombol 'Simulation' (ikon amplop tertutup). Pastikan 'Event List' kosong atau klik 'Delete' untuk membersihkannya.",
+    "<b>Langkah 6: Menambahkan PDU Sederhana (Ping).</b> Klik ikon 'Add Simple PDU' (amplop terbuka dengan tanda plus) di bilah alat. Klik PC-1 (sebagai sumber), lalu klik PC-2 (sebagai tujuan). Sebuah PDU (paket ICMP) akan muncul di Event List.",
+    "<b>Langkah 7: Melakukan Auto Capture/Play.</b> Klik tombol 'Auto Capture/Play' pada kontrol simulasi. Amati pergerakan PDU dari PC-1, melalui Switch-1, Router-1, lalu ke PC-2. Perhatikan ikon amplop yang berubah warna.",
+    "<b>Langkah 8: Menganalisis PDU pada Setiap Hop.</b> Hentikan simulasi. Di 'Event List', klik salah satu event (misal, event saat PDU meninggalkan PC-1). Jendela 'PDU Information at Device' akan muncul. Amati tab 'OSI Model' dan 'Inbound PDU Details' / 'Outbound PDU Details'.",
+    "<b>Langkah 9: Fokus pada Proses Enkapsulasi.</b> Saat PDU bergerak dari PC-1 ke Switch-1, lalu ke Router-1, perhatikan bagaimana 'Outbound PDU Details' pada PC-1 menunjukkan penambahan header dari Layer 7 hingga Layer 2 (Ethernet Frame). Catat perubahan ini.",
+    "<b>Langkah 10: Fokus pada Proses Dekapsulasi dan Routing.</b> Saat PDU mencapai Router-1, perhatikan 'Inbound PDU Details' pada Router-1 menunjukkan dekapsulasi hingga Layer 3 (IP Packet). Kemudian, pada 'Outbound PDU Details' dari Router-1, amati bagaimana paket dienkapsulasi kembali dengan header Layer 2 (Ethernet Frame) baru untuk segmen jaringan yang berbeda (menuju PC-2).",
+    "<b>Langkah 11: Mengamati Respon PDU.</b> Lanjutkan simulasi dan amati bagaimana paket balasan (Reply) dari PC-2 kembali ke PC-1 melalui proses yang berlawanan (dekapsulasi-enkapsulasi).",
+    "<b>Langkah 12: Eksplorasi Protokol Lain (HTTP).</b> Hapus event di 'Event List'. Dari PC-1, buka 'Web Browser', masukkan IP Address '192.168.20.10' (asumsikan PC-2 menjalankan layanan HTTP server). Ulangi langkah 6-11 untuk mengamati PDU HTTP dan membandingkannya dengan ICMP."
   ],
-  "commands": "```cli\nRouter>en\nRouter#conf t\nEnter configuration commands, one per line.  End with CNTL/Z.\nRouter(config)#interface GigabitEthernet0/0\nRouter(config-if)#ip address 192.168.10.1 255.255.255.0\n# Konfigurasi alamat IP dan subnet mask untuk interface GigabitEthernet0/0\nRouter(config-if)#no shutdown\n# Mengaktifkan interface (equivalent dengan power on)\nRouter(config-if)#description Uplink to S1\n# Memberikan deskripsi pada interface untuk memudahkan identifikasi\nRouter(config-if)#exit\nRouter(config)#exit\nRouter#show ip interface brief\n# Memverifikasi status semua interface dan alamat IP yang terkonfigurasi\nRouter#ping 192.168.10.10\n# Melakukan ping ke Host-A dari router untuk menguji konektivitas\n\n# Pada PC/Host (melalui Command Prompt):\nPC>ipconfig\n# Menampilkan konfigurasi IP pada PC\nPC>ping 192.168.10.1\n# Menguji konektivitas ke Default Gateway (Router R1)\nPC>ping 192.168.10.11\n# Menguji konektivitas ke Host-B\nPC>traceroute 192.168.10.1\n# Melacak jalur paket ke Default Gateway\n```",
-  "uji_coba_text": "Setelah semua konfigurasi IP Address selesai, langkah selanjutnya adalah melakukan pengujian konektivitas untuk memastikan semua perangkat dapat saling berkomunikasi. Gunakan utilitas `ping` dari Command Prompt (pada PC) atau mode Privileged EXEC (pada Router) untuk mengirimkan paket ICMP (Internet Control Message Protocol) ke perangkat lain. Amati respon yang diberikan. Respon 'Reply from' menunjukkan konektivitas berhasil, sementara 'Request timed out' atau 'Destination Host Unreachable' mengindikasikan adanya masalah. Selain itu, gunakan utilitas `traceroute` (atau `tracert` pada Windows) untuk melihat jalur yang dilewati paket data, serta berapa banyak hop yang diperlukan untuk mencapai tujuan. Pada Cisco Packet Tracer, mode simulasi adalah alat yang sangat ampuh untuk memvisualisasikan enkapsulasi dan dekapsulasi; Anda dapat melihat detail PDU (Layer 7 hingga Layer 1) saat paket melewati setiap perangkat.",
-  "uji_coba_cmd": "```\nC:\\>ping 192.168.10.11\n\nPinging 192.168.10.11 with 32 bytes of data:\nReply from 192.168.10.11: bytes=32 time<1ms TTL=128\nReply from 192.168.10.11: bytes=32 time<1ms TTL=128\nReply from 192.168.10.11: bytes=32 time<1ms TTL=128\nReply from 192.168.10.11: bytes=32 time<1ms TTL=128\n\nPing statistics for 192.168.10.11:\n    Packets: Sent = 4, Received = 4, Lost = 0 (0% loss),\nApproximate round trip times in milli-seconds:\n    Minimum = 0ms, Maximum = 0ms, Average = 0ms\n\nC:\\>traceroute 192.168.10.1\n\nTracing route to 192.168.10.1 over a maximum of 30 hops:\n\n  1    <1 ms    <1 ms    <1 ms  192.168.10.1\n\nTrace complete.\n```",
+  "commands": "```cli\r\n# Konfigurasi Awal Router-1\r\nRouter>en\r\nRouter#conf t\r\nEnter configuration commands, one per line.  End with CNTL/Z.\r\nRouter(config)#hostname R1\r\nR1(config)#\r\n\r\n# Konfigurasi Interface GigabitEthernet0/0 untuk segmen Departemen A (192.168.10.0/24)\r\nR1(config)#int GigabitEthernet0/0\r\nR1(config-if)#ip address 192.168.10.1 255.255.255.0\r\nR1(config-if)#no shutdown\r\nR1(config-if)#description LINK_TO_DEPT_A_LAN\r\nR1(config-if)#exit\r\n\r\n# Konfigurasi Interface GigabitEthernet0/1 untuk segmen Departemen B (192.168.20.0/24)\r\nR1(config)#int GigabitEthernet0/1\r\nR1(config-if)#ip address 192.168.20.1 255.255.255.0\r\nR1(config-if)#no shutdown\r\nR1(config-if)#description LINK_TO_DEPT_B_LAN\r\nR1(config-if)#exit\r\n\r\n# Menyimpan konfigurasi\r\nR1(config)#end\r\nR1#copy run start\r\nDestination filename [startup-config]?\r\nBuilding configuration...\r\n[OK]\r\nR1#\r\n\r\n# Verifikasi konfigurasi interface pada Router-1\r\nR1#show ip interface brief\r\nInterface              IP-Address      OK? Method Status                Protocol\r\nGigabitEthernet0/0     192.168.10.1    YES manual up                    up\r\nGigabitEthernet0/1     192.168.20.1    YES manual up                    up\r\nVlan1                  unassigned      YES unset  administratively down down\r\nR1#\r\n\r\n# Verifikasi tabel routing pada Router-1 (menunjukkan jaringan yang terhubung langsung)\r\nR1#show ip route\r\nCodes: L - local, C - connected, S - static, R - RIP, M - mobile, B - BGP\r\n       D - EIGRP, EX - EIGRP external, O - OSPF, IA - OSPF inter area\r\n       N1 - OSPF NSSA external type 1, N2 - OSPF NSSA external type 2\r\n       E1 - OSPF external type 1, E2 - OSPF external type 2\r\n       i - IS-IS, su - IS-IS summary, L1 - IS-IS level-1, L2 - IS-IS level-2\r\n       ia - IS-IS inter area, * - candidate default, U - per-user static route\r\n       o - ODR, P - periodic downloaded static route\r\n\r\nGateway of last resort is not set\r\n\r\n     192.168.10.0/24 is directly connected, GigabitEthernet0/0\r\nC    192.168.10.0/24 is directly connected, GigabitEthernet0/0\r\nL    192.168.10.1/32 is directly connected, GigabitEthernet0/0\r\n     192.168.20.0/24 is directly connected, GigabitEthernet0/1\r\nC    192.168.20.0/24 is directly connected, GigabitEthernet0/1\r\nL    192.168.20.1/32 is directly connected, GigabitEthernet0/1\r\nR1#\r\n\r\n# Perintah Ping dari PC-1 ke PC-2 melalui Command Prompt (simulasi setelah konfigurasi)\r\nPC-1> ping 192.168.20.10\r\n\r\n# Perintah untuk mengaktifkan layanan HTTP Server di PC-2 (Jika ingin mencoba simulasi HTTP)\r\n# Klik PC-2, tab 'Services' -> 'HTTP' -> pastikan 'HTTP' dan 'HTTPS' dalam keadaan 'On'\r\n```",
+  "uji_coba_text": "Untuk melakukan pengujian konektivitas dan menganalisis aliran data, kita akan sepenuhnya memanfaatkan mode simulasi yang disediakan oleh Cisco Packet Tracer. Setelah topologi dan pengalamatan IP dikonfigurasi dengan benar, alihlah ke 'Simulation Mode' (tombol di pojok kanan bawah). Mode ini memungkinkan kita untuk melihat pergerakan PDU (Protocol Data Unit) selangkah demi selangkah melalui jaringan, memberikan pandangan yang sangat detail tentang proses enkapsulasi dan dekapsulasi pada setiap lapisan.<br/><br/>Ketika PDU dikirim dari sumber ke tujuan, Anda dapat mengklik ikon PDU yang sedang bergerak atau yang telah tercatat dalam 'Event List'. Jendela 'PDU Information at Device' akan muncul, menampilkan dua tab penting: 'OSI Model' dan 'In/Outbound PDU Details'. Tab 'OSI Model' secara visual menunjukkan lapisan OSI mana yang aktif pada perangkat saat ini dan PDU apa yang sedang diproses. Sementara itu, 'In/Outbound PDU Details' memberikan informasi header dan data mentah dari PDU pada setiap lapisan, memungkinkan Anda melihat secara eksplisit bagaimana setiap lapisan menambahkan atau menghapus informasi spesifiknya, seperti MAC address (Layer 2), IP address (Layer 3), port number (Layer 4), atau data aplikasi (Layer 7). Analisis ini sangat krusial untuk mengaitkan teori OSI/TCP/IP dengan implementasi praktis.",
+  "uji_coba_cmd": "```cli\r\n# Contoh Output Ping Sukses dari PC-1 ke PC-2\r\nPC-1> ping 192.168.20.10\r\n\r\nPinging 192.168.20.10 with 32 bytes of data:\r\nReply from 192.168.20.10: bytes=32 time=4ms TTL=127\r\nReply from 192.168.20.10: bytes=32 time=3ms TTL=127\r\nReply from 192.168.20.10: bytes=32 time=3ms TTL=127\r\nReply from 192.168.20.10: bytes=32 time=3ms TTL=127\r\n\r\nPing statistics for 192.168.20.10:\r\n    Packets: Sent = 4, Received = 4, Lost = 0 (0% loss),\r\nApproximate round trip times in milli-seconds:\r\n    Minimum = 3ms, Maximum = 4ms, Average = 3ms\r\n\r\n# Simulasi Output 'PDU Information at Device' (Contoh saat PDU Keluar dari PC-1)\r\n# (Visualisasi ini akan terlihat di jendela Packet Tracer 'PDU Information at Device' bukan di CLI)\r\n\r\n------------------------------------------------------------\r\nIn/Outbound PDU Details (Outbound PDU at PC-1)\r\n------------------------------------------------------------\r\n\r\nLayer 7: HTTP - GET / HTTP/1.1 (Jika menggunakan HTTP)\r\nLayer 6: (Implicitly handled by Layer 7 application data)\r\nLayer 5: (Implicitly handled by Layer 7 application data)\r\n\r\nLayer 4: TCP Segment\r\n  Source Port: 1025 (Dynamic client port)\r\n  Destination Port: 80 (HTTP Server Port)\r\n  Sequence Number: XXXXX\r\n  Acknowledgement Number: YYYYY\r\n  ... (TCP flags, window size, checksum)\r\n  Data (from Layer 7)\r\n\r\nLayer 3: IP Packet\r\n  Source IP: 192.168.10.10\r\n  Destination IP: 192.168.20.10\r\n  Protocol: TCP (6)\r\n  TTL: 128\r\n  Header Checksum: ZZZZ\r\n  ... (Other IP header fields)\r\n  Data (from Layer 4: TCP Segment)\r\n\r\nLayer 2: Ethernet II Frame\r\n  Preamble: 10101010...\r\n  Destination MAC: [MAC Address of R1's Gi0/0 interface] (via ARP lookup for 192.168.10.1)\r\n  Source MAC: [MAC Address of PC-1's Fa0 interface]\r\n  Type: 0x0800 (IPv4)\r\n  Data (from Layer 3: IP Packet)\r\n  FCS: WXYZ (Frame Check Sequence)\r\n\r\nLayer 1: Physical - Bits over copper cable\r\n  (Details about voltage levels, timing, encoding)\r\n```",
   "troubleshooting_table": [
     [
       "Gejala Masalah",
@@ -132,37 +135,27 @@
       "Tindakan Korektif"
     ],
     [
-      "Ping 'Request timed out' ke perangkat lain",
-      "IP Address/Subnet Mask salah; Kabel tidak terhubung; Interface down.",
-      "Periksa konfigurasi IP pada perangkat, pastikan kabel terhubung dengan benar, aktifkan interface (no shutdown)."
+      "Ping dari PC-1 ke Router-1 gagal (Request Timeout)",
+      "Kesalahan konfigurasi IP address/subnet mask pada PC-1 atau interface GigabitEthernet0/0 Router-1 (Layer 3) / Kabel tidak terhubung atau rusak (Layer 1).",
+      "Periksa IP address, subnet mask, dan default gateway pada PC-1. Verifikasi konfigurasi IP dan status interface GigabitEthernet0/0 pada Router-1 ('show ip int brief'). Pastikan kabel terhubung dengan benar dan lampu indikator port menyala hijau."
     ],
     [
-      "Lampu indikator port di Packet Tracer merah",
-      "Interface belum diaktifkan (no shutdown) atau ada masalah kabel.",
-      "Masuk ke mode konfigurasi interface di router/switch, gunakan perintah `no shutdown`. Periksa jenis dan koneksi kabel."
+      "Ping dari PC-1 ke PC-2 gagal, tetapi ping ke Router-1 berhasil",
+      "Router tidak memiliki rute ke jaringan tujuan (Layer 3) / Kesalahan pengalamatan gateway pada PC-2. Atau, salah konfigurasi alamat IP pada PC-2.",
+      "Pastikan Router-1 memiliki rute ke jaringan 192.168.20.0/24 (via 'show ip route', harus 'C' connected). Pastikan default gateway pada PC-1 mengarah ke 192.168.10.1 dan pada PC-2 mengarah ke 192.168.20.1. Periksa IP address dan subnet mask PC-2."
     ],
     [
-      "Tidak bisa ping antar host di segmen LAN yang sama",
-      "Subnet Mask tidak konsisten; Default Gateway salah/tidak dikonfigurasi.",
-      "Pastikan semua perangkat dalam segmen yang sama menggunakan Subnet Mask yang identik. Cek Default Gateway apakah menunjuk ke IP Router yang benar."
-    ],
-    [
-      "Tidak bisa ping ke Default Gateway dari PC",
-      "IP Gateway pada PC salah; Interface router yang terhubung ke LAN belum diaktifkan/salah IP.",
-      "Verifikasi IP Gateway pada konfigurasi PC. Pastikan interface router (misal G0/0) sudah di-`no shutdown` dan IP-nya benar."
-    ],
-    [
-      "Koneksi intermiten atau sangat lambat",
-      "Kualitas kabel buruk; Terlalu banyak collision (pada half-duplex, jarang di modern LAN); Duplex mismatch.",
-      "Ganti kabel; Pastikan semua perangkat beroperasi pada full-duplex (jika memungkinkan); Periksa auto-negotiation duplex/speed pada interface."
+      "Akses HTTP dari PC-1 ke PC-2 gagal, tetapi ping berhasil",
+      "Layanan HTTP pada PC-2 tidak aktif atau di-block oleh firewall (Layer 7).",
+      "Pastikan layanan HTTP (web server) pada PC-2 telah diaktifkan di Packet Tracer (tab 'Services' > 'HTTP'). Jika di dunia nyata, periksa konfigurasi firewall pada PC-2 atau server."
     ]
   ],
-  "tugas_mandiri": "Sebagai tantangan, perluas topologi praktikum ini dengan menambahkan satu segmen jaringan baru. Segmen baru ini harus memiliki satu switch (Switch S2) dan dua host (Host-C dan Host-D) dengan skema IP Address yang berbeda (misal: 192.168.20.0/24). Hubungkan Switch S2 ke port GigabitEthernet0/1 pada Router R1. Konfigurasikan IP Address pada interface baru R1 dan semua host di segmen baru. Setelah itu, pastikan semua host di segmen 192.168.10.0/24 dapat berkomunikasi dengan semua host di segmen 192.168.20.0/24. Laporkan topologi, tabel pengalamatan, dan hasil pengujian konektivitas Anda dalam laporan praktikum.",
+  "tugas_mandiri": "Sebagai kelanjutan dari pemahaman Anda tentang model referensi jaringan dan proses enkapsulasi, Anda diminta untuk mengembangkan skenario praktikum ini. Tugas Anda adalah menambahkan satu perangkat server (misalnya, Server-1) ke dalam topologi jaringan yang sudah ada, menempatkannya dalam segmen jaringan baru (misalnya, 192.168.30.0/24) yang juga terhubung ke Router-1 melalui interface GigabitEthernet0/2. Konfigurasikan Server-1 sebagai server DNS (Domain Name System) dan DHCP (Dynamic Host Configuration Protocol).\r\n\r\nSetelah konfigurasi, ubah PC-1 dan PC-2 untuk mendapatkan IP Address secara otomatis dari Server-1 (melalui DHCP) dan gunakan Server-1 sebagai DNS Server. Kemudian, ulangi proses simulasi untuk mengamati aliran PDU DHCP dan DNS, serta akses HTTP ke Server-1 menggunakan nama domain (bukan IP Address). Dokumentasikan secara rinci bagaimana PDU DHCP dan DNS dienkapsulasi dan didekapsulasi pada setiap lapisan dan perangkat jaringan, serta identifikasi peran setiap lapisan dalam proses resolusi nama dan alokasi alamat IP. Laporan ini harus mencakup tangkapan layar dari 'PDU Information at Device' pada setiap hop untuk protokol-protokol baru ini.",
   "evaluasi_questions": [
-    "Jelaskan mengapa model referensi OSI masih relevan untuk dipelajari di era jaringan modern yang didominasi oleh TCP/IP, terutama dari sudut pandang pemecahan masalah (troubleshooting) jaringan!",
-    "Berikan contoh konkret tiga protokol yang beroperasi pada lapisan Aplikasi (Layer 7) OSI dan sebutkan fungsi utama masing-masing dalam skenario komunikasi data harian!",
-    "Bagaimana proses enkapsulasi data pada lapisan Transport (OSI Layer 4) berbeda dengan enkapsulasi pada lapisan Network (OSI Layer 3)? Sebutkan PDU yang dihasilkan di masing-masing lapisan tersebut!",
-    "Jika sebuah paket data mengalami kegagalan transmisi, pada lapisan mana (OSI atau TCP/IP) Anda akan pertama kali mencari penyebab jika masalahnya terkait dengan pengalamatan fisik (MAC Address) atau kerusakan kabel?",
-    "Dalam konteks simulasi Packet Tracer, jelaskan bagaimana fitur 'Simulation Mode' dapat membantu seorang Network Engineer pemula memahami konsep enkapsulasi dan dekapsulasi data secara visual?"
+    "Jelaskan secara komprehensif perbedaan mendasar antara model OSI dan TCP/IP dari segi jumlah lapisan, tujuan, dan implementasi historisnya. Mengapa model TCP/IP menjadi lebih dominan dalam praktik jaringan modern?",
+    "Analisislah peran penting proses enkapsulasi dan dekapsulasi data dalam komunikasi jaringan berdasarkan model OSI. Mengapa setiap lapisan harus menambahkan atau menghapus header/trailer-nya sendiri, dan apa konsekuensinya jika proses ini tidak berjalan dengan benar?",
+    "Identifikasi PDU (Protocol Data Unit) yang terbentuk pada lapisan Network dan Transport pada model OSI. Jelaskan perbedaan fungsional antara keduanya, termasuk informasi kunci yang ditambahkan oleh masing-masing lapisan untuk tujuan komunikasi data.",
+    "Bagaimana ARP (Address Resolution Protocol) beroperasi pada lapisan Data Link (atau Network Access pada TCP/IP) dan apa hubungannya dengan pengalamatan IP di lapisan Network? Jelaskan perannya dalam pengiriman data antar perangkat dalam satu segmen jaringan lokal.",
+    "Dalam skenario troubleshooting jaringan, mengapa pemahaman tentang model referensi OSI dan TCP/IP sangat vital bagi seorang Network Engineer? Berikan contoh nyata bagaimana pengetahuan ini dapat digunakan untuk mendiagnosis dan menyelesaikan masalah konektivitas pada lapisan yang berbeda."
   ]
 }

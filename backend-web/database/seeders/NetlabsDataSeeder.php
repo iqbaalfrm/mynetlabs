@@ -53,10 +53,17 @@ class NetlabsDataSeeder extends Seeder
 
     private function buatPertemuan($nomor, $judul, $deskripsi, $semester, $warna, array $topiks, array $soals, array $moduls = [])
     {
+        $isiMateriArray = [];
+        foreach ($topiks as $t) {
+            $isiMateriArray[] = "### " . $t['judul'] . "\n\n" . $t['isi'];
+        }
+        $isiMateri = implode("\n\n", $isiMateriArray);
+
         $pertemuan = Pertemuan::create([
             'nomor_urut' => $nomor,
             'judul' => $judul,
             'deskripsi' => $deskripsi,
+            'isi_materi' => $isiMateri,
             'semester' => $semester,
             'warna_tema' => $warna,
         ]);
