@@ -18,6 +18,7 @@ class PengaturanController extends Controller
             'SCHOOL_ADDRESS' => env('SCHOOL_ADDRESS', ''),
             'SCHOOL_PHONE' => env('SCHOOL_PHONE', ''),
             'SCHOOL_EMAIL' => env('SCHOOL_EMAIL', ''),
+            'GOOGLE_FORM_URL' => env('GOOGLE_FORM_URL', ''),
         ];
 
         return view('admin.pengaturan.index', compact('settings'));
@@ -33,6 +34,7 @@ class PengaturanController extends Controller
             'SCHOOL_ADDRESS' => 'nullable|string|max:255',
             'SCHOOL_PHONE' => 'nullable|string|max:20',
             'SCHOOL_EMAIL' => 'nullable|email|max:100',
+            'GOOGLE_FORM_URL' => 'nullable|url',
         ]);
 
         $envPath = base_path('.env');

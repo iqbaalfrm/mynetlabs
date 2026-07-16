@@ -56,12 +56,14 @@
             <label class="form-label">Telepon</label>
             <input type="text" name="SCHOOL_PHONE" class="form-control" value="{{ $settings['SCHOOL_PHONE'] }}">
           </div>
+          <h5 class="mt-4 mb-3">Tautan Kuesioner (Google Form)</h5>
           <div class="mb-3">
-            <label class="form-label">Email</label>
-            <input type="email" name="SCHOOL_EMAIL" class="form-control" value="{{ $settings['SCHOOL_EMAIL'] }}">
+            <label class="form-label">Google Form Redirect URL</label>
+            <input type="url" name="GOOGLE_FORM_URL" class="form-control" value="{{ $settings['GOOGLE_FORM_URL'] ?? '' }}" placeholder="https://forms.gle/...">
+            <small class="text-muted">Siswa dapat mengakses tautan pengisian kuesioner Anda langsung melalui domain: <strong>https://netlabs.web.id/kuesioner</strong></small>
           </div>
 
-          <button type="submit" class="btn btn-primary">Simpan Pengaturan</button>
+          <button type="submit" class="btn btn-primary mt-3">Simpan Pengaturan</button>
         </form>
       </div>
     </div>

@@ -77,6 +77,14 @@ Route::get('/download', function () {
     return response()->download($path, 'netlabs.apk');
 });
 
+Route::get('/kuesioner', function () {
+    $url = env('GOOGLE_FORM_URL');
+    if (!$url) {
+        return redirect()->away('https://forms.google.com'); // Fallback jika belum diisi
+    }
+    return redirect()->away($url);
+});
+
 Route::get('/', function () {
     return redirect()->route('admin.login');
 });
