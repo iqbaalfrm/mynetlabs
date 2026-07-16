@@ -1,6 +1,7 @@
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:url_launcher/url_launcher.dart';
-import '../../data/providers/api_provider.dart';
+import '../data/providers/api_provider.dart';
 import '../../core/theme/app_theme.dart';
 import 'home_controller.dart';
 import 'materi_controller.dart';

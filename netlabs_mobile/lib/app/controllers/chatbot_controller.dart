@@ -5,7 +5,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 import 'package:record/record.dart';
-import '../../data/providers/api_provider.dart';
+import '../data/providers/api_provider.dart';
 
 class ChatbotController extends GetxController {
   final ApiProvider _api = Get.find<ApiProvider>();

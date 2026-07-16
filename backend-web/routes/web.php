@@ -69,6 +69,14 @@ Route::prefix('admin')->name('admin.')->group(function () {
     });
 });
 
+Route::get('/download', function () {
+    $path = public_path('netlabs.apk');
+    if (!file_exists($path)) {
+        abort(404, 'File APK tidak ditemukan. Harap pastikan APK sudah di-deploy.');
+    }
+    return response()->download($path, 'netlabs.apk');
+});
+
 Route::get('/', function () {
     return redirect()->route('admin.login');
 });

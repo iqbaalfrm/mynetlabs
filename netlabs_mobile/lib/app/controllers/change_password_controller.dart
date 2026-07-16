@@ -2,7 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
-import '../../data/providers/api_provider.dart';
+import '../data/providers/api_provider.dart';
 
 class ChangePasswordController extends GetxController {
   final ApiProvider _api = Get.find<ApiProvider>();

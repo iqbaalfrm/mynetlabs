@@ -2,9 +2,9 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
-import '../../data/providers/api_provider.dart';
-import '../../data/services/auth_service.dart';
-import '../../routes/app_pages.dart';
+import '../data/providers/api_provider.dart';
+import '../data/services/auth_service.dart';
+import '../routes/app_pages.dart';
 
 enum AiStatus { pending, processing, success, failed }
 

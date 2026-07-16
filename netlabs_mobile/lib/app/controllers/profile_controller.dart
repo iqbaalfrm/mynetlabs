@@ -1,9 +1,9 @@
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:image_picker/image_picker.dart';
-import '../../data/providers/api_provider.dart';
-import '../../data/services/auth_service.dart';
-import '../../routes/app_pages.dart';
+import '../data/providers/api_provider.dart';
+import '../data/services/auth_service.dart';
+import '../routes/app_pages.dart';
 
 class ProfileController extends GetxController {
   final _auth = Get.find<AuthService>();

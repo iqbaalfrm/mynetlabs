@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:netlabs_mobile/app/modules/chatbot/views/chatbot_view.dart';
-import 'package:netlabs_mobile/app/modules/materi/views/materi_view.dart';
-import 'package:netlabs_mobile/app/modules/profile/views/profile_view.dart';
+import 'package:netlabs_mobile/app/views/chatbot/chatbot_view.dart';
+import 'package:netlabs_mobile/app/views/modul/materi_view.dart';
+import 'package:netlabs_mobile/app/views/profil/profile_view.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../controllers/main_layout_controller.dart';
-import '../../home/views/home_view.dart';
+import 'home_view.dart';
 
 // Catatan: Sementara kita panggil Container kosong untuk Chatbot dan Profile 
 // sebelum modul tersebut kita koding penuh.
@@ -15,11 +15,10 @@ class MainLayoutView extends GetView<MainLayoutController> {
   @override
   Widget build(BuildContext context) {
     final List<Widget> pages = [
-  const HomeView(),
-  const MateriView(),
-  const ChatbotView(), // Sambungkan ke sini[cite: 1]
-  const ProfileView(),
-
+      HomeView(),
+      MateriView(),
+      ChatbotView(), // Sambungkan ke sini
+      ProfileView(),
     ];
 
     return Scaffold(

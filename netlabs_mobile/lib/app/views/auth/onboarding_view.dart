@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
-import '../../../routes/app_pages.dart';
+import '../../routes/app_pages.dart';
 import '../../../core/theme/app_theme.dart';
 
 class OnboardingView extends StatefulWidget {

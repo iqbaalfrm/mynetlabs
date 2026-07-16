@@ -1,5 +1,5 @@
-﻿import 'package:get/get.dart';
-import '../../data/providers/api_provider.dart';
+import 'package:get/get.dart';
+import '../data/providers/api_provider.dart';
 
 class MateriController extends GetxController {
   final ApiProvider _api = Get.find<ApiProvider>();

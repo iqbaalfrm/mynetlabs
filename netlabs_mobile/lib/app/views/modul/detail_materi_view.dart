@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../controllers/detail_materi_controller.dart';
-import '../../../routes/app_pages.dart';
+import '../../routes/app_pages.dart';
 
 class DetailMateriView extends GetView<DetailMateriController> {
   const DetailMateriView({super.key});
