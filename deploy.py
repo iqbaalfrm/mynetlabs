@@ -254,6 +254,10 @@ def deploy_to_vps():
         # 14f. Jalankan re-indexing seluruh PDF ke Qdrant di VPS
         run_remote(ssh, f"cd {AI_PROJECT_PATH} && venv/bin/python index_all_pdfs.py", "14f. Jalankan re-indexing offline di VPS")
 
+        # 14g. Kembalikan kepemilikan ke www-data dan restart service AI agar tidak terjadi Permission Error pada file lock Qdrant
+        run_remote(ssh, f"chown -R www-data:www-data {AI_PROJECT_PATH}", "14g. Set ownership backend-ai post-indexing")
+        run_remote(ssh, "systemctl restart netlabs-ai", "14h. Restart service netlabs-ai post-indexing")
+
         # 15. Tunggu sebentar lalu cek status
         import time as _time
         _time.sleep(3)
