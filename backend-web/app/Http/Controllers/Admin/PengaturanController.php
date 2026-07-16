@@ -18,7 +18,7 @@ class PengaturanController extends Controller
             'SCHOOL_ADDRESS' => env('SCHOOL_ADDRESS', ''),
             'SCHOOL_PHONE' => env('SCHOOL_PHONE', ''),
             'SCHOOL_EMAIL' => env('SCHOOL_EMAIL', ''),
-            'GOOGLE_FORM_URL' => env('GOOGLE_FORM_URL', ''),
+            'GOOGLE_FORM_URL' => env('GOOGLE_FORM_URL', 'https://forms.gle/CSvEsNRN6LLS1Wc96'),
         ];
 
         return view('admin.pengaturan.index', compact('settings'));

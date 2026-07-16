@@ -78,10 +78,7 @@ Route::get('/download', function () {
 });
 
 Route::get('/kuesioner', function () {
-    $url = env('GOOGLE_FORM_URL');
-    if (!$url) {
-        return redirect()->away('https://forms.google.com'); // Fallback jika belum diisi
-    }
+    $url = env('GOOGLE_FORM_URL', 'https://forms.gle/CSvEsNRN6LLS1Wc96');
     return redirect()->away($url);
 });
 
