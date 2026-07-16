@@ -162,36 +162,43 @@ def deploy_to_vps():
         run_remote(ssh, "chown -R www-data:www-data /var/www/mynetlabs", "7a. Set ownership www-data")
         run_remote(ssh, f"chmod -R 775 {PROJECT_PATH}/storage {PROJECT_PATH}/bootstrap/cache", "7b. Set permission 775")
 
-        # 8. Tulis ulang config Nginx yang BENAR (tanpa backslash escape salah)
-        nginx_conf = (
-            "server {\n"
-            "    listen 80;\n"
-            "    server_name _;\n"
-            "    root /var/www/mynetlabs/backend-web/public;\n"
-            "    index index.php index.html;\n"
-            "    client_max_body_size 64M;\n"
-            "    location / {\n"
-            "        try_files $uri $uri/ /index.php?$query_string;\n"
-            "    }\n"
-            "    location ~ \\.php$ {\n"
-            "        include snippets/fastcgi-php.conf;\n"
-            f"        fastcgi_pass unix:/var/run/php/php{php_ver}-fpm.sock;\n"
-            "        fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;\n"
-            "        include fastcgi_params;\n"
-            "    }\n"
-            "    location /ai-api/ {\n"
-            "        proxy_pass http://127.0.0.1:5050/;\n"
-            "        proxy_set_header Host $host;\n"
-            "        proxy_set_header X-Real-IP $remote_addr;\n"
-            "    }\n"
-            "}\n"
-        )
-        write_cmd = "cat > /etc/nginx/sites-available/netlabs << 'NGINXEOF'" + chr(10) + nginx_conf + "NGINXEOF"
-        run_remote(ssh, write_cmd, "8a. Tulis config Nginx baru")
-        run_remote(ssh, "ln -sf /etc/nginx/sites-available/netlabs /etc/nginx/sites-enabled/", "8b. Symlink sites-enabled")
-        run_remote(ssh, "rm -f /etc/nginx/sites-enabled/default /etc/nginx/sites-enabled/default.conf", "8c. Hapus default nginx")
-        run_remote(ssh, "nginx -t", "8d. Validasi konfigurasi Nginx")
-        run_remote(ssh, "systemctl restart nginx", "8e. Restart Nginx")
+        # 8. Tulis ulang config Nginx yang BENAR jika belum ada SSL
+        # Kita cek apakah file config nginx di vps sudah punya ssl
+        _, stdout, _ = ssh.exec_command("cat /etc/nginx/sites-available/netlabs 2>/dev/null")
+        current_conf = stdout.read().decode('utf-8', errors='ignore')
+        if "listen 443" not in current_conf:
+            nginx_conf = (
+                "server {\n"
+                "    listen 80;\n"
+                "    server_name netlabs.web.id www.netlabs.web.id;\n"
+                "    root /var/www/mynetlabs/backend-web/public;\n"
+                "    index index.php index.html;\n"
+                "    client_max_body_size 64M;\n"
+                "    location / {\n"
+                "        try_files $uri $uri/ /index.php?$query_string;\n"
+                "    }\n"
+                "    location ~ \\.php$ {\n"
+                "        include snippets/fastcgi-php.conf;\n"
+                f"        fastcgi_pass unix:/var/run/php/php{php_ver}-fpm.sock;\n"
+                "        fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;\n"
+                "        include fastcgi_params;\n"
+                "    }\n"
+                "    location /ai-api/ {\n"
+                "        proxy_pass http://127.0.0.1:5050/;\n"
+                "        proxy_set_header Host $host;\n"
+                "        proxy_set_header X-Real-IP $remote_addr;\n"
+                "    }\n"
+                "}\n"
+            )
+            write_cmd = "cat > /etc/nginx/sites-available/netlabs << 'NGINXEOF'" + chr(10) + nginx_conf + "NGINXEOF"
+            run_remote(ssh, write_cmd, "8a. Tulis config Nginx baru")
+            run_remote(ssh, "ln -sf /etc/nginx/sites-available/netlabs /etc/nginx/sites-enabled/", "8b. Symlink sites-enabled")
+            run_remote(ssh, "rm -f /etc/nginx/sites-enabled/default /etc/nginx/sites-enabled/default.conf", "8c. Hapus default nginx")
+            run_remote(ssh, "nginx -t", "8d. Validasi konfigurasi Nginx")
+            run_remote(ssh, "systemctl restart nginx", "8e. Restart Nginx")
+        else:
+            print(">>> [Nginx] Konfigurasi memiliki SSL aktif (port 443). Melewati overwrite.")
+        
         run_remote(ssh, f"systemctl restart php{php_ver}-fpm", f"8f. Restart PHP {php_ver}-FPM")
 
         # 9. Tes endpoint API login (harusnya 401/422, BUKAN 500)
