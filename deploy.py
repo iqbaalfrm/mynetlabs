@@ -142,7 +142,7 @@ def deploy_to_vps():
         run_remote(ssh, "git config --global --add safe.directory /var/www/mynetlabs", "2. Set safe.directory git")
 
         # 3. Git pull kode terbaru
-        run_remote(ssh, f"cd {PROJECT_PATH} && git pull origin main", "3. Git pull kode terbaru")
+        run_remote(ssh, f"cd /var/www/mynetlabs && git reset --hard && git clean -fd && cd {PROJECT_PATH} && git pull origin main", "3. Git reset & pull kode terbaru")
 
         # 4. Install dependency Composer (production, tanpa dev)
         run_remote(ssh, f"cd {PROJECT_PATH} && composer install --no-dev --optimize-autoloader", "4. Composer install")
