@@ -125,7 +125,10 @@ class HomeController extends GetxController {
       rataRataNilai.value = (s['rata_rata_nilai'] ?? 0).toDouble();
       totalChatAI.value = s['total_chat_ai'] ?? 0;
       if (totalTopik.value > 0) progressSemester.value = totalTopikSelesai.value / totalTopik.value;
-    } catch (_) {}
+    } catch (e) {
+      debugPrint('Error loadStatistik: $e');
+      rethrow;
+    }
   }
 
   Future<void> loadPertemuan() async {
@@ -155,7 +158,10 @@ class HomeController extends GetxController {
         if (blm.isNotEmpty) lanjutBelajar.value = Map.from(blm.first);
       }
       kuisBelumDikerjakan.value = semuaPertemuan.where((p) => (p['progress'] as num) >= 1.0).toList();
-    } catch (_) {}
+    } catch (e) {
+      debugPrint('Error loadPertemuan: $e');
+      rethrow;
+    }
   }
 
   void _buildBentoCards() {

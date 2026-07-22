@@ -86,14 +86,35 @@ def generate_chat_response(prompt: str, user_message: str) -> str:
     Returns:
         str: Balasan teks dari Gemini.
     """
+    import time
+    import re
     logger.info("Mengirim pesan RAG ke Gemini...")
-    response = _chat_model.generate_content(
-        contents=[
-            {"role": "user", "parts": [{"text": prompt + "\n\nPertanyaan siswa: " + user_message}]},
-        ],
-        request_options={"timeout": 30.0}
-    )
-    return response.text.strip() if response.text else ""
+    max_retries = 5
+    for attempt in range(1, max_retries + 1):
+        try:
+            response = _chat_model.generate_content(
+                contents=[
+                    {"role": "user", "parts": [{"text": prompt + "\n\nPertanyaan siswa: " + user_message}]},
+                ],
+                request_options={"timeout": 45.0}
+            )
+            return response.text.strip() if response and response.text else ""
+        except Exception as e:
+            err_str = str(e)
+            logger.warning(f"Percobaan {attempt}/{max_retries} generate_chat_response gagal: {err_str}")
+            if "429" in err_str or "quota" in err_str.lower() or "limit" in err_str.lower():
+                match = re.search(r'retry in (\d+(?:\.\d+)?)s', err_str, re.IGNORECASE)
+                if match:
+                    wait_seconds = int(float(match.group(1))) + 2
+                else:
+                    wait_seconds = 12 * attempt
+                logger.info(f"Rate limit 429 terdeteksi. Menunggu {wait_seconds}s sebelum retry...")
+                time.sleep(wait_seconds)
+            else:
+                if attempt == max_retries:
+                    raise e
+                time.sleep(3)
+    return ""
 
 def generate_quiz_json(prompt: str) -> str:
     """Generate soal kuis dalam format JSON terstruktur menggunakan Gemini.
@@ -104,14 +125,42 @@ def generate_quiz_json(prompt: str) -> str:
     Returns:
         str: Hasil generate berupa string JSON.
     """
+    import time
+    import re
     logger.info("Mengirim instruksi pembuatan kuis ke Gemini...")
-    response = _quiz_model.generate_content(
-        contents=[
-            {"role": "user", "parts": [{"text": prompt}]},
-        ],
-        request_options={"timeout": 45.0}
-    )
-    return response.text.strip() if response.text else ""
+    max_retries = 5
+    for attempt in range(1, max_retries + 1):
+        try:
+            response = _quiz_model.generate_content(
+                contents=[
+                    {"role": "user", "parts": [{"text": prompt}]},
+                ],
+                request_options={"timeout": 60.0}
+            )
+            raw_text = response.text.strip() if response and response.text else ""
+            
+            # Hapus pembungkus markdown ```json ... ``` jika ada
+            if raw_text.startswith("```"):
+                raw_text = re.sub(r'^```(?:json)?\s*', '', raw_text, flags=re.IGNORECASE)
+                raw_text = re.sub(r'\s*```$', '', raw_text).strip()
+                
+            return raw_text
+        except Exception as e:
+            err_str = str(e)
+            logger.warning(f"Percobaan {attempt}/{max_retries} generate_quiz_json gagal: {err_str}")
+            if "429" in err_str or "quota" in err_str.lower() or "limit" in err_str.lower():
+                match = re.search(r'retry in (\d+(?:\.\d+)?)s', err_str, re.IGNORECASE)
+                if match:
+                    wait_seconds = int(float(match.group(1))) + 2
+                else:
+                    wait_seconds = 15 * attempt
+                logger.info(f"Rate limit 429 terdeteksi. Menunggu {wait_seconds}s sebelum retry...")
+                time.sleep(wait_seconds)
+            else:
+                if attempt == max_retries:
+                    raise e
+                time.sleep(3)
+    return ""
 
 def transcribe_audio_file(file_path: str, mime_type: str) -> str:
     """Mentranskripsikan audio file menggunakan Gemini API.

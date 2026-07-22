@@ -35,6 +35,8 @@ class ChatService
         $balasan = 'Maaf, terjadi kesalahan saat menghubungi AI Tutor.';
         $sources = [];
         $chunksUsed = 0;
+        $retrievalMethod = 'hybrid_bm25_dense_rrf_reranker';
+        $retrievalDetails = [];
 
         try {
             $response = Http::timeout(60)->post("{$this->aiUrl}/chat", [
@@ -46,6 +48,12 @@ class ChatService
                 $balasan = $response->json('answer') ?? 'Maaf, gagal mendapatkan jawaban dari AI (Error API).';
                 $sources = $response->json('sources') ?? [];
                 $chunksUsed = $response->json('chunks_used') ?? 0;
+                $retrievalMethod = $response->json('retrieval_method') ?? $retrievalMethod;
+                $retrievalDetails = $response->json('retrieval_details') ?? [];
+                
+                if (!empty($sources)) {
+                    $sumber = implode(', ', $sources);
+                }
             } else {
                 $balasan = $response->json('answer') ?? 'Maaf, gagal mendapatkan jawaban dari AI (Error API).';
             }
@@ -70,6 +78,8 @@ class ChatService
             'waktu' => $chatAi->created_at->format('Y-m-d H:i'),
             'sources' => $sources,
             'chunks_used' => $chunksUsed,
+            'retrieval_method' => $retrievalMethod,
+            'retrieval_details' => $retrievalDetails,
         ];
     }
 

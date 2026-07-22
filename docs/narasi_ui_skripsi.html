@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <title>Narasi_UI_Skripsi_NetLabs.pdf</title>
+    
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap');
+    
+    @page {
+        size: A4;
+        margin: 20mm 15mm 20mm 15mm;
+        @bottom-right {
+            content: counter(page);
+        }
+    }
+
+    body {
+        font-family: 'Plus Jakarta Sans', 'Segoe UI', Helvetica, Arial, sans-serif;
+        color: #1e293b;
+        line-height: 1.6;
+        font-size: 11pt;
+        background: #ffffff;
+        padding: 0;
+        margin: 0;
+    }
+
+    h1 {
+        font-size: 20pt;
+        color: #0f172a;
+        border-bottom: 3px solid #2563eb;
+        padding-bottom: 8px;
+        margin-top: 0;
+        margin-bottom: 16px;
+        page-break-before: always;
+    }
+    
+    h1:first-of-type {
+        page-break-before: avoid;
+    }
+
+    h2 {
+        font-size: 15pt;
+        color: #1e3a8a;
+        border-bottom: 1.5px solid #e2e8f0;
+        padding-bottom: 6px;
+        margin-top: 24px;
+        margin-bottom: 12px;
+    }
+
+    h3 {
+        font-size: 12pt;
+        color: #2563eb;
+        margin-top: 18px;
+        margin-bottom: 8px;
+    }
+
+    h4 {
+        font-size: 11pt;
+        color: #334155;
+        margin-top: 14px;
+        margin-bottom: 6px;
+    }
+
+    p {
+        margin-bottom: 10px;
+        text-align: justify;
+    }
+
+    strong {
+        color: #0f172a;
+    }
+
+    ul, ol {
+        margin-top: 4px;
+        margin-bottom: 12px;
+        padding-left: 24px;
+    }
+
+    li {
+        margin-bottom: 4px;
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 16px 0;
+        font-size: 10pt;
+        page-break-inside: avoid;
+    }
+
+    th {
+        background-color: #1e293b;
+        color: #ffffff;
+        font-weight: 600;
+        text-align: left;
+        padding: 8px 12px;
+        border: 1px solid #1e293b;
+    }
+
+    td {
+        padding: 8px 12px;
+        border: 1px solid #cbd5e1;
+    }
+
+    tr:nth-child(even) {
+        background-color: #f8fafc;
+    }
+
+    code {
+        font-family: 'Consolas', 'Courier New', monospace;
+        background-color: #f1f5f9;
+        color: #0f172a;
+        padding: 2px 6px;
+        border-radius: 4px;
+        font-size: 9.5pt;
+    }
+
+    pre {
+        background-color: #0f172a;
+        color: #f8fafc;
+        padding: 14px;
+        border-radius: 8px;
+        overflow-x: auto;
+        font-size: 9.5pt;
+        line-height: 1.45;
+        page-break-inside: avoid;
+    }
+
+    pre code {
+        background: none;
+        color: inherit;
+        padding: 0;
+    }
+
+    blockquote {
+        background-color: #eff6ff;
+        border-left: 4px solid #2563eb;
+        margin: 14px 0;
+        padding: 10px 16px;
+        border-radius: 0 6px 6px 0;
+        color: #1e40af;
+    }
+
+    blockquote p {
+        margin: 0;
+    }
+
+    hr {
+        border: none;
+        border-top: 1px solid #e2e8f0;
+        margin: 20px 0;
+    }
+</style>
+
+</head>
+<body>
+    <h1 id="narasi-implementasi-antarmuka-ui-skripsi-netlabs">NARASI IMPLEMENTASI ANTARMUKA (UI) SKRIPSI NETLABS</h1>
+<p><strong>Platform Media Pembelajaran &amp; Pendamping Praktikum Jaringan Digital Berbasis Hybrid RAG AI</strong></p>
+<hr />
+<h3 id="a-siswa-aplikasi-mobile-android">a. Siswa (Aplikasi Mobile Android)</h3>
+<h4 id="1-halaman-login-siswa">1) Halaman Login Siswa</h4>
+<p>Halaman antarmuka ini dirancang minimalis sebagai pintu utama verifikasi hak akses siswa. Komponen input difokuskan pada pengisian Nomor Induk Siswa (NIS) sebagai <em>username</em> serta kata sandi (<em>password</em>). Halaman ini dilengkapi dengan fungsi pesan kesalahan (<em>error handling indicator</em>) yang informatif dan responsif apabila proses autentikasi <em>token</em> Laravel Sanctum mengalami kegagalan (seperti kredensial tidak valid atau gangguan koneksi jaringan). Tampilan Halaman Login Siswa dapat dilihat pada <strong>Gambar 2.33</strong> berikut.</p>
+<p><em>(Tempatkan Gambar 2.33 di sini)</em><br />
+<strong>Gambar 2.33</strong> Halaman Login Siswa</p>
+<p><br></p>
+<h4 id="2-halaman-beranda-siswa">2) Halaman Beranda Siswa</h4>
+<p>Halaman Beranda berfungsi sebagai pusat informasi personal siswa yang menyajikan <em>dashboard</em> pembelajaran secara komprehensif. Pada antarmuka ini ditampilkan sapaan nama siswa secara dinamis, kartu rangkuman progres penyelesaian materi praktikum kejuruan, grafik capaian rata-rata nilai kuis, serta komponen infografis harian bertopik infrastruktur jaringan digital. Sistem secara otomatis melakukan validasi dan sinkronisasi data pembelajaran terenkripsi dari server sebelum diproses dan disimpan dalam sistem. Tampilan Halaman Beranda Siswa dapat dilihat pada <strong>Gambar 2.34</strong> berikut.</p>
+<p><em>(Tempatkan Gambar 2.34 di sini)</em><br />
+<strong>Gambar 2.34</strong> Halaman Beranda Siswa</p>
+<p><br></p>
+<h4 id="3-halaman-detail-topik-materi">3) Halaman Detail Topik Materi</h4>
+<p>Halaman ini merupakan lembar bacaan digital interaktif yang menyajikan konten materi langkah kerja laboratorium jaringan (seperti teknik <em>crimping</em> kabel UTP/STP atau simulasi topologi jaringan pada Cisco Packet Tracer). Materi disajikan dalam struktur poin-poin ringkas (<em>bulleted lists</em>) dan kartu visual guna mengoptimalkan keterbacaan serta menghindari kepadatan visual (<em>cognitive overload</em>). Selain itu, halaman ini dilengkapi dengan tombol pintas (<em>Floating Action Button / FAB</em>) melayang untuk akses langsung menuju AI Tutor. Tampilan Halaman Detail Topik Materi dapat dilihat pada <strong>Gambar 2.35</strong> berikut.</p>
+<p><em>(Tempatkan Gambar 2.35 di sini)</em><br />
+<strong>Gambar 2.35</strong> Halaman Detail Topik Materi</p>
+<p><br></p>
+<h4 id="4-halaman-chatbot-ai-tutor">4) Halaman Chatbot (AI Tutor)</h4>
+<p>Antarmuka interaktif tanya-jawab ini dirancang sebagai pendamping siswa saat melaksanakan praktikum mandiri dengan memanfaatkan format gelembung percakapan (<em>bubble conversation</em>). Antarmuka ini dilengkapi dengan tombol pemutar audio <em>Text-to-Speech</em> (TTS) untuk mendengarkan jawaban AI, fitur unggah berkas/foto untuk analisis visual kendala konfigurasi perangkat, serta ikon indikator input perekaman suara (<em>Voice Recognition</em>). Tampilan Halaman Chatbot dapat dilihat pada <strong>Gambar 2.36</strong> berikut.</p>
+<p><em>(Tempatkan Gambar 2.36 di sini)</em><br />
+<strong>Gambar 2.36</strong> Halaman Chatbot (AI Tutor)</p>
+<p><br></p>
+<h4 id="5-halaman-profil-siswa">5) Halaman Profil Siswa</h4>
+<p>Halaman Profil memuat statistik menyeluruh terkait aktivitas dan capaian belajar siswa. Antarmuka ini menampilkan visualisasi riwayat kuis, data identitas siswa, pengaturan akun dan keamanan, serta grafik <em>streak</em> keaktifan harian siswa saat berinteraksi di laboratorium maupun aplikasi. Tampilan Halaman Profil Siswa dapat dilihat pada <strong>Gambar 2.37</strong> berikut.</p>
+<p><em>(Tempatkan Gambar 2.37 di sini)</em><br />
+<strong>Gambar 2.37</strong> Halaman Profil Siswa</p>
+<hr />
+<h3 id="b-administrator-guru-aplikasi-web-back-office">b. Administrator &amp; Guru (Aplikasi Web Back-Office)</h3>
+<h4 id="1-halaman-login-admin">1) Halaman Login Admin</h4>
+<p>Halaman autentikasi <em>web back-office</em> dirancang khusus bagi Administrator dan Guru untuk mengakses panel kontrol sistem. Antarmuka ini menerapkan mekanisme <em>Role-Based Access Control</em> (RBAC) yang memastikan bahwa hanya akun berhak akses tinggi yang dapat masuk. Halaman ini juga dilengkapi indikator proteksi sesi dan pesan validasi kredensial. Tampilan Halaman Login Admin dapat dilihat pada <strong>Gambar 2.38</strong> berikut.</p>
+<p><em>(Tempatkan Gambar 2.38 di sini)</em><br />
+<strong>Gambar 2.38</strong> Halaman Login Admin</p>
+<p><br></p>
+<h4 id="2-halaman-dashboard-utama-admin">2) Halaman Dashboard Utama Admin</h4>
+<p>Halaman <em>Dashboard</em> Administrator menyajikan ringkasan eksekutif dan analitik aktivitas pembelajaran secara <em>real-time</em>. Antarmuka ini menampilkan widget statistik total siswa aktif, jumlah modul materi terpublikasi, rata-rata nilai kuis keseluruhan kelas, serta grafik tren interaksi siswa dengan modul dan AI Tutor. Tampilan Halaman Dashboard Admin dapat dilihat pada <strong>Gambar 2.39</strong> berikut.</p>
+<p><em>(Tempatkan Gambar 2.39 di sini)</em><br />
+<strong>Gambar 2.39</strong> Halaman Dashboard Utama Admin</p>
+<p><br></p>
+<h4 id="3-halaman-kelola-modul-topik-materi">3) Halaman Kelola Modul &amp; Topik Materi</h4>
+<p>Antarmuka ini digunakan oleh Guru/Admin untuk melakukan manajemen konten pembelajaran (CRUD: <em>Create, Read, Update, Delete</em>). Pengguna dapat mengunggah berkas PDF modul praktikum, menyusun urutan bab dan pertemuan, memasukkan konten panduan jaringan, serta mengatur status publikasi materi agar dapat diakses oleh aplikasi <em>mobile</em> siswa. Tampilan Halaman Kelola Modul &amp; Topik Materi dapat dilihat pada <strong>Gambar 2.40</strong> berikut.</p>
+<p><em>(Tempatkan Gambar 2.40 di sini)</em><br />
+<strong>Gambar 2.40</strong> Halaman Kelola Modul &amp; Topik Materi</p>
+<p><br></p>
+<h4 id="4-halaman-kelola-kuis-bank-soal">4) Halaman Kelola Kuis &amp; Bank Soal</h4>
+<p>Halaman ini memfasilitasi pengolahan evaluasi belajar siswa. Admin/Guru dapat mengelola bank soal pilihan ganda, menentukan kunci jawaban, mengatur bobot penilaian, serta mengasosiasikan kuis ke topik materi jaringan tertentu. Tampilan Halaman Kelola Kuis &amp; Bank Soal dapat dilihat pada <strong>Gambar 2.41</strong> berikut.</p>
+<p><em>(Tempatkan Gambar 2.41 di sini)</em><br />
+<strong>Gambar 2.41</strong> Halaman Kelola Kuis &amp; Bank Soal</p>
+<p><br></p>
+<h4 id="5-halaman-kelola-data-siswa-progres-belajar">5) Halaman Kelola Data Siswa &amp; Progres Belajar</h4>
+<p>Antarmuka ini berfungsi untuk mengelola data master siswa, pemetaan kelas kejuruan, pembuatan akun siswa baru, serta melakukan pemantauan log aktivitas belajar individual. Guru dapat meninjau rekapitulasi nilai kuis dan <em>streak</em> keaktifan masing-masing siswa. Tampilan Halaman Kelola Data Siswa &amp; Progres Belajar dapat dilihat pada <strong>Gambar 2.42</strong> berikut.</p>
+<p><em>(Tempatkan Gambar 2.42 di sini)</em><br />
+<strong>Gambar 2.42</strong> Halaman Kelola Data Siswa &amp; Progres Belajar</p>
+<p><br></p>
+<h4 id="6-halaman-monitoring-audit-log-chatbot-ai-tutor">6) Halaman Monitoring &amp; Audit Log Chatbot (AI Tutor)</h4>
+<p>Halaman ini dirancang untuk memantau riwayat interaksi dan efektivitas AI Tutor. Admin/Guru dapat meninjau topik kendala jaringan yang paling sering ditanyakan oleh siswa, mengaudit respon jawaban AI, serta menganalisis tren kebingungan siswa selama praktikum mandiri. Tampilan Halaman Monitoring Chatbot AI Tutor dapat dilihat pada <strong>Gambar 2.43</strong> berikut.</p>
+<p><em>(Tempatkan Gambar 2.43 di sini)</em><br />
+<strong>Gambar 2.43</strong> Halaman Monitoring Chatbot (AI Tutor)</p>
+</body>
+</html>

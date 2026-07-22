@@ -30,12 +30,15 @@ app = create_app()
 
 if __name__ == "__main__":
     logger.info("=" * 60)
-    logger.info("🚀 NetLabs AI Backend dimulai!")
+    logger.info("🚀 NetLabs AI Backend v3.0 — Advanced Hybrid RAG")
     logger.info(f"   📡 Port           : {Config.FLASK_PORT}")
     logger.info(f"   🐛 Debug Mode     : {Config.FLASK_DEBUG}")
     logger.info(f"   📂 Qdrant Dir     : {Config.QDRANT_PERSIST_DIR}")
     logger.info(f"   📦 Collection     : {Config.QDRANT_COLLECTION_NAME}")
-    logger.info(f"   🔤 Embedding      : paraphrase-multilingual-MiniLM-L12-v2")
+    logger.info(f"   🔤 Bi-Encoder     : paraphrase-multilingual-MiniLM-L12-v2")
+    logger.info(f"   🔍 Sparse Search  : BM25 Okapi (rank-bm25)")
+    logger.info(f"   🔀 Fusion         : Reciprocal Rank Fusion (RRF, k=60)")
+    logger.info(f"   🎯 Re-ranker      : cross-encoder/ms-marco-MiniLM-L-6-v2")
     logger.info("=" * 60)
 
     app.run(

@@ -459,26 +459,27 @@ class PulsatingDotWidget extends StatefulWidget {
 }
 
 class _PulsatingDotWidgetState extends State<PulsatingDotWidget> with SingleTickerProviderStateMixin {
-  late AnimationController _controller;
-  late Animation<double> _scaleAnimation;
-  late Animation<double> _opacityAnimation;
+  AnimationController? _controller;
+  Animation<double>? _scaleAnimation;
+  Animation<double>? _opacityAnimation;
 
   @override
   void initState() {
     super.initState();
     _controller = AnimationController(vsync: this, duration: const Duration(milliseconds: 1000))..repeat(reverse: true);
-    _scaleAnimation = Tween<double>(begin: 0.6, end: 1.0).animate(CurvedAnimation(parent: _controller, curve: Curves.easeInOut));
-    _opacityAnimation = Tween<double>(begin: 0.5, end: 1.0).animate(CurvedAnimation(parent: _controller, curve: Curves.easeInOut));
+    _scaleAnimation = Tween<double>(begin: 0.6, end: 1.0).animate(CurvedAnimation(parent: _controller!, curve: Curves.easeInOut));
+    _opacityAnimation = Tween<double>(begin: 0.5, end: 1.0).animate(CurvedAnimation(parent: _controller!, curve: Curves.easeInOut));
   }
 
   @override
   void dispose() {
-    _controller.dispose();
+    _controller?.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
+    if (_controller == null || _opacityAnimation == null) return const SizedBox.shrink();
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
       decoration: BoxDecoration(
@@ -490,10 +491,10 @@ class _PulsatingDotWidgetState extends State<PulsatingDotWidget> with SingleTick
         mainAxisSize: MainAxisSize.min,
         children: [
           AnimatedBuilder(
-            animation: _controller,
+            animation: _controller!,
             builder: (context, child) {
               return Opacity(
-                opacity: _opacityAnimation.value,
+                opacity: _opacityAnimation?.value ?? 1.0,
                 child: Container(
                   width: 6, height: 6,
                   decoration: const BoxDecoration(color: NetlabsTheme.textSecondary, shape: BoxShape.circle),
@@ -527,28 +528,29 @@ class BentoCardSkeleton extends StatefulWidget {
 }
 
 class _BentoCardSkeletonState extends State<BentoCardSkeleton> with SingleTickerProviderStateMixin {
-  late AnimationController _controller;
-  late Animation<double> _animation;
+  AnimationController? _controller;
+  Animation<double>? _animation;
 
   @override
   void initState() {
     super.initState();
     _controller = AnimationController(vsync: this, duration: const Duration(milliseconds: 1500))..repeat();
-    _animation = Tween<double>(begin: -1, end: 2).animate(CurvedAnimation(parent: _controller, curve: Curves.easeInOutSine));
+    _animation = Tween<double>(begin: -1, end: 2).animate(CurvedAnimation(parent: _controller!, curve: Curves.easeInOutSine));
   }
 
   @override
   void dispose() {
-    _controller.dispose();
+    _controller?.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
+    if (_controller == null || _animation == null) return const SizedBox.shrink();
     return AnimatedBuilder(
-      animation: _animation,
+      animation: _animation!,
       builder: (context, child) {
-        final offset = _animation.value;
+        final offset = _animation?.value ?? 0.0;
         final shimmerGradient = LinearGradient(
           begin: Alignment(offset - 1, 0),
           end: Alignment(offset + 1, 0),

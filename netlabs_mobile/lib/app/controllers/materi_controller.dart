@@ -24,14 +24,24 @@ class MateriController extends GetxController {
     try {
       final response = await _api.getPertemuan();
       final data = response.data['data'];
-      final s1 = (data['1'] as List)
-          .map((e) => Map<String, dynamic>.from(e))
-          .toList();
-      final s2 = (data['2'] as List)
-          .map((e) => Map<String, dynamic>.from(e))
-          .toList();
-      materiSemester1.value = s1;
-      materiSemester2.value = s2;
+
+      List<Map<String, dynamic>> allMateri = [];
+      if (data is List) {
+        allMateri = data.map((e) => Map<String, dynamic>.from(e)).toList();
+        materiSemester1.value = allMateri
+            .where((e) => e['semester'].toString() == '1')
+            .toList();
+        materiSemester2.value = allMateri
+            .where((e) => e['semester'].toString() == '2')
+            .toList();
+      } else if (data is Map) {
+        final s1Raw = data['1'] ?? data[1] ?? [];
+        final s2Raw = data['2'] ?? data[2] ?? [];
+        materiSemester1.value =
+            (s1Raw as List).map((e) => Map<String, dynamic>.from(e)).toList();
+        materiSemester2.value =
+            (s2Raw as List).map((e) => Map<String, dynamic>.from(e)).toList();
+      }
     } catch (e) {
       print('Gagal memuat materi: $e');
     } finally {

@@ -231,7 +231,7 @@ Format keluaran harus berupa objek JSON dengan struktur kunci berikut:
     "Langkah 11...",
     "Langkah 12..."
   ],
-  "commands": "Kumpulan baris perintah CLI Cisco IOS atau perintah sistem operasi terkait yang sangat lengkap dengan komentar penjelasan (gunakan tanda # di awal baris komentar). Buat sangat panjang, berurutan, detail, dan mencakup semua skenario konfigurasi dari awal sampai selesai.",
+  "commands": "Kumpulan baris perintah CLI Command Prompt / PowerShell Sistem Operasi Windows yang sangat lengkap, detail, berurutan, dan mencakup seluruh skenario konfigurasi praktikum dari awal sampai verifikasi akhir. Gunakan tanda # di awal baris untuk komentar penjelasan di setiap tahapnya. Masukkan perintah Windows nyata secara presisi (misal: ipconfig /all, netsh interface ip set address ..., route add ..., netsh advfirewall ..., powershell Test-NetConnection, nslookup, arp -a, netstat -an, dll. sesuai dengan topik modul). Buat sangat panjang, informatif, dan mudah dipahami siswa SMK.",
   "uji_coba_text": "Penjelasan rinci mengenai tata cara pengujian konektivitas (seperti utilitas ping, traceroute, atau show commands) dan bagaimana menganalisis respon paket data (minimal 2 paragraf, panjang sekitar 200-250 kata).",
   "uji_coba_cmd": "Simulasi output terminal ketika pengujian sukses dilakukan (misal output utility ping lengkap dengan statistik RTT dan TTL, atau output show ip route secara detail).",
   "troubleshooting_table": [
@@ -258,15 +258,13 @@ Catatan penting:
 - Kembalikan HANYA JSON objek yang valid sesuai dengan spesifikasi di atas. Jangan tambahkan penjelasan pembuka atau penutup di luar objek JSON tersebut. Jangan dibungkus dengan markdown ```json.
 """
 
-    # Coba beberapa model jika terjadi rate limit (bypassing pool quota)
-    models_to_try = ["gemini-2.5-flash", "gemini-2.5-pro"]
-    current_model_idx = 0
+    # Gunakan model gemini-2.5-flash
+    models_to_try = ["gemini-2.5-flash"]
 
-    # Coba hingga 6 kali jika ada kegagalan parsing JSON atau kuota terlampaui
-    for attempt in range(6):
+    # Coba hingga 8 kali jika ada kegagalan parsing JSON atau kuota terlampaui
+    for attempt in range(8):
         try:
-            model_name = models_to_try[current_model_idx]
-            model = genai.GenerativeModel(model_name)
+            model = genai.GenerativeModel("gemini-2.5-flash")
             response = model.generate_content(
                 prompt,
                 generation_config={"response_mime_type": "application/json"}
@@ -283,19 +281,18 @@ Catatan penting:
             return data
         except Exception as e:
             error_msg = str(e)
-            print(f"      [WARNING] Gagal pada percobaan {attempt+1} dengan model {models_to_try[current_model_idx]}: {error_msg}")
+            print(f"      [WARNING] Gagal pada percobaan {attempt+1} dengan gemini-2.5-flash: {error_msg}")
             
             if "429" in error_msg or "quota" in error_msg.lower() or "limit" in error_msg.lower():
-                current_model_idx = (current_model_idx + 1) % len(models_to_try)
-                print(f"      [RATE LIMIT] Kuota terlampaui. Beralih ke model {models_to_try[current_model_idx]} dan menunggu 35 detik...")
+                print(f"      [RATE LIMIT] Menunggu 15 detik sebelum mencoba kembali...")
                 import time
-                time.sleep(35)
+                time.sleep(15)
             else:
-                print("      Menunggu 5 detik sebelum mencoba kembali...")
+                print("      Menunggu 4 detik sebelum mencoba kembali...")
                 import time
-                time.sleep(5)
+                time.sleep(4)
             
-    print(f"   [ERROR] Gagal mendapatkan konten berkualitas untuk {outline['file_name']} setelah 6 kali mencoba.")
+    print(f"   [ERROR] Gagal mendapatkan konten berkualitas untuk {outline['file_name']} setelah 8 kali mencoba.")
     sys.exit(1)
 
 
@@ -425,37 +422,38 @@ def buat_modul_pdf(data, file_name):
     elements.append(Spacer(1, 0.15 * cm))
     
     elements.append(Paragraph("<b>2. Tujuan Instruksional Khusus (TIK):</b>", style_heading))
-    tujuan_p = "<br/>".join([f"• {t}" for t in data["tujuan"]])
+    tujuan_p = "<br/>".join([f"• {t}" for t in data.get("tujuan", [])])
     elements.append(Paragraph(tujuan_p, style_body))
     
     elements.append(Paragraph("<b>3. Kompetensi Dasar (KD) Terkait:</b>", style_heading))
-    kd_p = "<br/>".join([f"• {k}" for k in data["kompetensi_dasar"]])
+    kd_p = "<br/>".join([f"• {k}" for k in data.get("kompetensi_dasar", [])])
     elements.append(Paragraph(kd_p, style_body))
     
     elements.append(Paragraph("<b>4. Alat dan Bahan Praktikum:</b>", style_heading))
-    alat_p = "<br/>".join([f"• [ ] {a}" for a in data["alat_bahan"]])
+    alat_p = "<br/>".join([f"• [ ] {a}" for a in data.get("alat_bahan", [])])
     elements.append(Paragraph(alat_p, style_body))
     
     elements.append(Spacer(1, 0.15 * cm))
     elements.append(Paragraph("<b>5. Prasyarat Teori:</b>", style_heading))
-    elements.append(Paragraph(data["prasyarat"], style_body))
+    elements.append(Paragraph(data.get("prasyarat", ""), style_body))
     elements.append(PageBreak())
 
     # ================= HALAMAN 3: TEORI DASAR I =================
     elements.append(Paragraph("TEORI DASAR I — KONSEP DAN MODEL TEKNOLOGI", style_judul_halaman))
     elements.append(Spacer(1, 0.2 * cm))
-    elements.append(Paragraph(data["teori_1"], style_body))
+    elements.append(Paragraph(data.get("teori_1", ""), style_body))
     elements.append(PageBreak())
 
     # ================= HALAMAN 4: TEORI DASAR II =================
     elements.append(Paragraph("TEORI DASAR II — ARSITEKTUR TEKNIS DAN DATA", style_judul_halaman))
     elements.append(Spacer(1, 0.2 * cm))
-    elements.append(Paragraph(data["teori_2_text"], style_body))
+    elements.append(Paragraph(data.get("teori_2_text", ""), style_body))
     elements.append(Spacer(1, 0.2 * cm))
     
     # Display data table
     formatted_table = []
-    for row_idx, row in enumerate(data["teori_2_table"]):
+    teori_table = data.get("teori_2_table", [["Parameter", "Deskripsi", "Tipe", "Contoh Nilai"]])
+    for row_idx, row in enumerate(teori_table):
         formatted_row = []
         for col_idx, col in enumerate(row):
             if row_idx == 0:
@@ -465,7 +463,7 @@ def buat_modul_pdf(data, file_name):
             formatted_row.append(Paragraph(col, p_style))
         formatted_table.append(formatted_row)
       
-    num_cols = len(data["teori_2_table"][0])
+    num_cols = len(teori_table[0])
     col_width = (A4[0] - 4 * cm) / num_cols
     
     t_teori = Table(formatted_table, colWidths=[col_width]*num_cols)
@@ -480,7 +478,7 @@ def buat_modul_pdf(data, file_name):
     ]))
     elements.append(t_teori)
     
-    if "teori_2_extra" in data:
+    if "teori_2_extra" in data and data["teori_2_extra"]:
         elements.append(Spacer(1, 0.4 * cm))
         elements.append(Paragraph(data["teori_2_extra"], style_body))
       
@@ -490,13 +488,14 @@ def buat_modul_pdf(data, file_name):
     elements.append(Paragraph("TOPOLOGI JARINGAN DAN SKENARIO KASUS", style_judul_halaman))
     elements.append(Spacer(1, 0.2 * cm))
     elements.append(Paragraph("<b>1. Deskripsi Topologi Jaringan:</b>", style_heading))
-    elements.append(Paragraph(data["topologi_desc"], style_body))
+    elements.append(Paragraph(data.get("topologi_desc", ""), style_body))
     elements.append(Spacer(1, 0.2 * cm))
     
     elements.append(Paragraph("<b>2. Tabel Pengalamatan IP (Addressing Table):</b>", style_heading))
     
     formatted_addr = []
-    for row_idx, row in enumerate(data["addressing_table"]):
+    addr_table = data.get("addressing_table", [["Perangkat", "Interface", "IP Address", "Subnet Mask", "Default Gateway"]])
+    for row_idx, row in enumerate(addr_table):
         formatted_row = []
         for col_idx, col in enumerate(row):
             if row_idx == 0:
@@ -506,7 +505,7 @@ def buat_modul_pdf(data, file_name):
             formatted_row.append(Paragraph(col, p_style))
         formatted_addr.append(formatted_row)
       
-    num_cols_addr = len(data["addressing_table"][0])
+    num_cols_addr = len(addr_table[0])
     col_width_addr = (A4[0] - 4 * cm) / num_cols_addr
     
     t_addr = Table(formatted_addr, colWidths=[col_width_addr]*num_cols_addr)
@@ -523,7 +522,7 @@ def buat_modul_pdf(data, file_name):
     
     elements.append(Spacer(1, 0.2 * cm))
     elements.append(Paragraph("<b>3. Skenario Pekerjaan:</b>", style_heading))
-    elements.append(Paragraph(data["skenario_desc"], style_body))
+    elements.append(Paragraph(data.get("skenario_desc", ""), style_body))
     elements.append(PageBreak())
 
     # ================= HALAMAN 6: PROSEDUR KONFIGURASI =================
@@ -531,15 +530,16 @@ def buat_modul_pdf(data, file_name):
     elements.append(Spacer(1, 0.2 * cm))
     
     # Steps loop
-    for idx, step in enumerate(data["langkah_kerja"]):
+    for idx, step in enumerate(data.get("langkah_kerja", [])):
         elements.append(Paragraph(f"<b>Langkah {idx+1}:</b> {step}", style_body))
         elements.append(Spacer(1, 0.05 * cm))
       
     # Show commands codeblock if present
-    if "commands" in data and data["commands"]:
+    commands_text = data.get("commands", "")
+    if commands_text:
         elements.append(Spacer(1, 0.2 * cm))
-        elements.append(Paragraph("<b>Baris Kode / Konfigurasi CLI Cisco IOS:</b>", style_heading))
-        elements.append(Paragraph(data["commands"].replace("\n", "<br/>"), style_code))
+        elements.append(Paragraph("<b>Baris Perintah / Konfigurasi CLI & Command Prompt (Windows):</b>", style_heading))
+        elements.append(Paragraph(commands_text.replace("\n", "<br/>"), style_code))
       
     elements.append(PageBreak())
 
@@ -548,15 +548,17 @@ def buat_modul_pdf(data, file_name):
     elements.append(Spacer(1, 0.2 * cm))
     
     elements.append(Paragraph("<b>1. Pengujian Konektivitas (Verification):</b>", style_heading))
-    elements.append(Paragraph(data["uji_coba_text"], style_body))
+    elements.append(Paragraph(data.get("uji_coba_text", ""), style_body))
     
-    if "uji_coba_cmd" in data and data["uji_coba_cmd"]:
-        elements.append(Paragraph(data["uji_coba_cmd"].replace("\n", "<br/>"), style_code))
+    uji_cmd = data.get("uji_coba_cmd", "")
+    if uji_cmd:
+        elements.append(Paragraph(uji_cmd.replace("\n", "<br/>"), style_code))
       
     elements.append(Paragraph("<b>2. Panduan Pemecahan Masalah (Troubleshooting Guide):</b>", style_heading))
     
     formatted_tb = []
-    for row_idx, row in enumerate(data["troubleshooting_table"]):
+    tb_table = data.get("troubleshooting_table", [["Gejala Masalah", "Kemungkinan Penyebab", "Tindakan Korektif"]])
+    for row_idx, row in enumerate(tb_table):
         formatted_row = []
         for col_idx, col in enumerate(row):
             if row_idx == 0:
@@ -566,7 +568,7 @@ def buat_modul_pdf(data, file_name):
             formatted_row.append(Paragraph(col, p_style))
         formatted_tb.append(formatted_row)
       
-    num_cols_tb = len(data["troubleshooting_table"][0])
+    num_cols_tb = len(tb_table[0])
     col_width_tb = (A4[0] - 4 * cm) / num_cols_tb
     
     t_tb = Table(formatted_tb, colWidths=[col_width_tb]*num_cols_tb)
@@ -587,10 +589,10 @@ def buat_modul_pdf(data, file_name):
     elements.append(Spacer(1, 0.1 * cm))
     
     elements.append(Paragraph("<b>1. Tugas Mandiri Praktikan:</b>", style_heading))
-    elements.append(Paragraph(data["tugas_mandiri"], style_body))
+    elements.append(Paragraph(data.get("tugas_mandiri", ""), style_body))
     
     elements.append(Paragraph("<b>2. Pertanyaan Evaluasi Jaringan:</b>", style_heading))
-    for idx, q in enumerate(data["evaluasi_questions"]):
+    for idx, q in enumerate(data.get("evaluasi_questions", [])):
         elements.append(Paragraph(f"{idx+1}. {q}", style_body))
         elements.append(Spacer(1, 0.04 * cm))
       

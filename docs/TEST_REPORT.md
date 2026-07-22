@@ -3,7 +3,7 @@
 **Tanggal:** 15 Juli 2026  
 **Tester:** Automated API Testing  
 **Versi:** Commit `baaa632`  
-**Environment:** Windows 11, PHP 8.x (Laravel), Python 3.12 (FastAPI)
+**Environment:** Windows 11, PHP 8.x (Laravel), Python 3.12 (Flask)
 
 ---
 
@@ -12,7 +12,7 @@
 | Komponen | Status | Keterangan |
 |----------|--------|------------|
 | Backend Web (Laravel) | ✅ PASS | Semua endpoint berjalan normal |
-| Backend AI (FastAPI) | ❌ FAIL | Crash saat startup - TensorFlow error + disk space kurang |
+| Backend AI (Flask) | ❌ FAIL | Crash saat startup - TensorFlow error + disk space kurang |
 | Integrasi Laravel ↔ AI | ⚠️ PARTIAL | Timeout tanpa proper error response saat AI down |
 
 **Total Test Cases:** 18  
@@ -24,7 +24,7 @@
 
 ## 1. Pengujian Autentikasi & Akses
 
-### TC-01: Login Siswa (Valid Credentials)
+### TC-01: Login Siswa (Valid Kredensial)
 - **Endpoint:** `POST /api/login`
 - **Input:** `username: 24001, password: siswa123`
 - **Expected:** 200, token & data profil
@@ -36,7 +36,7 @@
 - **Input:** `username: 24001, password: salah123`
 - **Expected:** 401, pesan error
 - **Result:** ✅ PASS
-- **Response:** `"Username atau password salah."` (HTTP 401)
+- **Response:** `"Nomor Induk (NIS) atau Kata Sandi salah."` (HTTP 401)
 
 ### TC-03: Akses Endpoint Tanpa Token
 - **Endpoint:** `GET /api/pertemuan` (tanpa Authorization header)
@@ -58,19 +58,19 @@
 
 ---
 
-## 2. Pengujian Modul Praktikum (Pertemuan & Topik)
+## 2. Pengujian Modul Praktikum (Pertemuan)
 
 ### TC-06: Daftar Pertemuan
 - **Endpoint:** `GET /api/pertemuan`
 - **Expected:** 200, list pertemuan dengan metadata
 - **Result:** ✅ PASS
-- **Response:** 13 pertemuan dimuat (semester 1 & 2), termasuk field: `nomor, judul, deskripsi, semester, warna_tema, topik_count, progress, is_completed, status_indexing, pdf_url`
+- **Response:** 13 pertemuan dimuat (semester 1 & 2), termasuk field: `nomor, judul, deskripsi, semester, warna_tema, progress, is_completed, status_indexing, pdf_url`
 
 ### TC-07: Detail Pertemuan
 - **Endpoint:** `GET /api/pertemuan/1`
-- **Expected:** 200, detail dengan daftar topik
+- **Expected:** 200, detail pertemuan dengan modul ter-index
 - **Result:** ✅ PASS
-- **Response:** Detail pertemuan "Pengenalan Jaringan Komputer" + 3 topik lengkap dengan isi materi
+- **Response:** Detail pertemuan "Modul 1: Pengenalan Jaringan Komputer" dimuat lengkap dengan konten dan status PDF RAG.
 
 ---
 
@@ -84,7 +84,7 @@
 
 ### TC-09: Submit Kuis (Jawaban Lengkap & Benar)
 - **Endpoint:** `POST /api/kuis/submit`
-- **Input:** 3 jawaban benar (B, C, D)
+- **Input:** 3 jawaban benar (A, B, C)
 - **Expected:** 200, nilai 100, pembahasan lengkap
 - **Result:** ✅ PASS
 - **Response:** `nilai: 100, jumlah_benar: 3/3`, rekomendasi AI positif, pembahasan tiap soal
@@ -107,21 +107,20 @@
 
 ## 4. Pengujian Progress Tracking
 
-### TC-12: Tandai Topik Selesai
-- **Endpoint:** `POST /api/pertemuan/1/topik/1/selesai`
-- **Expected:** 200, topik ditandai selesai
+### TC-12: Tandai Pertemuan Selesai
+- **Endpoint:** `POST /api/pertemuan/1/selesai`
+- **Expected:** 200, pertemuan ditandai selesai (progress = 1.0)
 - **Result:** ✅ PASS
-- **Response:** `"Topik berhasil ditandai selesai."`
+- **Response:** `{"success":true,"message":"Pertemuan berhasil ditandai selesai.","progress":1.0}`
 
 ### TC-13: Statistik Siswa (Verifikasi Progress Update)
 - **Endpoint:** `GET /api/siswa/statistik`
-- **Expected:** 200, total_topik_selesai terupdate
+- **Expected:** 200, total_pertemuan_selesai terupdate
 - **Result:** ✅ PASS
 - **Response:**
-  - `total_topik_selesai: 1` (setelah tandai 1 topik)
-  - `total_topik: 30`
+  - `total_pertemuan_selesai: 1` (setelah tandai 1 pertemuan selesai)
+  - `total_pertemuan: 12`
   - `rata_rata_nilai: 50` (avg dari 100 dan 0)
-  - `total_pertemuan_selesai: 0` (belum semua topik di pertemuan 1 selesai)
   - Profil lengkap dengan info password_is_default dan grace days
 
 ---
@@ -172,7 +171,7 @@
 
 | # | Issue | Impact | Rekomendasi |
 |---|-------|--------|-------------|
-| 1 | AI Backend crash - TensorFlow/Keras incompatibility | AI Tutor tidak bisa digunakan | Downgrade keras ke versi 2.x atau uninstall tensorflow (sentence-transformers hanya butuh PyTorch) |
+| 1 | AI Backend crash - TensorFlow/Keras incompatibility | AI Tutor tidak bisa digunakan | Downgrade keras ke versi 2.x atau uninstall tensorflow (sentence-transformers hanya butuh PyTorch/lokal) |
 | 2 | Disk space insufficient untuk model AI | Model embedding tidak bisa diload | Pastikan minimal 1GB free space di environment target |
 | 3 | Chat endpoint timeout tanpa proper error | User experience buruk (loading tanpa akhir) | Tambahkan timeout (5-10s) pada HTTP client di ChatService, return 503 jika AI unreachable |
 
@@ -188,7 +187,7 @@
 1. **Autentikasi & otorisasi** berjalan solid (Sanctum token, rate limiting, role-based)
 2. **CRUD Materi** response lengkap dan terstruktur (termasuk status_indexing, pdf_url)
 3. **Sistem kuis** komprehensif - auto-grading, pembahasan per soal, rekomendasi AI
-4. **Progress tracking** real-time dan akurat (topik → pertemuan → statistik keseluruhan)
+4. **Progress tracking** real-time dan akurat (pertemuan → statistik keseluruhan)
 5. **API response format** konsisten dan informatif (selalu ada message + data)
 6. **Validasi input** berjalan baik (422 untuk field salah)
 
@@ -210,7 +209,7 @@ AI Backend Error Log:
 
 Backend Web (Laravel) **production-ready** dari sisi fungsionalitas API. Semua fitur utama (autentikasi, manajemen materi, kuis harian, progress tracking) berfungsi dengan baik dan response-nya sesuai kebutuhan mobile app.
 
-Backend AI (FastAPI) **membutuhkan perbaikan environment** sebelum bisa ditest fungsionalnya. Issue utama adalah dependency version conflict dan disk space.
+Backend AI (Flask) **membutuhkan perbaikan environment** sebelum bisa ditest fungsionalnya. Issue utama adalah dependency version conflict dan disk space.
 
 **Prioritas perbaikan:**
 1. Fix AI backend dependencies (keras/tensorflow)  

@@ -1,0 +1,681 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <title>Dokumen_Teknis_NetLabs.pdf</title>
+    
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap');
+    
+    @page {
+        size: A4;
+        margin: 20mm 15mm 20mm 15mm;
+        @bottom-right {
+            content: counter(page);
+        }
+    }
+
+    body {
+        font-family: 'Plus Jakarta Sans', 'Segoe UI', Helvetica, Arial, sans-serif;
+        color: #1e293b;
+        line-height: 1.6;
+        font-size: 11pt;
+        background: #ffffff;
+        padding: 0;
+        margin: 0;
+    }
+
+    h1 {
+        font-size: 20pt;
+        color: #0f172a;
+        border-bottom: 3px solid #2563eb;
+        padding-bottom: 8px;
+        margin-top: 0;
+        margin-bottom: 16px;
+        page-break-before: always;
+    }
+    
+    h1:first-of-type {
+        page-break-before: avoid;
+    }
+
+    h2 {
+        font-size: 15pt;
+        color: #1e3a8a;
+        border-bottom: 1.5px solid #e2e8f0;
+        padding-bottom: 6px;
+        margin-top: 24px;
+        margin-bottom: 12px;
+    }
+
+    h3 {
+        font-size: 12pt;
+        color: #2563eb;
+        margin-top: 18px;
+        margin-bottom: 8px;
+    }
+
+    h4 {
+        font-size: 11pt;
+        color: #334155;
+        margin-top: 14px;
+        margin-bottom: 6px;
+    }
+
+    p {
+        margin-bottom: 10px;
+        text-align: justify;
+    }
+
+    strong {
+        color: #0f172a;
+    }
+
+    ul, ol {
+        margin-top: 4px;
+        margin-bottom: 12px;
+        padding-left: 24px;
+    }
+
+    li {
+        margin-bottom: 4px;
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 16px 0;
+        font-size: 10pt;
+        page-break-inside: avoid;
+    }
+
+    th {
+        background-color: #1e293b;
+        color: #ffffff;
+        font-weight: 600;
+        text-align: left;
+        padding: 8px 12px;
+        border: 1px solid #1e293b;
+    }
+
+    td {
+        padding: 8px 12px;
+        border: 1px solid #cbd5e1;
+    }
+
+    tr:nth-child(even) {
+        background-color: #f8fafc;
+    }
+
+    code {
+        font-family: 'Consolas', 'Courier New', monospace;
+        background-color: #f1f5f9;
+        color: #0f172a;
+        padding: 2px 6px;
+        border-radius: 4px;
+        font-size: 9.5pt;
+    }
+
+    pre {
+        background-color: #0f172a;
+        color: #f8fafc;
+        padding: 14px;
+        border-radius: 8px;
+        overflow-x: auto;
+        font-size: 9.5pt;
+        line-height: 1.45;
+        page-break-inside: avoid;
+    }
+
+    pre code {
+        background: none;
+        color: inherit;
+        padding: 0;
+    }
+
+    blockquote {
+        background-color: #eff6ff;
+        border-left: 4px solid #2563eb;
+        margin: 14px 0;
+        padding: 10px 16px;
+        border-radius: 0 6px 6px 0;
+        color: #1e40af;
+    }
+
+    blockquote p {
+        margin: 0;
+    }
+
+    hr {
+        border: none;
+        border-top: 1px solid #e2e8f0;
+        margin: 20px 0;
+    }
+</style>
+
+</head>
+<body>
+    <h1 id="dokumen-spesifikasi-teknis-sistem-netlabs">DOKUMEN SPESIFIKASI TEKNIS SISTEM NETLABS</h1>
+<p><strong>Platform Media Pembelajaran &amp; Pendamping Praktikum Jaringan Digital Berbasis Hybrid RAG AI</strong></p>
+<hr />
+<h2 id="1-dokumen-overview">1. DOKUMEN OVERVIEW</h2>
+<p>NetLabs adalah ekosistem media pembelajaran interaktif untuk siswa kejuruan jaringan komputer yang mengintegrasikan aplikasi <em>mobile</em> berbasis Android dengan <em>web back-office</em> untuk Administrator/Guru dan <em>engine</em> Kecerdasan Buatan (AI Tutor) berbasis <em>Hybrid Retrieval-Augmented Generation</em> (RAG).</p>
+<h3 id="11-arsitektur-sistem-high-level-architecture">1.1 Arsitektur Sistem (High-Level Architecture)</h3>
+<pre><code class="language-mermaid">graph TD
+    subgraph Client Layer
+        A[Mobile App Siswa - Flutter Android]
+        B[Web Admin &amp; Guru - Laravel Blade / Filament]
+    end
+
+    subgraph Core Backend Layer - Laravel 11
+        C[API Gateway &amp; Auth - Sanctum]
+        D[Database MySQL - Data Core]
+        E[Storage System - PDF/Images/Audio]
+    end
+
+    subgraph AI Engine Layer - Flask v3.0 Python
+        F[API Routes Flask]
+        G[Hybrid RAG Engine]
+        H[Vector DB - Qdrant]
+        I[Sparse Search - BM25 Okapi]
+        J[Re-Ranker - Cross Encoder]
+        K[LLM Provider - Google Gemini API]
+        L[Audio Engine - TTS &amp; Voice]
+    end
+
+    A --&gt;|HTTPS REST API / Bearer Sanctum| C
+    B --&gt;|HTTP Session &amp; RBAC| D
+    C &lt;--&gt; D
+    C --&gt;|Internal REST API| F
+    F --&gt; G
+    G --&gt; H
+    G --&gt; I
+    G --&gt; J
+    G --&gt; K
+    F --&gt; L
+</code></pre>
+<hr />
+<h2 id="2-stack-teknologi">2. STACK TEKNOLOGI</h2>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Komponen</th>
+<th style="text-align: left;">Teknologi / Framework</th>
+<th style="text-align: left;">Versi / Librari Utama</th>
+<th style="text-align: left;">Fungsi Utama</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><strong>Mobile App</strong></td>
+<td style="text-align: left;">Flutter (Dart)</td>
+<td style="text-align: left;">Flutter v3.x, GetX / Provider</td>
+<td style="text-align: left;">Antarmuka interaktif siswa (Android)</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Web Back-Office</strong></td>
+<td style="text-align: left;">Laravel</td>
+<td style="text-align: left;">Laravel 11.x, PHP 8.2+</td>
+<td style="text-align: left;">Panel kontrol guru/admin, manajemen materi, kuis, user</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Database Core</strong></td>
+<td style="text-align: left;">MySQL / MariaDB</td>
+<td style="text-align: left;">MySQL 8.0 / MariaDB 10.6+</td>
+<td style="text-align: left;">Penyimpanan data pengguna, kuis, materi, log aktivitas</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>AI Backend Services</strong></td>
+<td style="text-align: left;">Python</td>
+<td style="text-align: left;">Flask 3.0, PyTorch</td>
+<td style="text-align: left;">Server mikroservis layanan cerdas AI Tutor</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Vector Store</strong></td>
+<td style="text-align: left;">Qdrant DB</td>
+<td style="text-align: left;">Local Persisted Qdrant</td>
+<td style="text-align: left;">Penyimpanan <em>dense embeddings</em> materi jaringan</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Sparse Indexing</strong></td>
+<td style="text-align: left;">Rank-BM25</td>
+<td style="text-align: left;">BM25 Okapi</td>
+<td style="text-align: left;">Pencarian kata kunci dan istilah teknis jaringan</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Embedding Model</strong></td>
+<td style="text-align: left;">SentenceTransformers</td>
+<td style="text-align: left;"><code>paraphrase-multilingual-MiniLM-L12-v2</code></td>
+<td style="text-align: left;">Pembentukan vektor <em>multilingual</em></td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Re-Ranking Model</strong></td>
+<td style="text-align: left;">Cross-Encoder</td>
+<td style="text-align: left;"><code>cross-encoder/ms-marco-MiniLM-L-6-v2</code></td>
+<td style="text-align: left;"><em>Re-ranking</em> relevansi dokumen hasil RAG</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Large Language Model</strong></td>
+<td style="text-align: left;">Google Gemini API</td>
+<td style="text-align: left;"><code>gemini-1.5-flash</code> / <code>pro</code></td>
+<td style="text-align: left;">Pembentuk jawaban kontekstual &amp; edukatif</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Audio Processing</strong></td>
+<td style="text-align: left;">gTTS &amp; Speech Recognition</td>
+<td style="text-align: left;">Python gTTS / Whisper</td>
+<td style="text-align: left;">Fitur Text-to-Speech &amp; Voice Input Chatbot</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="3-skema-database-entity-relationship-diagram-erd">3. SKEMA DATABASE &amp; ENTITY RELATIONSHIP DIAGRAM (ERD)</h2>
+<h3 id="31-tabel-utama-deskripsi-entitas">3.1 Tabel Utama &amp; Deskripsi Entitas</h3>
+<ol>
+<li><strong><code>users</code></strong></li>
+<li><code>id</code> (PK, BigInt Auto Increment)</li>
+<li><code>username</code> (Varchar, Unique, NIS Siswa / Username)</li>
+<li><code>name</code> (Varchar, Nama Lengkap)</li>
+<li><code>email</code> (Varchar, Unique, Email Siswa/Admin)</li>
+<li><code>password</code> (Varchar, Hashed bcrypt)</li>
+<li><code>role</code> (Enum: <code>'admin'</code>, <code>'guru'</code>, <code>'siswa'</code>)</li>
+<li><code>foto_profil</code> (Varchar, Nullable)</li>
+<li>
+<p><code>remember_token</code>, <code>created_at</code>, <code>updated_at</code></p>
+</li>
+<li>
+<p><strong><code>kelas</code></strong></p>
+</li>
+<li><code>id</code> (PK, BigInt)</li>
+<li><code>nama_kelas</code> (Varchar, contoh: "X TKJ 1")</li>
+<li><code>jurusan</code> (Varchar, contoh: "Teknik Komputer dan Jaringan")</li>
+<li>
+<p><code>created_at</code>, <code>updated_at</code></p>
+</li>
+<li>
+<p><strong><code>pertemuan</code></strong></p>
+</li>
+<li><code>id</code> (PK, BigInt)</li>
+<li><code>judul_pertemuan</code> (Varchar)</li>
+<li><code>urutan</code> (Integer)</li>
+<li><code>deskripsi</code> (Text)</li>
+<li>
+<p><code>created_at</code>, <code>updated_at</code></p>
+</li>
+<li>
+<p><strong><code>topik_materi</code></strong></p>
+</li>
+<li><code>id</code> (PK, BigInt)</li>
+<li><code>pertemuan_id</code> (FK -&gt; <code>pertemuan.id</code>)</li>
+<li><code>judul_topik</code> (Varchar)</li>
+<li><code>konten_materi</code> (LongText, Format HTML/Markdown)</li>
+<li><code>file_pdf_path</code> (Varchar, Nullable)</li>
+<li>
+<p><code>created_at</code>, <code>updated_at</code></p>
+</li>
+<li>
+<p><strong><code>soal_kuis</code></strong></p>
+</li>
+<li><code>id</code> (PK, BigInt)</li>
+<li><code>pertemuan_id</code> (FK -&gt; <code>pertemuan.id</code>)</li>
+<li><code>pertanyaan</code> (Text)</li>
+<li><code>opsi_a</code> (Text), <code>opsi_b</code> (Text), <code>opsi_c</code> (Text), <code>opsi_d</code> (Text)</li>
+<li><code>kunci_jawaban</code> (Enum: <code>'A'</code>, <code>'B'</code>, <code>'C'</code>, <code>'D'</code>)</li>
+<li>
+<p><code>pembahasan</code> (Text, Nullable)</p>
+</li>
+<li>
+<p><strong><code>hasil_kuis</code></strong></p>
+</li>
+<li><code>id</code> (PK, BigInt)</li>
+<li><code>user_id</code> (FK -&gt; <code>users.id</code>)</li>
+<li><code>pertemuan_id</code> (FK -&gt; <code>pertemuan.id</code>)</li>
+<li><code>skor</code> (Decimal 5,2)</li>
+<li><code>jumlah_benar</code> (Integer), <code>jumlah_salah</code> (Integer)</li>
+<li>
+<p><code>created_at</code>, <code>updated_at</code></p>
+</li>
+<li>
+<p><strong><code>progress_siswa</code></strong></p>
+</li>
+<li><code>id</code> (PK, BigInt)</li>
+<li><code>user_id</code> (FK -&gt; <code>users.id</code>)</li>
+<li><code>pertemuan_id</code> (FK -&gt; <code>pertemuan.id</code>)</li>
+<li><code>status</code> (Enum: <code>'belum_selesai'</code>, <code>'selesai'</code>)</li>
+<li>
+<p><code>updated_at</code></p>
+</li>
+<li>
+<p><strong><code>chat_histories</code></strong></p>
+</li>
+<li><code>id</code> (PK, BigInt)</li>
+<li><code>siswa_id</code> (FK -&gt; <code>users.id</code>)</li>
+<li><code>pertemuan_id</code> (FK -&gt; <code>pertemuan.id</code>)</li>
+<li><code>sender</code> (Enum: <code>'siswa'</code>, <code>'ai'</code>)</li>
+<li><code>pesan</code> (Text)</li>
+<li><code>sumber_referensi</code> (Text, Nullable)</li>
+<li><code>created_at</code></li>
+</ol>
+<hr />
+<h2 id="4-spesifikasi-api-rest-laravel-sanctum">4. SPESIFIKASI API REST (LARAVEL SANCTUM)</h2>
+<h3 id="41-autentikasi-api">4.1 Autentikasi API</h3>
+<p>Semua <em>endpoint</em> terproteksi wajib menyertakan HTTP Header:</p>
+<pre><code class="language-http">Authorization: Bearer &lt;SANCTUM_TOKEN&gt;
+Accept: application/json
+</code></pre>
+<h3 id="42-daftar-endpoint-api-utilitas">4.2 Daftar Endpoint API Utilitas</h3>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Method</th>
+<th style="text-align: left;">Endpoint</th>
+<th style="text-align: left;">Fungsi</th>
+<th style="text-align: left;">Status Access</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>POST</code></td>
+<td style="text-align: left;"><code>/api/login</code></td>
+<td style="text-align: left;">Autentikasi NIS/Password &amp; Generasi Token</td>
+<td style="text-align: left;">Public</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>POST</code></td>
+<td style="text-align: left;"><code>/api/register</code></td>
+<td style="text-align: left;">Registrasi Akun Siswa Baru</td>
+<td style="text-align: left;">Public</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>POST</code></td>
+<td style="text-align: left;"><code>/api/logout</code></td>
+<td style="text-align: left;">Revokasi Token Sanctum</td>
+<td style="text-align: left;">Protected</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>GET</code></td>
+<td style="text-align: left;"><code>/api/user-profile</code></td>
+<td style="text-align: left;">Mengambil data akun siswa aktif</td>
+<td style="text-align: left;">Protected</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>GET</code></td>
+<td style="text-align: left;"><code>/api/pertemuan</code></td>
+<td style="text-align: left;">Mengambil daftar materi per pertemuan</td>
+<td style="text-align: left;">Protected</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>GET</code></td>
+<td style="text-align: left;"><code>/api/pertemuan/{id}</code></td>
+<td style="text-align: left;">Detail materi praktikum &amp; modul PDF</td>
+<td style="text-align: left;">Protected</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>POST</code></td>
+<td style="text-align: left;"><code>/api/pertemuan/{id}/selesai</code></td>
+<td style="text-align: left;">Tandai pertemuan telah diselesaikan</td>
+<td style="text-align: left;">Protected</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>GET</code></td>
+<td style="text-align: left;"><code>/api/pertemuan/{id}/kuis</code></td>
+<td style="text-align: left;">Mengambil soal kuis berdasarkan pertemuan</td>
+<td style="text-align: left;">Protected</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>POST</code></td>
+<td style="text-align: left;"><code>/api/kuis/submit</code></td>
+<td style="text-align: left;">Mengirimkan jawaban kuis &amp; hitung skor</td>
+<td style="text-align: left;">Protected</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>GET</code></td>
+<td style="text-align: left;"><code>/api/kuis/riwayat</code></td>
+<td style="text-align: left;">Mengambil riwayat capaian kuis siswa</td>
+<td style="text-align: left;">Protected</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>POST</code></td>
+<td style="text-align: left;"><code>/api/chat</code></td>
+<td style="text-align: left;">Mengirim pertanyaan teks ke AI Tutor</td>
+<td style="text-align: left;">Protected</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>POST</code></td>
+<td style="text-align: left;"><code>/api/chat/audio</code></td>
+<td style="text-align: left;">Mengirim pertanyaan suara/audio ke AI Tutor</td>
+<td style="text-align: left;">Protected</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>GET</code></td>
+<td style="text-align: left;"><code>/api/siswa/statistik</code></td>
+<td style="text-align: left;">Mengambil data statistik &amp; streak keaktifan</td>
+<td style="text-align: left;">Protected</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="5-spesifikasi-alur-hybrid-rag-python-ai-backend">5. SPESIFIKASI ALUR HYBRID RAG (PYTHON AI BACKEND)</h2>
+<pre><code>[User Query] ──► [Bi-Encoder: Dense Embedding] ──► [Qdrant Vector DB] ──┐
+             └──► [Sparse Tokenization]       ──► [BM25 Okapi]         ──┼─► [RRF Fusion] ──► [Cross-Encoder Re-rank] ──► [Gemini Prompt Synthesis] ──► [Response]
+</code></pre>
+<ol>
+<li><strong>Preprocessing</strong>: Pembersihan teks, penanganan diakritik, dan penguraian istilah teknis jaringan.</li>
+<li><strong>Dense Retrieval</strong>: Menggunakan <code>paraphrase-multilingual-MiniLM-L12-v2</code> ke dalam Qdrant Vector Store untuk menangkap arti semantik.</li>
+<li><strong>Sparse Retrieval</strong>: Menggunakan BM25 Okapi untuk pencarian istilah persis (seperti command Cisco <code>show ip interface brief</code>, subnetting, jenis kabel UTP).</li>
+<li><strong>Reciprocal Rank Fusion (RRF)</strong>: Penggabungan urutan hasil <em>dense</em> dan <em>sparse</em> menggunakan konstanta $k=60$.</li>
+<li><strong>Cross-Encoder Re-Ranking</strong>: Menggunakan <code>ms-marco-MiniLM-L-6-v2</code> untuk menyaring Top-N dokumen yang paling relevan.</li>
+<li><strong>LLM Generation</strong>: Google Gemini menyintesis jawaban yang terstruktur, edukatif, dan ramah sesuai konteks praktikum jaringan.</li>
+</ol>
+<hr />
+<h2 id="6-cara-deployment-instruksi-setup-lingkungan">6. CARA DEPLOYMENT &amp; INSTRUKSI SETUP LINGKUNGAN</h2>
+<h3 id="61-setup-backend-web-laravel-11">6.1 Setup Backend Web (Laravel 11)</h3>
+<pre><code class="language-bash">cd backend-web
+composer install
+cp .env.example .env
+php artisan key:generate
+# Sesuaikan DB_DATABASE, DB_USERNAME, DB_PASSWORD di .env
+php artisan migrate --seed
+php artisan storage:link
+php artisan serve --port=8000
+</code></pre>
+<h3 id="62-setup-backend-ai-engine-python-flask">6.2 Setup Backend AI Engine (Python Flask)</h3>
+<pre><code class="language-bash">cd backend-ai
+python -m venv venv
+# Windows:
+.\venv\Scripts\activate
+pip install -r requirements.txt
+python app.py
+# Server berjalan di http://localhost:5000
+</code></pre>
+<h3 id="63-setup-mobile-application-flutter">6.3 Setup Mobile Application (Flutter)</h3>
+<pre><code class="language-bash">cd netlabs_mobile
+flutter pub get
+# Sesuaikan baseUrl API di lib/app/config/api_config.dart
+flutter run
+</code></pre>
+<hr />
+<h2 id="7-penjelasan-kode-fungsi-fungsi-penting-sistem">7. PENJELASAN KODE &amp; FUNGSI-FUNGSI PENTING SISTEM</h2>
+<p>Berikut adalah dokumentasi teknis mendalam mengenai implementasi fungsi-fungsi vital (<em>core functions</em>) yang mendorong kerja sistem NetLabs pada Backend Web Laravel, Backend AI Python, dan Integrasi Mobile.</p>
+<h3 id="71-autentikasi-kredensial-generasi-token-laravel-sanctum">7.1 Autentikasi Kredensial &amp; Generasi Token (Laravel Sanctum)</h3>
+<ul>
+<li><strong>Lokasi Berkas</strong>: <code>backend-web/app/Http/Controllers/Api/AuthController.php</code></li>
+<li><strong>Nama Fungsi</strong>: <code>login(LoginRequest $request)</code></li>
+</ul>
+<pre><code class="language-php">public function login(LoginRequest $request)
+{
+    try {
+        // 1. Cari user berdasarkan Username / NIS
+        $user = User::where('username', $request-&gt;username)-&gt;first();
+
+        // 2. Validasi keberadaan user dan verifikasi kata sandi bcrypt
+        if (!$user || !Hash::check($request-&gt;password, $user-&gt;password)) {
+            return response()-&gt;json([
+                'message' =&gt; 'Nomor Induk (NIS) atau Kata Sandi salah.'
+            ], 401);
+        }
+
+        // 3. Validasi status keaktifan akun
+        if ($user-&gt;status === 'nonaktif') {
+            return response()-&gt;json([
+                'message' =&gt; 'Akun Anda telah dinonaktifkan oleh administrator.'
+            ], 403);
+        }
+
+        // 4. Mencegah Multi-Device / Single Active Session (Revokasi token lama)
+        $user-&gt;tokens()-&gt;delete();
+
+        // 5. Generasi Plain Text Token Laravel Sanctum baru
+        $token = $user-&gt;createToken('netlabs_token')-&gt;plainTextToken;
+
+        return response()-&gt;json([
+            'message' =&gt; 'Login Berhasil!',
+            'user' =&gt; new UserResource($user),
+            'token' =&gt; $token
+        ], 200);
+    } catch (Exception $e) {
+        Log::error('Error saat login user: ' . $e-&gt;getMessage());
+        return response()-&gt;json(['message' =&gt; 'Terjadi kesalahan pada server.'], 500);
+    }
+}
+</code></pre>
+<p><strong>Penjelasan Alur &amp; Logika Kode:</strong><br />
+1. <strong>Pencarian Entitas Siswa</strong>: Menggunakan Query Builder <code>User::where('username', ...)-&gt;first()</code> untuk mengambil data siswa berdasarkan NIS.<br />
+2. <strong>Kriptografi Hash Verification</strong>: <code>Hash::check()</code> membandingkan kata sandi <em>plain text</em> dari input siswa dengan nilai <em>hash</em> Bcrypt terenkripsi di database MySQL tanpa mendeskripsikan hash asli.<br />
+3. <strong>Single Active Session Security</strong>: <code>$user-&gt;tokens()-&gt;delete()</code> mencabut seluruh Personal Access Token terdahulu sebelum menerbitkan token baru. Hal ini mencegah penggunaan akun siswa secara bersamaan (<em>account sharing</em>) pada multiple perangkat.<br />
+4. <strong>Token Generation</strong>: <code>$user-&gt;createToken('netlabs_token')-&gt;plainTextToken</code> menghasilkan token bearer acak yang aman untuk dikirimkan ke aplikasi Flutter Android.</p>
+<hr />
+<h3 id="72-layanan-komunikasi-inter-service-ke-engine-ai-chatservicephp">7.2 Layanan Komunikasi Inter-Service ke Engine AI (<code>ChatService.php</code>)</h3>
+<ul>
+<li><strong>Lokasi Berkas</strong>: <code>backend-web/app/Services/ChatService.php</code></li>
+<li><strong>Nama Fungsi</strong>: <code>kirimPesanTeks($siswa, ?int $pertemuanId, string $pesan)</code></li>
+</ul>
+<pre><code class="language-php">public function kirimPesanTeks($siswa, ?int $pertemuanId, string $pesan): array
+{
+    // 1. Catat riwayat pertanyaan siswa ke Database Laravel
+    ChatHistory::create([
+        'siswa_id' =&gt; $siswa-&gt;id,
+        'pertemuan_id' =&gt; $pertemuanId,
+        'sender' =&gt; 'siswa',
+        'pesan' =&gt; $pesan,
+    ]);
+
+    $balasan = 'Maaf, terjadi kesalahan saat menghubungi AI Tutor.';
+    $sumber = 'Netlabs AI Tutor';
+
+    try {
+        // 2. HTTP POST Request ke Python Flask AI Microservice
+        $response = Http::timeout(60)-&gt;post(&quot;{$this-&gt;aiUrl}/chat&quot;, [
+            'pertemuan_id' =&gt; $pertemuanId,
+            'message' =&gt; $pesan,
+        ]);
+
+        if ($response-&gt;successful()) {
+            $balasan = $response-&gt;json('answer') ?? $balasan;
+            $sources = $response-&gt;json('sources') ?? [];
+            if (!empty($sources)) {
+                $sumber = implode(', ', $sources);
+            }
+        }
+    } catch (Exception $e) {
+        Log::error('AI Chat Error: ' . $e-&gt;getMessage());
+    }
+
+    // 3. Simpan balasan AI ke database
+    $chatAi = ChatHistory::create([
+        'siswa_id' =&gt; $siswa-&gt;id,
+        'pertemuan_id' =&gt; $pertemuanId,
+        'sender' =&gt; 'ai',
+        'pesan' =&gt; $balasan,
+        'sumber_referensi' =&gt; $sumber,
+    ]);
+
+    return [
+        'sender' =&gt; 'ai',
+        'pesan' =&gt; $balasan,
+        'sumber' =&gt; $sumber,
+        'waktu' =&gt; $chatAi-&gt;created_at-&gt;format('Y-m-d H:i'),
+    ];
+}
+</code></pre>
+<p><strong>Penjelasan Alur &amp; Logika Kode:</strong><br />
+1. <strong>Auditing &amp; State Persistence</strong>: Menyimpan pesan siswa ke tabel <code>chat_histories</code> terlebih dahulu sebelum memanggil API eksternal guna mengantisipasi kegagalan jaringan.<br />
+2. <strong>HTTP Guzzle Client Connection</strong>: <code>Http::timeout(60)-&gt;post(...)</code> bertindak sebagai API Client yang menghubungkan Laravel Core dengan Python Flask AI Engine di port 5050.<br />
+3. <strong>Data Extraction &amp; Citations</strong>: Ekstraksi balasan AI (<code>answer</code>) serta sumber dokumen rujukan (<code>sources</code>) yang kemudian disimpan kembali ke MySQL untuk kebutuhan audit log oleh Guru.</p>
+<hr />
+<h3 id="73-algoritma-penggabungan-pencarian-reciprocal-rank-fusion-rrf">7.3 Algoritma Penggabungan Pencarian (Reciprocal Rank Fusion / RRF)</h3>
+<ul>
+<li><strong>Lokasi Berkas</strong>: <code>backend-ai/services/hybrid_search_service.py</code></li>
+<li><strong>Nama Fungsi</strong>: <code>_reciprocal_rank_fusion(dense_results, sparse_results, k=60)</code></li>
+</ul>
+<pre><code class="language-python">def _reciprocal_rank_fusion(
+    dense_results: list[dict],
+    sparse_results: list[dict],
+    k: int = 60,
+) -&gt; list[dict]:
+    &quot;&quot;&quot;Menggabungkan hasil Dense Retrieval (Qdrant) dan Sparse Retrieval (BM25)
+
+    Rumus RRF: Score(d) = Σ 1 / (k + rank(d))
+    &quot;&quot;&quot;
+    rrf_scores: dict[tuple, dict] = {}
+
+    # 1. Proses Peringkat Hasil Dense Retrieval (Vector Similarity)
+    for rank, doc in enumerate(dense_results, start=1):
+        doc_key = (doc[&quot;source_file&quot;], doc[&quot;chunk_index&quot;])
+        if doc_key not in rrf_scores:
+            rrf_scores[doc_key] = {
+                &quot;teks_asli&quot;: doc[&quot;teks_asli&quot;],
+                &quot;source_file&quot;: doc[&quot;source_file&quot;],
+                &quot;chunk_index&quot;: doc[&quot;chunk_index&quot;],
+                &quot;rrf_score&quot;: 0.0,
+            }
+        rrf_scores[doc_key][&quot;rrf_score&quot;] += 1.0 / (k + rank)
+
+    # 2. Proses Peringkat Hasil Sparse Retrieval (BM25 Keywords)
+    for rank, doc in enumerate(sparse_results, start=1):
+        doc_key = (doc[&quot;source_file&quot;], doc[&quot;chunk_index&quot;])
+        if doc_key not in rrf_scores:
+            rrf_scores[doc_key] = {
+                &quot;teks_asli&quot;: doc[&quot;teks_asli&quot;],
+                &quot;source_file&quot;: doc[&quot;source_file&quot;],
+                &quot;chunk_index&quot;: doc[&quot;chunk_index&quot;],
+                &quot;rrf_score&quot;: 0.0,
+            }
+        rrf_scores[doc_key][&quot;rrf_score&quot;] += 1.0 / (k + rank)
+
+    # 3. Urutkan dokumen berdasarkan skor RRF tertinggi
+    fused = sorted(rrf_scores.values(), key=lambda x: x[&quot;rrf_score&quot;], reverse=True)
+    return fused
+</code></pre>
+<p><strong>Penjelasan Alur &amp; Matematika Algoritma:</strong><br />
+1. <strong>Masalah yang Diatasi</strong>: Pencarian berbasis Vektor (<em>Dense Retrieval</em>) unggul memahami makna semantik umum, namun sering gagal menemukan perintah spesifik (seperti <code>show ip route</code> atau istilah kabel UTP). Sebaliknya, <em>BM25 Sparse Search</em> unggul pada istilah persis (<em>exact keywords</em>).<br />
+2. <strong>Invariansi Skala Skor</strong>: Karena skor Cosine Similarity Qdrant dan skor BM25 memiliki rentang skala berbeda (misal 0.0–1.0 vs 0.0–25.5), RRF <strong>tidak memperdulikan nilai skor mentah</strong>, melainkan hanya menggunakan <strong>posisi peringkat (<em>rank</em>)</strong> dokumen.<br />
+3. <strong>Rumus RRF</strong>: Dengan konstanta <em>smoothing</em> $k=60$ (Cormack et al., 2009), dokumen yang berada di peringkat 1 pada kedua metode akan menerima akumulasi nilai RRF terbesar:<br />
+   $$\text{Score}_{\text{RRF}}(d) = \frac{1}{60 + 1} + \frac{1}{60 + 1} = \frac{2}{61} \approx 0.03278$$<br />
+4. <strong>Penyaringan kandidat</strong>: Hasil <em>fusion</em> diurutkan secara <em>descending</em> untuk diserahkan ke tahap <em>Cross-Encoder Re-Ranking</em>.</p>
+<hr />
+<h3 id="74-sintesis-jawaban-terkonteks-proteksi-halusinasi-ai-api_routespy">7.4 Sintesis Jawaban Terkonteks &amp; Proteksi Halusinasi AI (<code>api_routes.py</code>)</h3>
+<ul>
+<li><strong>Lokasi Berkas</strong>: <code>backend-ai/routes/api_routes.py</code></li>
+<li><strong>Struktur Kode &amp; Prompt</strong>:</li>
+</ul>
+<pre><code class="language-python">SYSTEM_PROMPT = &quot;&quot;&quot;Kamu adalah NetLabs AI Tutor, asisten cerdas untuk pembelajaran Jaringan Komputer di tingkat SMK.
+
+ATURAN KETAT:
+1. Jawab pertanyaan siswa HANYA berdasarkan konteks dokumen praktikum jaringan komputer yang disediakan di bawah.
+2. JANGAN pernah berhalusinasi atau menggunakan pengetahuan bawaan/umum di luar konteks materi modul resmi.
+3. Jika informasi yang ditanyakan tidak tercantum secara eksplisit dalam konteks dokumen, Anda harus menolak menjawab.
+4. Gunakan bahasa Indonesia yang formal, jelas, dan mudah dipahami oleh siswa SMK.
+
+KONTEKS DOKUMEN MODUL RESMI:
+---
+{konteks}
+---
+
+Berdasarkan HANYA konteks dokumen di atas, jawab pertanyaan siswa berikut dengan lengkap dan akurat.&quot;&quot;&quot;
+</code></pre>
+<p><strong>Penjelasan Logika &amp; Proteksi Sistem:</strong><br />
+1. <strong>Grounded Generation</strong>: Menyuntikkan pecahan teks materi (<em>chunks</em>) hasil pencarian RAG ke dalam variabel <code>{konteks}</code> sebelum dikirimkan ke model Google Gemini.<br />
+2. <strong>Anti-Hallucination Constraints</strong>: Aturan sistem nomor 1–3 memaksa AI bertindak sebagai <em>closed-domain QA system</em>. Apabila siswa menanyakan topik di luar modul (seperti resep makanan atau pemrograman web), AI secara otomatis menolak memberikan jawaban yang tidak bersumber dari modul resmi.</p>
+</body>
+</html>

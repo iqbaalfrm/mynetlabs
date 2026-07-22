@@ -14,7 +14,7 @@ from qdrant_client.models import (
 )
 from config import Config
 from services.embedding_service import buat_embedding, buat_embedding_batch, VECTOR_SIZE
-from utils.text_cleaner import ekstrak_teks_pdf, potong_teks_menjadi_chunks
+from utils.text_cleaner import ekstrak_teks_pdf_dengan_halaman, potong_teks_menjadi_chunks_dengan_halaman
 
 logger = logging.getLogger("NetLabsAI.RagService")
 
@@ -52,11 +52,11 @@ def index_pdf_chunks(pertemuan_id: int, file_path: str) -> dict:
     Returns:
         dict: Hasil operasi indeks.
     """
-    teks_pdf = ekstrak_teks_pdf(file_path)
-    if not teks_pdf or len(teks_pdf.strip()) < 50:
+    halaman_list = ekstrak_teks_pdf_dengan_halaman(file_path)
+    if not halaman_list:
         raise ValueError("File PDF tidak mengandung teks yang cukup untuk diproses.")
 
-    chunks = potong_teks_menjadi_chunks(teks_pdf)
+    chunks = potong_teks_menjadi_chunks_dengan_halaman(halaman_list)
     if not chunks:
         raise ValueError("Gagal memotong teks PDF menjadi chunks.")
 
@@ -77,19 +77,21 @@ def index_pdf_chunks(pertemuan_id: int, file_path: str) -> dict:
     )
 
     logger.info(f"Membuat embedding secara batch untuk {len(chunks)} chunk...")
-    vektor_list = buat_embedding_batch(chunks)
+    teks_list = [c["text"] for c in chunks]
+    vektor_list = buat_embedding_batch(teks_list)
 
     points = []
-    for i, (chunk, vektor) in enumerate(zip(chunks, vektor_list)):
+    for i, (chunk_item, vektor) in enumerate(zip(chunks, vektor_list)):
         doc_id = str(uuid.uuid4())
         points.append(
             PointStruct(
                 id=doc_id,
                 vector=vektor,
                 payload={
-                    "teks_asli": chunk,
+                    "teks_asli": chunk_item["text"],
                     "pertemuan_id": pertemuan_id,
                     "source_file": nama_file,
+                    "halaman": chunk_item["halaman"],
                     "chunk_index": i,
                     "total_chunks": len(chunks),
                     "indexed_at": datetime.now().isoformat(),
@@ -144,6 +146,7 @@ def search_relevant_chunks(pertemuan_id: int | None, query_vector: list[float], 
             "score": point.score,
             "teks_asli": point.payload.get("teks_asli", ""),
             "source_file": point.payload.get("source_file", "?"),
+            "halaman": point.payload.get("halaman", "?"),
             "chunk_index": point.payload.get("chunk_index", "?"),
         }
         for point in hasil

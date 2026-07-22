@@ -9,6 +9,8 @@ from flask import Blueprint, request, jsonify, Response
 from services.embedding_service import buat_embedding
 from services import gemini_service
 from services import rag_service
+from services import bm25_service
+from services.hybrid_search_service import hybrid_search
 
 logger = logging.getLogger("NetLabsAI.Routes")
 api_blueprint = Blueprint("api", __name__)
@@ -22,17 +24,20 @@ PESAN_PERTANYAAN_TIDAK_RELEVAN = (
     "Maaf, pertanyaan tersebut tidak ditemukan dalam modul praktikum yang tersedia. "
     "Silakan tanyakan materi yang berkaitan dengan praktikum Dasar-Dasar Kejuruan."
 )
-RELEVANCE_THRESHOLD = 0.5
 
 # System Prompt ketat untuk NetLabs AI Tutor
 SYSTEM_PROMPT = """Kamu adalah NetLabs AI Tutor, asisten cerdas untuk pembelajaran Jaringan Komputer di tingkat SMK.
 
 ATURAN KETAT:
-1. Jawab pertanyaan siswa HANYA berdasarkan konteks dokumen praktikum jaringan komputer yang disediakan di bawah.
-2. JANGAN pernah berhalusinasi atau menggunakan pengetahuan bawaan/umum di luar konteks materi modul resmi.
-3. Jika informasi yang ditanyakan tidak tercantum secara eksplisit dalam konteks dokumen, Anda harus menolak menjawab dan sampaikan bahwa informasi tersebut tidak ada di modul.
+1. Jawab pertanyaan siswa berdasarkan konteks dokumen praktikum jaringan komputer yang disediakan di bawah.
+2. JANGAN PERNAH memberikan langkah konfigurasi menggunakan CLI Cisco IOS (seperti configure terminal, ip route, router ospf, dll). Jika pertanyaan meminta langkah konfigurasi atau jika konteks dokumen berisi konfigurasi Cisco CLI, terjemahkan langkah tersebut ke konfigurasi Sistem Operasi Windows yang umum (baik GUI melalui Control Panel/Settings, maupun CLI Command Prompt/PowerShell seperti ipconfig, netsh, route add, dll). Anda diperbolehkan menggunakan pengetahuan bawaan Anda HANYA untuk melakukan penerjemahan konfigurasi Cisco ke Windows ini secara akurat.
+3. Jika informasi yang ditanyakan tidak tercantum secara eksplisit atau tidak berhubungan dengan modul, Anda harus menolak menjawab dan sampaikan bahwa informasi tersebut tidak ada di modul.
 4. Gunakan bahasa Indonesia yang formal, jelas, dan mudah dipahami oleh siswa SMK.
-5. Sebutkan nama file sumber/modul (citation) secara singkat di akhir jawaban Anda jika Anda menggunakan informasi dari sana.
+5. Wajib cantumkan format sumber di akhir jawaban Anda pada baris baru dengan format persis seperti ini:
+Sumber: [Nama File Modul] (Halaman [Nomor Halaman])
+Contoh:
+Sumber: Modul-07-Static-Routing.pdf (Halaman 3)
+Jika menggunakan beberapa sumber atau halaman berbeda, sebutkan semuanya dipisahkan dengan koma.
 6. JANGAN gunakan markdown bold (**) atau formatting khusus dalam jawaban. Gunakan teks biasa saja.
 7. JANGAN gunakan asterisk (*) untuk bullet points. Gunakan format: "1. " atau "- " saja.
 
@@ -74,9 +79,13 @@ def health_check() -> tuple[Response, int]:
     return jsonify({
         "status": "running",
         "service": "NetLabs AI Backend",
-        "version": "2.0.0",
+        "version": "3.0.0-hybrid-rag",
+        "retrieval_method": "Hybrid BM25 + Dense Vector + RRF + Cross-Encoder Re-ranker",
         "vector_db": "Qdrant",
         "embedding_model": "paraphrase-multilingual-MiniLM-L12-v2",
+        "reranker_model": "cross-encoder/ms-marco-MiniLM-L-6-v2",
+        "sparse_retrieval": "BM25 Okapi (rank-bm25)",
+        "fusion_algorithm": "Reciprocal Rank Fusion (RRF, k=60)",
         "qdrant_collection": "basis_pengetahuan",
         "total_documents": total,
         "timestamp": datetime.now().isoformat(),
@@ -105,6 +114,10 @@ def index_pdf() -> tuple[Response, int]:
         
         result = rag_service.index_pdf_chunks(pertemuan_id, file_path)
         
+        # Invalidasi cache BM25 karena dokumen berubah
+        bm25_service.invalidate_cache(pertemuan_id)
+        logger.info(f"Cache BM25 untuk pertemuan_id={pertemuan_id} di-invalidasi setelah re-index.")
+        
         return jsonify({
             "success": True,
             "message": "Modul berhasil di-index ke Vektor DB.",
@@ -123,7 +136,15 @@ def index_pdf() -> tuple[Response, int]:
 
 @api_blueprint.route("/chat", methods=["POST"])
 def chat() -> tuple[Response, int]:
-    """Menjawab pertanyaan siswa berdasarkan dokumen modul RAG secara ketat."""
+    """Menjawab pertanyaan siswa menggunakan pipeline Advanced Hybrid RAG.
+    
+    Pipeline:
+        1. Dense Retrieval (Qdrant Cosine Similarity) → Top-10
+        2. Sparse Retrieval (BM25 Okapi) → Top-10
+        3. Reciprocal Rank Fusion (RRF, k=60) → Gabungkan & deduplikasi
+        4. Cross-Encoder Re-ranking (ms-marco-MiniLM-L-6-v2) → Top-4
+        5. Gemini LLM → Generate jawaban dari konteks terbaik
+    """
     try:
         data = request.get_json(force=True) or {}
         pertemuan_id = data.get("pertemuan_id")
@@ -140,10 +161,9 @@ def chat() -> tuple[Response, int]:
         else:
             pertemuan_id = None
 
-        logger.info(f"CHAT dimulai | pertemuan_id={pertemuan_id} | Pertanyaan: {message[:100]}")
+        logger.info(f"CHAT [Hybrid RAG] dimulai | pertemuan_id={pertemuan_id} | Pertanyaan: {message[:100]}")
         
         # 1. Cek apakah ada dokumen modul ter-index untuk pertemuan_id ini
-        #    Jika tidak ada modul ter-index sama sekali, tolak dengan pesan modul belum tersedia.
         from qdrant_client.models import Filter, FieldCondition, MatchValue
         from config import Config
         
@@ -169,26 +189,36 @@ def chat() -> tuple[Response, int]:
                 "chunks_used": 0
             }), 200
 
-        # 2. Buat embedding kueri
-        query_vector = buat_embedding(message)
+        # 2. Jalankan pipeline Hybrid Search (Dense + BM25 + RRF + Cross-Encoder)
+        hasil_hybrid = hybrid_search(pertemuan_id, message, top_k=4)
         
-        # 3. Cari dokumen relevan di Qdrant
-        hasil_pencarian = rag_service.search_relevant_chunks(pertemuan_id, query_vector, limit=4)
-        
-        # Filter berdasarkan threshold relevansi (RELEVANCE_THRESHOLD = 0.5)
+        # 3. Filter berdasarkan threshold relevansi menggunakan skor Cross-Encoder Re-ranker
         chunks_relevan = []
         sources = set()
+        retrieval_details = []
         
-        for res in hasil_pencarian:
-            skor = res["score"]
-            logger.info(f"  Score: {skor:.4f} | Source: {res['source_file']} | Chunk: {res['chunk_index']}")
-            if skor >= RELEVANCE_THRESHOLD:
-                chunks_relevan.append(res["teks_asli"])
-                sources.add(res["source_file"])
+        for res in hasil_hybrid:
+            reranker_score = res.get("reranker_score", 0)
+            # Cross-Encoder menggunakan skala skor berbeda, threshold disesuaikan
+            # Skor > 0 dari Cross-Encoder sudah menunjukkan relevansi positif
+            if reranker_score > -5.0:  # Cross-Encoder threshold (skala logit)
+                # Tambahkan info sumber dan halaman langsung ke teks chunk agar Gemini membacanya
+                chunk_teks = f"[Sumber: {res['source_file']}, Halaman: {res.get('halaman', '?')}]\n{res['teks_asli']}"
+                chunks_relevan.append(chunk_teks)
+                sources.add(f"{res['source_file']} (Halaman {res.get('halaman', '?')})")
+                retrieval_details.append({
+                    "source_file": res["source_file"],
+                    "halaman": res.get("halaman", "?"),
+                    "chunk_index": res.get("chunk_index", "?"),
+                    "dense_score": round(res.get("dense_score", 0), 4),
+                    "bm25_score": round(res.get("bm25_score", 0), 4),
+                    "rrf_score": round(res.get("rrf_score", 0), 6),
+                    "reranker_score": round(reranker_score, 4),
+                })
 
-        # 4. Jika tidak ada chunk yang relevan (di bawah threshold), tolak secara spesifik
+        # 4. Jika tidak ada chunk yang relevan, tolak secara spesifik
         if not chunks_relevan:
-            logger.warning(f"Semua dokumen di bawah threshold relevansi ({RELEVANCE_THRESHOLD}). Menolak menjawab.")
+            logger.warning("Hybrid Search: Semua kandidat di bawah threshold. Menolak menjawab.")
             return jsonify({
                 "success": False,
                 "answer": PESAN_PERTANYAAN_TIDAK_RELEVAN,
@@ -210,7 +240,9 @@ def chat() -> tuple[Response, int]:
             "success": True,
             "answer": jawaban,
             "sources": list(sources),
-            "chunks_used": len(chunks_relevan)
+            "chunks_used": len(chunks_relevan),
+            "retrieval_method": "hybrid_bm25_dense_rrf_reranker",
+            "retrieval_details": retrieval_details,
         }), 200
 
     except Exception as e:
@@ -219,7 +251,14 @@ def chat() -> tuple[Response, int]:
 
 @api_blueprint.route("/debug/search", methods=["GET"])
 def debug_search() -> tuple[Response, int]:
-    """Endpoint untuk visualisasi hasil pencarian vektor dan cosine similarity untuk sidang."""
+    """Endpoint untuk visualisasi lengkap pipeline Hybrid RAG untuk sidang/skripsi.
+    
+    Menampilkan skor detail dari setiap tahap retrieval:
+    - Dense Retrieval (Qdrant Cosine Similarity)
+    - Sparse Retrieval (BM25 Okapi)
+    - Reciprocal Rank Fusion (RRF)
+    - Cross-Encoder Re-ranking
+    """
     try:
         query = request.args.get("query", "").strip()
         pertemuan_id = request.args.get("pertemuan_id")
@@ -235,26 +274,37 @@ def debug_search() -> tuple[Response, int]:
         else:
             pertemuan_id = None
 
-        logger.info(f"DEBUG SEARCH | query={query} | pertemuan_id={pertemuan_id}")
+        logger.info(f"DEBUG SEARCH [Hybrid] | query={query} | pertemuan_id={pertemuan_id}")
 
-        query_vector = buat_embedding(query)
-        hasil_pencarian = rag_service.search_relevant_chunks(pertemuan_id, query_vector, limit=5)
+        # Jalankan pipeline Hybrid Search lengkap
+        hasil_hybrid = hybrid_search(pertemuan_id, query, top_k=5)
 
         results = []
-        for res in hasil_pencarian:
+        for rank, res in enumerate(hasil_hybrid, start=1):
             results.append({
-                "score": float(res["score"]),
+                "final_rank": rank,
+                "dense_score": round(res.get("dense_score", 0), 4),
+                "dense_rank": res.get("dense_rank"),
+                "bm25_score": round(res.get("bm25_score", 0), 4),
+                "bm25_rank": res.get("bm25_rank"),
+                "rrf_score": round(res.get("rrf_score", 0), 6),
+                "reranker_score": round(res.get("reranker_score", 0), 4),
                 "source_file": res["source_file"],
-                "chunk_index": int(res["chunk_index"]),
+                "chunk_index": int(res.get("chunk_index", 0)),
                 "text": res["teks_asli"],
-                "passed_threshold": res["score"] >= RELEVANCE_THRESHOLD
             })
 
         return jsonify({
             "success": True,
             "query": query,
             "pertemuan_id": pertemuan_id,
-            "relevance_threshold": RELEVANCE_THRESHOLD,
+            "retrieval_method": "hybrid_bm25_dense_rrf_reranker",
+            "pipeline_stages": [
+                "1. Dense Retrieval (Qdrant Cosine Similarity, Top-10)",
+                "2. Sparse Retrieval (BM25 Okapi, Top-10)",
+                "3. Reciprocal Rank Fusion (RRF, k=60)",
+                "4. Cross-Encoder Re-ranking (ms-marco-MiniLM-L-6-v2)",
+            ],
             "results": results
         }), 200
 
@@ -312,15 +362,26 @@ def generate_quiz() -> tuple[Response, int]:
             return jsonify({"success": False, "message": "Gemini tidak menghasilkan soal kuis."}), 500
 
         # 3. Parse dan validasi JSON
+        clean_text = raw_text.strip()
+        if clean_text.startswith("```"):
+            clean_text = re.sub(r'^```(?:json)?\s*', '', clean_text, flags=re.IGNORECASE)
+            clean_text = re.sub(r'\s*```$', '', clean_text).strip()
+
+        soal_list = None
         try:
-            soal_list = _json.loads(raw_text)
+            soal_list = _json.loads(clean_text)
         except _json.JSONDecodeError:
-            # Fallback regex extraction
-            json_match = re.search(r'\[.*\]', raw_text, re.DOTALL)
+            # Fallback regex extraction jika ada teks tambahan di luar array JSON
+            json_match = re.search(r'\[.*\]', clean_text, re.DOTALL)
             if json_match:
-                soal_list = _json.loads(json_match.group())
-            else:
-                return jsonify({"success": False, "message": "Gagal memproses output JSON dari AI."}), 500
+                try:
+                    soal_list = _json.loads(json_match.group())
+                except _json.JSONDecodeError:
+                    pass
+
+        if not soal_list or not isinstance(soal_list, list):
+            logger.error(f"Gagal parse JSON dari Gemini: {raw_text[:200]}")
+            return jsonify({"success": False, "message": "Gagal memproses output JSON dari AI. Silakan coba klik tombol Generate lagi."}), 500
 
         REQUIRED_KEYS = {"pertanyaan", "pilihan_a", "pilihan_b", "pilihan_c", "pilihan_d", "kunci_jawaban", "pembahasan"}
         VALID_JAWABAN = {"A", "B", "C", "D"}
@@ -377,6 +438,9 @@ def delete_pertemuan(pertemuan_id: int) -> tuple[Response, int]:
     try:
         logger.info(f"Menghapus semua dokumen untuk pertemuan_id={pertemuan_id}")
         count = rag_service.delete_pertemuan_chunks(pertemuan_id)
+        
+        # Invalidasi cache BM25 karena dokumen dihapus
+        bm25_service.invalidate_cache(pertemuan_id)
         
         return jsonify({
             "success": True,

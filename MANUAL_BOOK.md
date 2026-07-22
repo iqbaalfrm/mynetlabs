@@ -1,140 +1,165 @@
 # BUKU PANDUAN PENGGUNAAN (MANUAL BOOK)
 ## Sistem Manajemen Pembelajaran & AI RAG "NetLabs"
 
-Buku panduan ini disusun sebagai pedoman operasional untuk administrator, pengajar (guru), dan pengembang dalam mengelola platform **NetLabs** (Web Admin Filament v3 + Mobile App Flutter).
+Buku panduan ini disusun sebagai pedoman operasional untuk administrator, pengajar (guru), dan pengembang dalam mengelola platform **NetLabs** (Web Admin Laravel 12 Skydash Template + Mobile App Flutter).
 
 ---
 
 ## 1. Arsitektur & Alur Kerja Sistem
 
 Sistem NetLabs terdiri dari tiga komponen utama yang saling terintegrasi:
-1.  **Web Admin (Laravel 11 + Filament v3)**: Panel manajemen data untuk guru/administrator.
-2.  **AI Backend (Python / Flask-FastAPI)**: Mesin pintar (port `5000`/`5050`) untuk ekstraksi PDF, indexing berkas ke Vector Database (RAG), serta pembuatan soal otomatis.
+1.  **Web Admin (Laravel 12 + Skydash Template)**: Panel manajemen data untuk guru/administrator.
+2.  **AI Backend (Python / Flask)**: Mesin pintar (port `5050`) untuk ekstraksi PDF, indexing berkas ke Vector Database (RAG), serta pembuatan soal kuis otomatis.
 3.  **Mobile App (Flutter)**: Aplikasi pembelajaran untuk siswa (membaca materi, mengerjakan kuis, dan interaksi chatbot AI).
 
 ```mermaid
 graph TD
-    A[Web Admin Filament] -->|Upload PDF & Request Index| B(AI Backend)
-    A -->|Set KKM & API Key| C[(Database MySQL)]
-    B -->|Create Vector Index| D[Vector Store / RAG]
-    E[Mobile App Flutter] -->|Get Materi & Quiz| C
+    A[Web Admin Skydash] -->|Upload PDF & Request Index| B(AI Backend Flask)
+    A -->|Set Konfigurasi & API Key| C[(Database MySQL)]
+    B -->|Buat Vektor Index| D[Vector Store / Qdrant DB]
+    E[Mobile App Flutter] -->|Ambil Materi & Kuis| C
     E -->|Tanya Chatbot AI| B
-    B -->|Context dari Vector Store| E
+    B -->|Konteks dari Qdrant DB| E
 ```
 
 ---
 
-## 2. Panduan Operasional Web Admin (Filament)
+## 2. Panduan Operasional Web Admin (Laravel Skydash)
 
 ### A. Halaman Login Admin
-*   **Tampilan/Screen**: Form login minimalis dengan tema Deep Indigo.
-*   **Fungsi**: Membatasi hak akses pengelolaan agar hanya guru atau admin yang berhak melakukan konfigurasi.
-*   **Cara Penggunaan**: Masukkan NIP/Username dan password, lalu klik *Sign In*.
+*   **Tampilan/Screen**: Halaman login formal minimalis dengan tema Deep Indigo khas Skydash Template.
+*   **Fungsi**: Membatasi hak akses pengelolaan agar hanya guru atau administrator sekolah yang dapat login ke dashboard.
+*   **Gambar UI**:
+    ![Halaman Login Admin](docs/screenshots/login_page.png)
+*   **Cara Penggunaan**:
+    1.  Buka browser dan akses URL panel admin (contoh: `https://netlabs.web.id/admin/login`).
+    2.  Masukkan **Username** dan **Password** guru/admin Anda (misalnya username: `19950812001`, password: `guru123`).
+    3.  Klik tombol **Sign In** untuk masuk ke sistem.
 
 ### B. Halaman Dashboard Admin
-*   **Tampilan/Screen**: Widget statistik ringkas dan grafik overview data kelas.
-*   **Fungsi**: Memberikan gambaran cepat jumlah modul, total kelas terdaftar, dan jumlah kuis yang telah dievaluasi.
-*   **Cara Penggunaan**: Memantau ringkasan data pembelajaran secara berkala.
+*   **Tampilan/Screen**: Widget statistik data, panel sambutan hangat guru, serta visualisasi grafik status pembelajaran.
+*   **Fungsi**: Menyajikan ringkasan eksekutif seluruh data penting sistem secara real-time.
+*   **Gambar UI**:
+    ![Halaman Dashboard Admin](docs/screenshots/dashboard.png)
+*   **Cara Penggunaan**:
+    *   Tinjau widget jumlah **Siswa Terdaftar**, **Total Kelas**, **Modul Pertemuan**, dan **Riwayat Kuis**.
+    *   Lihat status aktivitas terbaru untuk memantau keaktifan siswa.
 
 ### C. Halaman Manajemen Kelas
-*   **Tampilan/Screen**: Tabel data kelas dan form input tambah/edit kelas.
-*   **Fungsi**: Digunakan untuk mengelompokkan siswa dan menunjuk Wali Kelas.
+*   **Tampilan/Screen**: Tabel daftar kelas yang terdaftar beserta wali kelasnya.
+*   **Fungsi**: Mengelompokkan siswa berdasarkan rombongan belajar (rombel) masing-masing.
+*   **Gambar UI**:
+    ![Halaman Manajemen Kelas](docs/screenshots/manajemen_kelas.png)
 *   **Cara Penggunaan**:
-    1.  Buka menu **Manajemen Kelas** di sidebar.
-    2.  Klik tombol **Tambah Kelas** (atau edit kelas yang ada).
-    3.  Isi **Nama Kelas** (contoh: *XI TKJ 1*) dan pilih **Wali Kelas** dari daftar guru.
-    4.  Gunakan tab **Kelola Siswa** di dalam detail kelas untuk memantau atau menambahkan akun siswa baru.
+    1.  Klik menu **Manajemen Kelas** pada sidebar.
+    2.  Untuk menambah kelas: Klik **Tambah Kelas**, masukkan nama kelas (misal: *XI TKJ 1*) dan tentukan guru pengampu/wali kelas, lalu klik **Simpan**.
+    3.  Untuk mengedit/menghapus: Gunakan tombol aksi edit pensil atau hapus tong sampah di ujung kanan baris tabel.
 
-### D. Halaman Modul Pertemuan & Integrasi AI (RAG)
-*   **Tampilan/Screen**: Detail Pertemuan yang terbagi ke dalam sub-tab Relasi (Topik Materi, PDF, Kuis).
-*   **Fungsi**: Jantung dari penyediaan materi pembelajaran berbasis AI.
+### D. Halaman Manajemen Siswa
+*   **Tampilan/Screen**: Tabel daftar akun siswa beserta form tambah/edit akun.
+*   **Fungsi**: Mengelola kredensial masuk siswa untuk aplikasi mobile NetLabs.
 *   **Cara Penggunaan**:
-    1.  Pilih menu **Modul Pertemuan** -> klik **Tambah Modul**.
-    2.  Isi informasi nomor bab, judul praktikum jaringan, warna tema kartu untuk aplikasi mobile, dan deskripsi singkat.
-    3.  Setelah modul dibuat, masuk ke halaman detail modul untuk mengelola 3 komponen berikut:
-        *   **Isi Materi Bacaan**: Tambahkan sub-bab atau topik tulisan secara manual menggunakan Rich Editor.
+    1.  Klik menu **Manajemen Siswa** pada sidebar.
+    2.  Klik **Tambah Siswa**, isi data lengkap mulai dari NIS (Nomor Induk Siswa), Nama Lengkap, Username, Kelas, dan Password.
+    3.  Klik **Simpan**. Guru juga dapat meriset password siswa jika siswa lupa melalui form Edit Siswa.
+
+### E. Halaman Modul Pertemuan & Integrasi AI (RAG)
+*   **Tampilan/Screen**: Detail Pertemuan yang terbagi ke dalam sub-tab relasi data: *Topik Materi*, *Modul PDF RAG*, dan *Soal Kuis*.
+*   **Fungsi**: Jantung dari penyediaan materi pembelajaran jaringan komputer berbasis AI.
+*   **Gambar UI**:
+    ![Detail Modul & Integrasi AI](docs/screenshots/modul_pertemuan.png)
+*   **Cara Penggunaan**:
+    1.  Pilih menu **Modul Pertemuan** -> klik **Tambah Pertemuan**.
+    2.  Isi nomor urut bab, judul materi praktikum jaringan, deskripsi singkat, semester (1 atau 2), serta kode warna tema kartu (misal: `#3B82F6` untuk warna biru) untuk UI kartu di aplikasi mobile siswa.
+    3.  Klik **Simpan**. Setelah itu, masuk ke halaman detail modul pertemuan untuk mengelola 3 komponen berikut:
+        *   **Topik Materi (Rich Text)**:
+            *   Tambahkan sub-bab atau materi bacaan mandiri langsung ke editor teks, lalu klik simpan agar teks tersebut tampil di layar aplikasi mobile siswa.
         *   **Modul PDF RAG (Dokumen AI)**:
-            1. Unggah berkas modul berformat `.pdf`.
-            2. Klik tombol **"Index AI"** pada berkas yang baru diunggah.
-            3. Status akan berubah dari `Pending` -> `Processing` -> `Success`. Setelah berstatus `Success`, siswa dapat menanyakan materi di dalam PDF tersebut langsung ke chatbot AI di aplikasi mobile.
+            *   Unggah berkas modul praktikum resmi berformat `.pdf` (ukuran maks 20MB).
+            *   Setelah diunggah, klik tombol **"Index AI"** untuk mengirim modul ke Flask AI Backend.
+            *   Status indexing akan berubah: `Pending` -> `Success` / `Failed`. Setelah berstatus `Success`, siswa secara instan dapat menanyakan materi di dalam dokumen PDF tersebut kepada AI Tutor.
         *   **Bank Soal Kuis (Otomatis & Manual)**:
-            *   **Manual**: Klik **Tambah Soal Kuis** untuk mengisi pertanyaan, pilihan ganda A/B/C/D, kunci jawaban, dan pembahasan.
-            *   **Otomatis (Generative AI)**: Klik **"Generate Soal AI"**, masukkan jumlah soal yang diinginkan (1-20), lalu klik kirim. AI akan secara otomatis membaca dokumen PDF yang terindeks dan membuat soal pilihan ganda beserta pembahasannya dalam hitungan detik.
+            *   **Manual**: Masukkan soal, opsi pilihan ganda A/B/C/D, kunci jawaban, dan penjelasan/pembahasan.
+            *   **Otomatis (Generative AI)**: Masukkan jumlah soal yang diinginkan (1-20), klik tombol **"Generate Soal AI"**. Sistem akan menghubungi Flask AI Backend untuk membaca dokumen PDF modul yang telah sukses di-index dan membuat soal pilihan ganda beserta pembahasannya secara cerdas sesuai kurikulum.
 
-### E. Halaman Hasil Kuis
-*   **Tampilan/Screen**: Tabel daftar nilai kuis dengan indikator warna (badge hijau untuk lulus, merah untuk tidak lulus).
-*   **Fungsi**: Guru dapat memantau perkembangan siswa melalui menu **Hasil Kuis**.
+### F. Halaman Monitoring Chat AI
+*   **Tampilan/Screen**: Tabel log percakapan siswa dengan AI Tutor.
+*   **Fungsi**: Memantau topik pertanyaan siswa serta mengawasi kualitas jawaban AI Tutor.
+*   **Gambar UI**:
+    ![Monitoring Chat AI](docs/screenshots/riwayat_chat.png)
 *   **Cara Penggunaan**:
-    1.  Di menu **Hasil Kuis**, guru dapat melihat daftar nama siswa, kelas, bab pertemuan, skor akhir, serta jumlah jawaban benar.
-    2.  **Rekomendasi AI**: Sistem memberikan analisis rekomendasi belajar otomatis berdasarkan kesalahan jawaban siswa agar siswa tahu bagian modul mana yang harus mereka pelajari ulang.
+    1.  Klik menu **Riwayat Chat AI** pada sidebar.
+    2.  Gunakan filter pencarian berdasarkan **Nama Siswa**, **Modul Pertemuan**, atau **Pengirim** (Siswa vs AI).
+    3.  Guru dapat menghapus log riwayat obrolan siswa tertentu jika diperlukan menggunakan tombol **Hapus**.
 
-### F. Halaman Pengaturan (Settings)
-*   **Tampilan/Screen**: Form input data profil guru, input KKM, dan input API Key.
-*   **Fungsi**: Konfigurasi global sistem.
+### G. Halaman Pengaturan (Settings)
+*   **Tampilan/Screen**: Form konfigurasi parameter sistem dan sekolah.
+*   **Fungsi**: Menyesuaikan variabel global aplikasi secara dinamis tanpa perlu mengubah baris kode langsung.
 *   **Cara Penggunaan**:
-    1.  **Profil Guru**: Memperbarui nama dan mengganti kata sandi admin.
-    2.  **KKM Kuis**: Batas nilai kelulusan siswa (contoh: `70`). Jika nilai kuis siswa di bawah angka ini, status kuis mereka di aplikasi mobile akan dianggap tidak lulus/merah.
-    3.  **API Key**: Masukkan **Gemini API Key** atau **OpenAI API Key** untuk mengaktifkan fitur kecerdasan buatan (Chatbot & Generate Soal).
+    1.  Klik menu **Pengaturan** pada sidebar.
+    2.  Sesuaikan data berikut:
+        *   **Nama Aplikasi**: `NetLabs`
+        *   **Nama Sekolah**: Nama SMK Anda (misal: *SMK Negeri 1 Jakarta*)
+        *   **Alamat & Kontak Sekolah**: Info detail sekolah.
+        *   **AI Service URL**: Alamat URL host Flask AI Backend (default: `http://127.0.0.1:5050`).
+        *   **AI API Key**: Masukkan Google Gemini API Key aktif Anda untuk mengaktifkan RAG dan Generator Kuis.
+        *   **Google Form URL**: URL kuisioner kepuasan/umpan balik sistem.
+    3.  Klik **Simpan Pengaturan**. Sistem akan otomatis memperbarui file konfigurasi `.env` dan membersihkan cache konfigurasi Laravel.
 
 ---
 
-## 3. Panduan Fitur Per Layar Aplikasi Mobile (Siswa)
+## 3. Panduan Fitur Aplikasi Mobile (Siswa)
 
 ### A. Layar Onboarding (`onboarding_view.dart`)
-*   **Deskripsi**: Layar sambutan pertama kali setelah siswa mengunduh aplikasi.
-*   **Elemen UI**: Ilustrasi modern minimalis dengan penjelasan singkat mengenai fitur NetLabs (Belajar Jaringan Komputer, Kuis Interaktif, dan Asisten AI).
-*   **Fungsi**: Memperkenalkan cara kerja sistem kepada siswa baru sebelum masuk ke halaman login/dashboard.
+*   **Deskripsi**: Layar pengenalan pertama kali saat aplikasi dibuka setelah diinstal.
+*   **Elemen UI**: Ilustrasi modern, judul edukatif, dan deskripsi ringkas mengenai fitur AI Tutor RAG, kuis evaluasi jaringan, serta pelacakan progres belajar.
+*   **Fungsi**: Membimbing siswa baru memahami alur penggunaan NetLabs.
 
 ### B. Layar Utama / Beranda (`home_view.dart`)
-*   **Deskripsi**: Dashboard interaktif pusat aktivitas siswa.
+*   **Deskripsi**: Pusat dashboard siswa setelah berhasil login.
 *   **Elemen UI**:
-    *   *Header*: Menyapa siswa dengan namanya dan informasi kelas (misal: *XI TKJ 1*) serta foto profil bulat.
-    *   *Stat Cards*: Kartu statistik ringkas yang menampilkan jumlah modul yang telah diselesaikan, rata-rata nilai kuis, dan total interaksi dengan AI Chat.
-    *   *Lanjut Belajar*: Kartu cepat untuk melanjutkan membaca bab yang terakhir kali dibuka.
-    *   *Bento Grid Modul*: Swiper horizontal berisi kartu-kartu bab modul praktikum yang menarik dengan tema warna kustom.
-    *   *Fakta AI Hari Ini (Insight)*: Kartu tips harian yang berisi edukasi jaringan komputer praktis.
-*   **Fungsi**: Memberikan navigasi cepat dan melihat pencapaian akademik siswa secara visual.
+    *   *Header*: Menyapa nama siswa beserta rombel kelasnya.
+    *   *Stat Cards*: Kartu statistik ringkas yang menampilkan rata-rata nilai kuis, jumlah bab modul yang telah diselesaikan, dan frekuensi interaksi dengan AI.
+    *   *Bento Grid Modul*: Daftar bab modul pertemuan semester berjalan yang disajikan dengan warna tema kustom yang telah diatur oleh guru dari panel admin.
+    *   *Rekomendasi / Tips AI*: Info harian menarik tentang jaringan komputer yang di-generate dinamis.
+*   **Fungsi**: Menyediakan navigasi cepat ke materi yang belum selesai dibaca dan melihat perkembangan belajar mandiri.
 
 ### C. Layar Daftar Modul (`materi_view.dart`)
-*   **Deskripsi**: Halaman katalog modul praktikum yang rapi.
+*   **Deskripsi**: Katalog seluruh bab modul pertemuan yang terbagi rapi.
 *   **Elemen UI**:
-    *   *Tab Bar*: Pemisah modul berbasis **Semester 1** dan **Semester 2**.
-    *   *Bento Cards List*: Daftar modul vertikal yang dilengkapi indikator persentase progres membaca (*Progress Bar*) dan tanda ceklis jika bab tersebut sudah selesai dibaca.
-*   **Fungsi**: Mempermudah siswa menyusuri kurikulum praktikum jaringan secara urut dan teratur.
+    *   *Tabs*: Mengelompokkan modul berdasarkan **Semester 1** dan **Semester 2**.
+    *   *List Modul*: Setiap modul memiliki status progres membaca berupa persentase kelengkapan (*Progress Bar*) dan tanda centang hijau bila selesai dibaca.
 
 ### D. Layar Detail Bacaan (`detail_materi_view.dart`)
-*   **Deskripsi**: Halaman pembaca konten pelajaran/modul secara detail.
-*   **Elemen UI**: Teks materi berformat kaya (*Rich Text*), tombol navigasi ke sub-bab berikutnya, dan status penyelesaian membaca.
-*   **Fungsi**: Tempat siswa menyerap ilmu teori maupun langkah-langkah praktikum konfigurasi jaringan secara mendalam.
+*   **Deskripsi**: Layar utama membaca topik bahasan secara terperinci.
+*   **Elemen UI**: Tampilan teks materi pelajaran yang di-render dari editor teks guru, tombol navigasi sub-bab, serta tombol **Tanya AI** di bagian bawah untuk langsung beralih ke Chatbot AI yang berfokus pada bab modul ini.
 
 ### E. Layar Evaluasi Kuis (`quiz_view.dart`)
-*   **Deskripsi**: Halaman interaktif pengerjaan soal latihan kuis.
+*   **Deskripsi**: Media pengerjaan latihan kuis interaktif.
 *   **Elemen UI**:
-    *   *Progress Bar Pengerjaan*: Menunjukkan posisi nomor soal yang sedang dikerjakan (contoh: *Soal 3 dari 10*).
-    *   *Pilihan Jawaban*: Pilihan ganda interaktif (A/B/C/D) dengan aksi tap.
-    *   *Layar Hasil Kuis*: Layar skor akhir (nilai angka 0-100) setelah selesai dikerjakan, jumlah jawaban benar, dan kotak **Rekomendasi AI** yang memberi masukan otomatis materi mana yang perlu dipelajari ulang.
-*   **Fungsi**: Mengukur pemahaman kognitif siswa secara real-time.
+    *   *Header*: Progress pengerjaan soal (contoh: *Soal ke-3 dari 5*).
+    *   *Pilihan Ganda*: Aksi ketuk (*tap*) yang responsif pada salah satu pilihan A, B, C, atau D.
+    *   *Layar Skor Akhir*: Tampilan total skor kelulusan. Jika skor berada di bawah KKM sekolah, status kelulusan kuis akan berwarna merah (Tidak Lulus).
+    *   *Rekomendasi Belajar AI*: Analisis rekomendasi pintar dari AI yang merujuk bagian modul mana saja yang salah dijawab, agar siswa dapat mempelajari kembali sub-bab materi tersebut.
 
 ### F. Layar AI Tutor Chatbot (`chatbot_view.dart`)
-*   **Deskripsi**: Layar interaktif tanya jawab dengan AI asisten tutor.
+*   **Deskripsi**: Asisten belajar interaktif 24/7 menggunakan kecerdasan buatan RAG.
 *   **Elemen UI**:
-    *   *Bubble Chat*: Balon chat siswa (warna indigo) dan balon chat AI (warna putih/abu-abu).
-    *   *Suggestion Chips*: Tombol bantuan cepat di bagian bawah layar untuk memicu pertanyaan otomatis (contoh: *"Jelaskan cara kerja router"*).
-    *   *Status Ketik*: Teks animasi *"AI Tutor sedang menyusun jawaban..."* saat AI memproses respons.
-    *   *Sumber Referensi*: AI akan mencantumkan sumber nama file PDF modul mana yang dia ambil sebagai dasar jawaban.
-*   **Fungsi**: Membantu siswa memecahkan masalah konfigurasi jaringan secara mandiri 24/7 menggunakan kecerdasan buatan berbasis modul resmi sekolah (RAG).
+    *   *Chat Bubble*: Percakapan bergaya modern dengan balon chat siswa (warna indigo) dan balon chat AI (warna putih/abu-abu).
+    *   *Suggestion Chips*: Kueri pertanyaan siap pakai di bagian bawah (contoh: *"Apa perbedaan router dan switch?"*).
+    *   *Citation*: Penyebutan nama file sumber dokumen PDF yang di-index di panel admin sebagai dasar jawaban AI, menjamin keakuratan jawaban akademik.
+    *   *Perekam Audio (TTS/STT)*: Tombol mikrofon untuk mengajukan kueri via suara dan fitur membaca teks jawaban AI dengan suara.
 
 ### G. Layar Profil Siswa (`profile_view.dart`)
-*   **Deskripsi**: Layar manajemen akun siswa.
-*   **Elemen UI**: Foto profil besar, detail akun siswa (NIP/Nama/Kelas), pengaturan ubah foto profil, dan tombol *Log Out*.
-*   **Fungsi**: Mengelola keamanan akun dan identitas siswa.
+*   **Deskripsi**: Layar pengaturan akun personal siswa.
+*   **Elemen UI**: Foto profil siswa yang dapat diunggah baru, detail data siswa (NIS, Nama, Kelas), statistik ringkas, dan tombol logout.
 
 ---
 
-## 5. Panduan Pemeliharaan Teknis (Maintenance)
+## 4. Panduan Pemeliharaan Teknis (Maintenance)
 
-### A. Membersihkan Cache Server
-Jika Anda mengubah konfigurasi atau file `.env` di VPS tetapi tidak ada perubahan di web admin, jalankan perintah berikut di folder root Laravel VPS:
+### A. Membersihkan Cache Laravel
+Jika konfigurasi `.env` telah diperbarui dari halaman Pengaturan tetapi tidak langsung diterapkan, jalankan perintah berikut pada terminal direktori `backend-web`:
 ```bash
 php artisan config:clear
 php artisan cache:clear
@@ -142,11 +167,12 @@ php artisan view:clear
 ```
 
 ### B. Memantau Log Eror
-Apabila sistem mengalami kendala (misal: gagal koneksi ke AI Backend), periksa catatan sistem pada VPS:
-*   **Log Laravel**: `tail -n 50 /var/www/mynetlabs/backend-web/storage/logs/laravel.log`
-*   **Log Nginx**: `tail -n 50 /var/log/nginx/error.log`
-
----
+Apabila web admin atau aplikasi mobile tidak dapat terhubung ke AI Backend (misalnya saat upload PDF gagal di-index):
+1.  Periksa apakah service Flask AI aktif pada port `5050`.
+2.  Periksa file log kesalahan Laravel:
+    `tail -n 50 storage/logs/laravel.log`
+3.  Periksa log Flask AI yang biasanya berjalan menggunakan systemd service di server VPS:
+    `journalctl -u netlabs-ai.service -n 50 -f`
 
 > [!IMPORTANT]
-> **Catatan Pengembang**: Pastikan *service* python AI Backend pada VPS (port 5000/5050) selalu dalam kondisi aktif (*running*) agar fitur **Index AI**, **Generate Soal**, dan **Chatbot** di aplikasi mobile dapat melayani *request* pengguna tanpa hambatan.
+> **Catatan Pengembang**: Pastikan *service* python AI Backend pada VPS (port 5050) selalu aktif (*running*) agar fitur **Index AI**, **Generate Soal**, dan **Chatbot** di aplikasi mobile dapat melayani *request* siswa tanpa hambatan.

@@ -68,7 +68,14 @@ class QuizController extends GetxController {
       daftarSoal.value = soalList;
       _syncSelectedJawaban();
     } catch (e) {
-      print('Gagal memuat soal: $e');
+      debugPrint('Gagal memuat soal: $e');
+      Get.snackbar(
+        'Gagal Memuat Soal',
+        'Gagal memuat soal kuis. Periksa koneksi internet Anda.',
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+      );
     } finally {
       isLoading.value = false;
     }
@@ -133,8 +140,14 @@ class QuizController extends GetxController {
       isQuizFinished.value = true;
       await _storage.remove(_cacheKey);
     } catch (e) {
-      print('Gagal submit kuis: $e');
-      hitungNilaiAkhirLokal();
+      debugPrint('Gagal submit kuis: $e');
+      Get.snackbar(
+        'Gagal Submit Kuis',
+        'Terjadi kesalahan saat mengirim jawaban. Silakan periksa koneksi internet Anda dan coba lagi.',
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+      );
     }
   }
 

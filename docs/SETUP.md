@@ -12,11 +12,11 @@ Dokumen ini memandu Anda dalam melakukan setup aplikasi Netlabs di lingkungan lo
 | **RAM** | 4 GB (Lokal) / 2 GB (VPS) | 8 GB (Lokal) / 4 GB (VPS) |
 | **Storage** | 10 GB ruang kosong | 20 GB SSD |
 | **PHP** | v8.2.0 | v8.3.0 |
-| **Python** | v3.11.0 | v3.11.9 |
+| **Python** | v3.11.0 | v3.12.0 |
 | **Composer**| v2.5.0 | v2.7.0 |
 | **MySQL** | v8.0.0 (atau MariaDB 10.4) | MySQL v8.0.36 |
 | **Node.js** | v18.0.0 (npm v9.0.0) | v20.0.0 (npm v10.0.0) |
-| **Flutter** | v3.12.0 (Dart 3.0) | v3.16.0 (Dart 3.2) |
+| **Flutter** | v3.12.2 (Dart 3.0) | v3.16.0 (Dart 3.2) |
 
 ---
 
@@ -120,7 +120,7 @@ cd netlabs
    ```bash
    flutter pub get
    ```
-3. Pastikan konfigurasi alamat Base URL API pada `lib/core/constants/app_constants.dart` sudah mengarah ke IP Server Laravel lokal Anda (gunakan IP lokal jaringan Wifi Anda, bukan localhost `127.0.0.1` jika dijalankan di hp fisik).
+3. Pastikan konfigurasi alamat Base URL API pada `lib/app/data/services/auth_service.dart` atau `lib/core/constants/app_constants.dart` sudah mengarah ke IP Server Laravel lokal Anda (gunakan IP lokal jaringan Wifi Anda, bukan localhost `127.0.0.1` jika dijalankan di hp fisik).
    ```dart
    class AppConstants {
      static const String baseUrl = "http://192.168.1.100:8000/api";
@@ -136,100 +136,132 @@ cd netlabs
 
 ## B. Deployment ke VPS (Lingkungan Production)
 
-Bagian ini memandu Anda melakukan deployment backend Laravel dan Flask AI ke server VPS berbasis **Ubuntu 22.04 LTS**.
+Bagian ini memandu Anda melakukan deployment backend Laravel dan Flask AI ke server VPS berbasis **Ubuntu 22.04 LTS** atau versi di atasnya.
 
 ### 1. Persiapan Awal Server VPS
 1. Update package manager server:
    ```bash
    sudo apt update && sudo apt upgrade -y
    ```
-2. Install LAMP Stack (Linux, Apache/Nginx, MySQL, PHP):
+2. Install Nginx, MySQL, dan PHP 8.2/8.3:
    ```bash
-   sudo apt install nginx mysql-server php8.2 php8.2-fpm php8.2-mysql php8.2-curl php8.2-mbstring php8.2-xml php8.2-zip -y
+   sudo apt install nginx mysql-server php8.2 php8.2-fpm php8.2-mysql php8.2-curl php8.2-mbstring php8.2-xml php8.2-zip php8.2-intl php8.2-bcmath php8.2-gd -y
    ```
-3. Install Python 3.11 & pip:
+3. Install Python 3.11/3.12, pip, dan virtualenv:
    ```bash
-   sudo apt install python3.11 python3.11-venv python3-pip -y
+   sudo apt install python3 python3-pip python3-venv -y
    ```
 
 ### 2. Deployment Laravel (backend-web)
-1. Pindahkan folder `backend-web` ke `/var/www/netlabs-web`.
-2. Ubah hak kepemilikan folder ke user Nginx (`www-data`):
-   ```bash
-   sudo chown -R www-data:www-data /var/www/netlabs-web
-   sudo chmod -R 775 /var/www/netlabs-web/storage
-   sudo chmod -R 775 /var/www/netlabs-web/bootstrap/cache
-   ```
-3. Install package & migrasi database di folder tersebut dengan opsi production:
+1. Pindahkan folder `backend-web` ke server VPS di bawah direktori `/var/www/mynetlabs/backend-web`.
+2. Pasang library Composer untuk production (tanpa paket development):
    ```bash
    composer install --no-dev --optimize-autoloader
+   ```
+3. Buat file `.env` di server dan sesuaikan kredensial database MySQL Anda:
+   ```bash
+   cp .env.example .env
+   # Edit .env dengan credentials database
+   php artisan key:generate
+   ```
+4. Jalankan migrasi database ke database production:
+   ```bash
    php artisan migrate --force
+   ```
+5. Optimasi cache rute dan konfigurasi Laravel:
+   ```bash
    php artisan config:cache
    php artisan route:cache
    php artisan view:cache
    ```
+6. Atur hak kepemilikan folder ke user web server (`www-data`):
+   ```bash
+   sudo chown -R www-data:www-data /var/www/mynetlabs
+   sudo chmod -R 775 /var/www/mynetlabs/backend-web/storage
+   sudo chmod -R 775 /var/www/mynetlabs/backend-web/bootstrap/cache
+   ```
 
 ### 3. Deployment Flask (backend-ai) & Gunicorn
-1. Pindahkan folder `backend-ai` ke `/var/www/netlabs-ai`.
-2. Buat venv dan pasang dependensi:
+1. Pindahkan folder `backend-ai` ke server VPS di bawah direktori `/var/www/mynetlabs/backend-ai`.
+2. Buat Python virtual environment dan instal library requirements:
    ```bash
-   cd /var/www/netlabs-ai
+   cd /var/www/mynetlabs/backend-ai
    python3 -m venv venv
    source venv/bin/activate
+   pip install --upgrade pip
    pip install -r requirements.txt
    ```
-3. Buat systemd service file untuk Gunicorn agar Flask AI berjalan otomatis di latar belakang (*background service*).
+3. Buat file `.env` di folder `backend-ai` VPS dengan konfigurasi berikut:
+   ```env
+   GEMINI_API_KEY=AIzaSy... (API Key Anda)
+   QDRANT_PERSIST_DIR=./qdrant_data
+   QDRANT_COLLECTION_NAME=basis_pengetahuan
+   FLASK_PORT=5050
+   FLASK_DEBUG=false
+   ```
+4. Buat systemd service file agar Flask AI berjalan otomatis di latar belakang:
    ```bash
    sudo nano /etc/systemd/system/netlabs-ai.service
    ```
-4. Tulis konfigurasi berikut (gunakan 1 worker `-w 1` karena keterbatasan database lokal Qdrant):
+5. Tulis konfigurasi berikut (gunakan worker `-w 1` untuk mencegah konflik lock file Qdrant DB):
    ```ini
    [Unit]
-   Description=Gunicorn instance to serve Netlabs AI Backend
+   Description=NetLabs AI Backend (Flask + Qdrant + Gemini)
    After=network.target
 
    [Service]
    User=www-data
-   WorkingDirectory=/var/www/netlabs-ai
-   Environment="PATH=/var/www/netlabs-ai/venv/bin"
-   ExecStart=/var/www/netlabs-ai/venv/bin/gunicorn -w 1 -b 127.0.0.1:5050 --timeout 120 app:app
+   WorkingDirectory=/var/www/mynetlabs/backend-ai
+   Environment=PATH=/var/www/mynetlabs/backend-ai/venv/bin:/usr/bin
+   Environment=HF_HOME=/var/www/mynetlabs/backend-ai/hf_cache
+   ExecStart=/var/www/mynetlabs/backend-ai/venv/bin/gunicorn -w 1 -b 127.0.0.1:5050 --timeout 120 app:app
+   Restart=always
+   RestartSec=5
 
    [Install]
    WantedBy=multi-user.target
    ```
-5. Nyalakan dan aktifkan service:
+6. Reload systemd, start service, dan aktifkan auto-start saat VPS booting:
    ```bash
    sudo systemctl daemon-reload
-   sudo systemctl start netlabs-ai
    sudo systemctl enable netlabs-ai
+   sudo systemctl start netlabs-ai
+   ```
+7. Jalankan indexing awal offline untuk seluruh modul PDF praktikum:
+   ```bash
+   venv/bin/python index_all_pdfs.py
+   sudo chown -R www-data:www-data /var/www/mynetlabs/backend-ai
+   sudo systemctl restart netlabs-ai
    ```
 
 ### 4. Konfigurasi Nginx Virtual Host
-1. Buat file konfigurasi virtual host Nginx:
+1. Buat file konfigurasi virtual host Nginx baru:
    ```bash
    sudo nano /etc/nginx/sites-available/netlabs
    ```
-2. Masukkan konfigurasi server block berikut:
+2. Salin dan sesuaikan konfigurasi server block berikut:
    ```nginx
    server {
        listen 80;
-       server_name netlabs-web.net;
+       server_name netlabs.web.id www.netlabs.web.id;
+       root /var/www/mynetlabs/backend-web/public;
+       index index.php index.html;
+       client_max_body_size 64M;
 
        # Laravel Front-end & API
-       root /var/www/netlabs-web/public;
-       index index.php index.html;
-
        location / {
            try_files $uri $uri/ /index.php?$query_string;
        }
 
        location ~ \.php$ {
            include snippets/fastcgi-php.conf;
-           fastcgi_pass unix:/var/run/php/php8.2-fpm.sock;
+           fastcgi_pass unix:/var/run/php/php8.2-fpm.sock; # Sesuaikan php8.2 atau php8.3
+           fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+           include fastcgi_params;
        }
 
-       # Proxy request AI ke Gunicorn Flask (khusus jika diakses eksternal)
-       location /ai/ {
+       # Proxy request ke Flask AI Backend Gunicorn
+       location /ai-api/ {
            proxy_pass http://127.0.0.1:5050/;
            proxy_set_header Host $host;
            proxy_set_header X-Real-IP $remote_addr;
@@ -237,9 +269,10 @@ Bagian ini memandu Anda melakukan deployment backend Laravel dan Flask AI ke ser
        }
    }
    ```
-3. Aktifkan konfigurasi dan restart Nginx:
+3. Aktifkan konfigurasi virtual host netlabs dan matikan virtual host default:
    ```bash
-   sudo ln -s /etc/nginx/sites-available/netlabs /etc/nginx/sites-enabled/
+   sudo ln -sf /etc/nginx/sites-available/netlabs /etc/nginx/sites-enabled/
+   sudo rm -f /etc/nginx/sites-enabled/default
    sudo nginx -t
    sudo systemctl restart nginx
    ```
@@ -248,7 +281,24 @@ Bagian ini memandu Anda melakukan deployment backend Laravel dan Flask AI ke ser
 Untuk mengamankan API transport, pasang sertifikat SSL gratis dari Let's Encrypt:
 ```bash
 sudo apt install certbot python3-certbot-nginx -y
-sudo certbot --nginx -d netlabs-web.net
+sudo certbot --nginx -d netlabs.web.id -d www.netlabs.web.id
 ```
 Certbot akan memperbarui file konfigurasi Nginx secara otomatis dan mengaktifkan HTTPS port 443.
-Setup selesai!
+
+---
+
+## C. Pemeliharaan dan Troubleshooting Layanan VPS
+
+*   **Melihat Log Gagal Index RAG**:
+    `journalctl -u netlabs-ai.service -n 50 -f`
+*   **Melihat Log Laravel**:
+    `tail -n 50 /var/www/mynetlabs/backend-web/storage/logs/laravel.log`
+*   **Memaksa Sinkronisasi Ulang Vektor Qdrant**:
+    Jika koleksi vector store rusak atau datanya tidak sinkron, Anda dapat menghapus folder `qdrant_data` di backend-ai, lalu menjalankan kembali skrip re-indexing offline:
+    ```bash
+    rm -rf /var/www/mynetlabs/backend-ai/qdrant_data
+    cd /var/www/mynetlabs/backend-ai
+    venv/bin/python index_all_pdfs.py
+    sudo chown -R www-data:www-data /var/www/mynetlabs/backend-ai
+    sudo systemctl restart netlabs-ai
+    ```

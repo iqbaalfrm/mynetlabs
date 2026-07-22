@@ -22,9 +22,10 @@ class DetailMateriController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-    pertemuanId = Get.arguments['id'] ?? 0;
-    nomorPertemuan = Get.arguments['nomor'] ?? 0;
-    judulPertemuan = Get.arguments['judul'] ?? 'Detail Pertemuan';
+    final args = (Get.arguments is Map) ? Map<String, dynamic>.from(Get.arguments) : <String, dynamic>{};
+    pertemuanId = args['id'] ?? args['pertemuan_id'] ?? 1;
+    nomorPertemuan = args['nomor'] ?? args['nomor_urut'] ?? 1;
+    judulPertemuan = args['judul'] ?? 'Detail Pertemuan';
     loadDetail();
   }
 
@@ -40,7 +41,7 @@ class DetailMateriController extends GetxController {
       isiMateri.value = d['isi_materi'] ?? '';
       isKuisEnabled.value = d['is_completed'] ?? false;
     } catch (e) {
-      print('Gagal memuat detail: $e');
+      debugPrint('Gagal memuat detail: $e');
     } finally {
       isLoading.value = false;
     }
@@ -89,7 +90,7 @@ class DetailMateriController extends GetxController {
         colorText: Colors.white,
       );
     } catch (e) {
-      print('Gagal menyimpan progress: $e');
+      debugPrint('Gagal menyimpan progress: $e');
       Get.snackbar('Error', 'Gagal menyimpan progress belajar.',
         snackPosition: SnackPosition.BOTTOM,
       );

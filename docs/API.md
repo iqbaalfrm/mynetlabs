@@ -1,20 +1,20 @@
 # API Documentation — Netlabs
 
-Dokumen ini menjelaskan seluruh endpoint REST API yang digunakan dalam ekosistem Netlabs, baik yang disediakan oleh **Laravel Web Server** (untuk komunikasi Mobile App ke Database) maupun **Flask AI Backend** (untuk operasi NLP dan Vector DB).
+Dokumen ini menjelaskan seluruh endpoint REST API yang digunakan dalam ekosistem Netlabs, baik yang disediakan oleh **Laravel Web Server** (untuk komunikasi Mobile App ke Database) maupun **Flask AI Backend** (untuk operasi NLP, Vector DB, transkripsi suara, dan pembuatan soal otomatis).
 
 ---
 
 ## Base URL
 
-*   **Laravel API Server**: `http://127.0.0.1:8000/api` (Local) atau `https://netlabs-web.net/api` (Production)
-*   **Flask AI Engine**: `http://127.0.0.1:5050` (Local/Inter-service) atau `http://vps-ip:5050` (Production)
+*   **Laravel API Server**: `http://127.0.0.1:8000/api` (Lokal) atau `https://netlabs.web.id/api` (Production)
+*   **Flask AI Engine**: `http://127.0.0.1:5050` (Lokal/Inter-service) atau `http://localhost/ai-api` (Proxy VPS Nginx)
 
 ---
 
 ## Autentikasi
 
 Semua endpoint di bawah segmen **Laravel Protected API** membutuhkan Bearer Token menggunakan Laravel Sanctum.
-Header wajib disertakan pada request:
+Header wajib disertakan pada setiap request:
 ```http
 Authorization: Bearer {your_sanctum_token}
 Content-Type: application/json
@@ -23,76 +23,71 @@ Accept: application/json
 
 ---
 
-## 1. Laravel API Endpoints
+## 1. Laravel API Endpoints (Untuk Mobile App)
 
 ### A. Public Endpoints (Tanpa Token)
 
-#### 1. Register Siswa
+#### 1. Registrasi Akun Siswa
 *   **Method & URL**: `POST /register`
-*   **Deskripsi**: Mendaftarkan akun siswa baru ke database Netlabs.
 *   **Request Body (JSON)**:
     ```json
     {
-      "nis": "22019283",
-      "name": "Iqbal Firmansyah",
-      "username": "iqbalfrm",
-      "kelas": "XI TKJ 1",
+      "username": "22019283",
       "password": "password123",
-      "password_confirmation": "password123"
+      "nama": "Iqbal Firmansyah",
+      "role": "siswa",
+      "kelas": "XI TKJ 1"
     }
     ```
-*   **Response Body (201 Created)**:
+*   **Response Body (210 Created)**:
     ```json
     {
-      "message": "Pendaftaran berhasil.",
-      "data": {
-        "token": "1|sYh821Ja0Sjkas...",
-        "user": {
-          "id": 5,
-          "nis": "22019283",
-          "name": "Iqbal Firmansyah",
-          "username": "iqbalfrm",
-          "kelas": "XI TKJ 1",
-          "foto_profil": null
-        }
-      }
-    }
-    ```
-*   **Error Response (422 Unprocessable Entity)**:
-    ```json
-    {
-      "message": "NIS sudah terdaftar.",
-      "errors": {
-        "nis": ["The nis has already been taken."]
-      }
+      "message": "Registrasi akun berhasil!",
+      "user": {
+        "username": "22019283",
+        "nama": "Iqbal Firmansyah",
+        "role": "siswa",
+        "kelas": "XI TKJ 1",
+        "foto_profil_url": null,
+        "password_is_default": true,
+        "must_change_password": false,
+        "password_grace_days_remaining": 7
+      },
+      "token": "1|sYh821Ja0Sjkas..."
     }
     ```
 
-#### 2. Login Siswa
+#### 2. Login Siswa / Guru
 *   **Method & URL**: `POST /login`
-*   **Deskripsi**: Melakukan autentikasi akun siswa dan menerbitkan Bearer Token.
+*   **Catatan**: Dilindungi Rate Limiter (Maksimal 5 kali percobaan dalam 15 menit).
 *   **Request Body (JSON)**:
     ```json
     {
-      "username": "iqbalfrm",
+      "username": "22019283",
       "password": "password123"
     }
     ```
 *   **Response Body (200 OK)**:
     ```json
     {
-      "message": "Login berhasil.",
-      "data": {
-        "token": "2|uHsjka817Sjadk...",
-        "user": {
-          "id": 5,
-          "nis": "22019283",
-          "name": "Iqbal Firmansyah",
-          "username": "iqbalfrm",
-          "kelas": "XI TKJ 1",
-          "foto_profil": "http://127.0.0.1:8000/storage/foto_profil/iqbal.jpg"
-        }
-      }
+      "message": "Login Berhasil!",
+      "user": {
+        "username": "22019283",
+        "nama": "Iqbal Firmansyah",
+        "role": "siswa",
+        "kelas": "XI TKJ 1",
+        "foto_profil_url": "http://127.0.0.1:8000/storage/avatars/iqbal.jpg",
+        "password_is_default": false,
+        "must_change_password": false,
+        "password_grace_days_remaining": 0
+      },
+      "token": "2|uHsjka817Sjadk..."
+    }
+    ```
+*   **Error Response (401 Unauthorized)**:
+    ```json
+    {
+      "message": "Nomor Induk (NIS) atau Kata Sandi salah."
     }
     ```
 
@@ -102,7 +97,6 @@ Accept: application/json
 
 #### 3. Logout Siswa
 *   **Method & URL**: `POST /logout`
-*   **Deskripsi**: Menghapus token autentikasi yang sedang digunakan saat ini.
 *   **Response Body (200 OK)**:
     ```json
     {
@@ -115,9 +109,9 @@ Accept: application/json
 *   **Request Body (JSON)**:
     ```json
     {
-      "current_password": "password123",
-      "new_password": "newpassword123",
-      "new_password_confirmation": "newpassword123"
+      "password_lama": "password123",
+      "password_baru": "newpassword123",
+      "password_baru_confirmation": "newpassword123"
     }
     ```
 *   **Response Body (200 OK)**:
@@ -133,178 +127,312 @@ Accept: application/json
     ```json
     {
       "id": 5,
-      "nis": "22019283",
-      "name": "Iqbal Firmansyah",
-      "username": "iqbalfrm",
+      "username": "22019283",
+      "nama": "Iqbal Firmansyah",
+      "role": "siswa",
       "kelas": "XI TKJ 1",
-      "foto_profil": "http://127.0.0.1:8000/storage/foto-profil/5.jpg"
+      "kelas_id": 1,
+      "foto_profil": "avatars/iqbal.jpg",
+      "status": "aktif",
+      "foto_profil_url": "http://127.0.0.1:8000/storage/avatars/iqbal.jpg"
     }
     ```
 
-#### 6. Ambil Daftar Pertemuan
+#### 6. Ambil Daftar Pertemuan (Modul)
 *   **Method & URL**: `GET /pertemuan`
 *   **Response Body (200 OK)**:
     ```json
-    [
-      {
-        "id": 1,
-        "nama_pertemuan": "Pertemuan 1: Pengenalan IP Address",
-        "deskripsi": "Mempelajari konsep dasar IP Address v4, Subnet Mask, dan pengalamatan host.",
-        "file_modul": "http://127.0.0.1:8000/storage/modul/pertemuan_1.pdf",
-        "is_completed": true,
-        "progress_persen": 100
-      },
-      {
-        "id": 2,
-        "nama_pertemuan": "Pertemuan 2: Routing Statis",
-        "deskripsi": "Mengkonfigurasi rute statis pada router Cisco CLI.",
-        "file_modul": "http://127.0.0.1:8000/storage/modul/pertemuan_2.pdf",
-        "is_completed": false,
-        "progress_persen": 0
-      }
-    ]
-    ```
-
-#### 7. Detail Pertemuan & Topik
-*   **Method & URL**: `GET /pertemuan/{id}`
-*   **Response Body (200 OK)**:
-    ```json
     {
-      "id": 1,
-      "nama_pertemuan": "Pertemuan 1: Pengenalan IP Address",
-      "deskripsi": "Mempelajari konsep dasar IP Address v4, Subnet Mask, dan pengalamatan host.",
-      "file_modul": "http://127.0.0.1:8000/storage/modul/pertemuan_1.pdf",
-      "topik_list": [
+      "message": "Daftar pertemuan berhasil dimuat.",
+      "data": [
         {
           "id": 1,
-          "judul_topik": "Konsep Desimal ke Biner",
-          "konten": "IP Address v4 terdiri atas 32 bit bilangan biner...",
-          "is_done": true
-        },
-        {
-          "id": 2,
-          "judul_topik": "Kelas IP Address v4",
-          "konten": "Pembagian kelas IP Address terdiri dari kelas A, B, C...",
-          "is_done": false
+          "nomor": 1,
+          "urutan": 1,
+          "judul": "Modul 1: Pengenalan Jaringan Komputer",
+          "deskripsi": "Konsep Dasar Jaringan, Tipe Jaringan, dan Topologi.",
+          "isi_materi": "Materi lengkap bab 1...",
+          "semester": "1",
+          "warna_tema": "#3B82F6",
+          "progress": 1.0,
+          "is_completed": true,
+          "status_indexing": "success",
+          "pdf_url": "http://127.0.0.1:8000/storage/modul_pdf/Modul-01-Pengenalan-Jaringan.pdf"
         }
       ]
     }
     ```
 
-#### 8. Tandai Topik Selesai
-*   **Method & URL**: `POST /pertemuan/{pertemuanId}/topik/{topikId}/selesai`
-*   **Deskripsi**: Mencatat progress belajar siswa pada topik tertentu.
+#### 7. Detail Pertemuan & Progres
+*   **Method & URL**: `GET /pertemuan/{id}`
 *   **Response Body (200 OK)**:
     ```json
     {
-      "success": true,
-      "message": "Topik berhasil ditandai selesai.",
-      "progress_persen": 50
-    }
-    ```
-
-#### 9. Ambil Soal Kuis
-*   **Method & URL**: `GET /pertemuan/{id}/kuis`
-*   **Deskripsi**: Mengambil daftar pertanyaan kuis untuk pertemuan tertentu. Jika guru belum men-generate kuis, Laravel akan meminta Flask AI Backend untuk men-generate soal kuis dari modul Qdrant secara real-time.
-*   **Response Body (200 OK)**:
-    ```json
-    [
-      {
-        "id": 12,
-        "pertanyaan": "Berapakah jumlah bit pada IP Address v4?",
-        "pilihan_a": "16 bit",
-        "pilihan_b": "32 bit",
-        "pilihan_c": "64 bit",
-        "pilihan_d": "128 bit"
-      }
-    ]
-    ```
-
-#### 10. Submit Jawaban Kuis
-*   **Method & URL**: `POST /kuis/submit`
-*   **Request Body (JSON)**:
-    ```json
-    {
-      "pertemuan_id": 1,
-      "jawaban": [
-        {"soal_id": 12, "pilihan": "B"},
-        {"soal_id": 13, "pilihan": "A"}
-      ]
-    }
-    ```
-*   **Response Body (200 OK)**:
-    ```json
-    {
-      "success": true,
-      "message": "Kuis berhasil dikirim.",
+      "message": "Detail pertemuan berhasil dimuat.",
       "data": {
-        "nilai": 100,
-        "total_soal": 2,
-        "jawaban_benar": 2,
-        "status_lulus": true,
-        "rekomendasi_belajar": "Selamat! Pemahaman Anda sudah sangat baik pada materi ini.",
-        "pembahasan": [
+        "id": 1,
+        "nomor": 1,
+        "urutan": 1,
+        "judul": "Modul 1: Pengenalan Jaringan Komputer",
+        "deskripsi": "Konsep Dasar Jaringan, Tipe Jaringan, dan Topologi.",
+        "isi_materi": "Materi lengkap bab 1...",
+        "semester": "1",
+        "warna_tema": "#3B82F6",
+        "progress": 0.0,
+        "is_completed": false,
+        "status_indexing": "success",
+        "pdf_url": "http://127.0.0.1:8000/storage/modul_pdf/Modul-01-Pengenalan-Jaringan.pdf"
+      }
+    }
+    ```
+
+#### 8. Tandai Pertemuan Selesai
+*   **Method & URL**: `POST /pertemuan/{pertemuanId}/selesai`
+*   **Deskripsi**: Mencatat kemajuan belajar siswa pada modul pertemuan tertentu (mengubah progres dari 0.0 menjadi 1.0).
+*   **Response Body (200 OK)**:
+    ```json
+    {
+      "success": true,
+      "message": "Pertemuan berhasil ditandai selesai.",
+      "progress": 1.0
+    }
+    ```
+
+#### 9. Ambil Soal Kuis Pertemuan
+*   **Method & URL**: `GET /pertemuan/{id}/kuis`
+*   **Deskripsi**: Mengambil daftar pertanyaan kuis untuk pertemuan tertentu. Kunci jawaban disembunyikan untuk menjaga kejujuran ujian.
+*   **Response Body (200 OK)**:
+    ```json
+    {
+      "message": "Soal kuis berhasil dimuat.",
+      "data": {
+        "pertemuan": {
+          "id": 1,
+          "nomor": 1,
+          "judul": "Modul 1: Pengenalan Jaringan Komputer"
+        },
+        "total_soal": 1,
+        "soal": [
           {
-            "soal_id": 12,
-            "pertanyaan": "Berapakah jumlah bit pada IP Address v4?",
-            "kunci": "B",
-            "jawaban_siswa": "B",
-            "is_benar": true,
-            "penjelasan": "IP Address v4 terdiri atas 32 bit bilangan biner yang terbagi menjadi 4 oktet."
+            "id": 12,
+            "pertanyaan": "Manakah topologi jaringan yang seluruh node-nya terhubung ke satu kabel pusat?",
+            "pilihan_a": "Topologi Bus",
+            "pilihan_b": "Topologi Star",
+            "pilihan_c": "Topologi Ring",
+            "pilihan_d": "Topologi Mesh"
           }
         ]
       }
     }
     ```
 
-#### 11. Kirim Pesan Chat (RAG)
+#### 10. Kirim Hasil Jawaban Kuis (Submit)
+*   **Method & URL**: `POST /kuis/submit`
+*   **Request Body (JSON)**:
+    ```json
+    {
+      "pertemuan_id": 1,
+      "jawaban": [
+        {
+          "soal_id": 12,
+          "jawaban": "A"
+        }
+      ]
+    }
+    ```
+*   **Response Body (200 OK)**:
+    ```json
+    {
+      "message": "Kuis berhasil disubmit!",
+      "data": {
+        "hasil_id": 3,
+        "nilai": 100,
+        "jumlah_benar": 1,
+        "total_soal": 1,
+        "rekomendasi_ai": "Luar biasa! Pertahankan pemahaman Anda mengenai topologi jaringan.",
+        "pembahasan": [
+          {
+            "soal_id": 12,
+            "pertanyaan": "Manakah topologi jaringan yang seluruh node-nya terhubung ke satu kabel pusat?",
+            "pilihan_a": "Topologi Bus",
+            "pilihan_b": "Topologi Star",
+            "pilihan_c": "Topologi Ring",
+            "pilihan_d": "Topologi Mesh",
+            "kunci_jawaban": "A",
+            "jawaban_siswa": "A",
+            "is_benar": true,
+            "penjelasan": "Topologi Bus menghubungkan semua komputer menggunakan satu kabel backbone dengan terminator di kedua ujungnya."
+          }
+        ]
+      }
+    }
+    ```
+
+#### 11. Ambil Riwayat Hasil Kuis
+*   **Method & URL**: `GET /kuis/riwayat`
+*   **Response Body (200 OK)**:
+    ```json
+    {
+      "message": "Riwayat kuis berhasil dimuat.",
+      "data": [
+        {
+          "id": 3,
+          "pertemuan": "Modul 1: Pengenalan Jaringan Komputer",
+          "nomor_pertemuan": 1,
+          "nilai": 100.0,
+          "jumlah_benar": 1,
+          "total_soal": 1,
+          "rekomendasi_ai": "Luar biasa! Pertahankan pemahaman Anda mengenai topologi jaringan.",
+          "tanggal": "2026-07-17 10:15"
+        }
+      ]
+    }
+    ```
+
+#### 12. Kirim Pesan Chat AI Tutor (RAG Teks)
 *   **Method & URL**: `POST /chat`
 *   **Request Body (JSON)**:
     ```json
     {
       "pertemuan_id": 1,
-      "message": "Bagaimana cara menghitung range IP Host?"
+      "pesan": "Bagaimana cara kerja topologi ring?"
     }
     ```
 *   **Response Body (200 OK)**:
     ```json
     {
-      "success": true,
-      "answer": "Untuk menghitung range IP Host, Anda dapat melihat block size subnet...",
-      "sources": ["pertemuan_1.pdf"],
-      "chunks_used": 2
+      "message": "Pesan berhasil diproses.",
+      "data": {
+        "sender": "ai",
+        "pesan": "Cara kerja topologi ring adalah data dikirim secara melingkar melewati tiap node...",
+        "sumber": "Netlabs AI Tutor",
+        "waktu": "2026-07-17 10:20",
+        "sources": ["Modul-01-Pengenalan-Jaringan.pdf"],
+        "chunks_used": 1
+      }
     }
     ```
 
-#### 12. Kirim Pesan Chat Audio (Voice Query)
+#### 13. Kirim Pesan Chat Audio (Voice Query & Speech-to-Text)
 *   **Method & URL**: `POST /chat/audio`
 *   **Request Body (Multipart Form-Data)**:
-    - `audio`: File `.wav` atau `.m4a` rekaman suara siswa.
-    - `pertemuan_id`: `1` (Integer)
+    *   `audio` (File binary): File rekaman suara (`.wav` / `.m4a` / `.mp3`).
+    *   `pertemuan_id` (Integer): `1`
+*   **Response Body (200 OK)**:
+    ```json
+    {
+      "message": "Pesan berhasil diproses.",
+      "data": {
+        "sender": "ai",
+        "pesan": "Topologi mesh memiliki koneksi point-to-point langsung antar komputer...",
+        "sumber": "Netlabs AI Tutor",
+        "waktu": "2026-07-17 10:22",
+        "sources": ["Modul-01-Pengenalan-Jaringan.pdf"],
+        "chunks_used": 2
+      }
+    }
+    ```
+
+#### 14. Ambil Riwayat Chat AI
+*   **Method & URL**: `GET /chat/riwayat`
+*   **Response Body (200 OK)**:
+    ```json
+    {
+      "message": "Riwayat chat berhasil dimuat.",
+      "data": [
+        {
+          "id": 14,
+          "pertemuan_id": 1,
+          "sender": "siswa",
+          "pesan": "Bagaimana cara kerja topologi ring?",
+          "sumber_referensi": null,
+          "waktu": "2026-07-17 10:20"
+        },
+        {
+          "id": 15,
+          "pertemuan_id": 1,
+          "sender": "ai",
+          "pesan": "Cara kerja topologi ring adalah data dikirim secara melingkar melewati tiap node...",
+          "sumber_referensi": "Netlabs AI Tutor",
+          "waktu": "2026-07-17 10:20"
+        }
+      ]
+    }
+    ```
+
+#### 15. Ambil Statistik Belajar Siswa
+*   **Method & URL**: `GET /siswa/statistik`
+*   **Response Body (200 OK)**:
+    ```json
+    {
+      "message": "Statistik siswa berhasil dimuat.",
+      "data": {
+        "profil": {
+          "username": "22019283",
+          "nama": "Iqbal Firmansyah",
+          "role": "siswa",
+          "kelas": "XI TKJ 1",
+          "foto_profil_url": "http://127.0.0.1:8000/storage/avatars/iqbal.jpg",
+          "password_is_default": false,
+          "must_change_password": false,
+          "password_grace_days_remaining": 0
+        },
+        "statistik": {
+          "total_pertemuan_selesai": 1,
+          "total_pertemuan": 12,
+          "total_topik_selesai": 3,
+          "total_topik": 36,
+          "rata_rata_nilai": 100.0,
+          "total_chat_ai": 52
+        }
+      }
+    }
+    ```
+
+#### 16. Ambil Modul yang Sedang Berjalan (Aktif)
+*   **Method & URL**: `GET /siswa/pertemuan-aktif`
+*   **Response Body (200 OK)**:
+    ```json
+    {
+      "message": "Pertemuan aktif berhasil dimuat.",
+      "data": [
+        {
+          "id": 2,
+          "nomor": 2,
+          "judul": "Modul 2: Model Referensi OSI & TCP/IP",
+          "topik": "3 Topik",
+          "progress": 0.33
+        }
+      ]
+    }
+    ```
+
+#### 17. Unggah Foto Profil Siswa
+*   **Method & URL**: `POST /siswa/foto-profil`
+*   **Request Body (Multipart Form-Data)**:
+    *   `foto` (File Image): Berkas gambar (`jpeg`/`png`/`jpg`, maks 2MB).
 *   **Response Body (200 OK)**:
     ```json
     {
       "success": true,
-      "query_transcription": "Apa itu subnet mask?",
-      "answer": "Subnet mask adalah bitmask 32-bit yang digunakan untuk membedakan Network ID dan Host ID...",
-      "sources": ["pertemuan_1.pdf"],
-      "chunks_used": 1
+      "message": "Foto profil berhasil diperbarui.",
+      "foto_profil_url": "http://127.0.0.1:8000/storage/avatars/randomname.jpg"
     }
     ```
 
 ---
 
-## 2. Flask AI Endpoints (Inter-Service)
+## 2. Flask AI Endpoints (Inter-Service / Internal)
 
-Endpoint Flask dipanggil secara internal oleh server Laravel, tetapi dapat dipanggil secara langsung untuk kebutuhan testing/debugging.
+Endpoint Flask ini dipanggil secara internal dari Laravel Service ke Python AI Service.
 
-### 1. Indexing Modul PDF
+### 1. Indexing Dokumen PDF
 *   **Method & URL**: `POST /index-pdf`
 *   **Request Body (JSON)**:
     ```json
     {
       "pertemuan_id": 1,
-      "file_path": "c:/SKRIPSI2026/netlabs/backend-web/storage/app/public/modul/pertemuan_1.pdf"
+      "file_path": "/var/www/mynetlabs/backend-web/storage/app/public/modul_pdf/Modul-01-Pengenalan-Jaringan.pdf"
     }
     ```
 *   **Response Body (200 OK)**:
@@ -313,39 +441,30 @@ Endpoint Flask dipanggil secara internal oleh server Laravel, tetapi dapat dipan
       "success": true,
       "message": "Modul berhasil di-index ke Vektor DB.",
       "data": {
-        "file_name": "pertemuan_1.pdf",
+        "file_name": "Modul-01-Pengenalan-Jaringan.pdf",
         "pertemuan_id": 1,
-        "total_chunks": 12,
-        "total_documents_in_db": 12
+        "total_chunks": 18,
+        "total_documents_in_db": 18
       }
     }
     ```
 
-### 2. Chat RAG (Engine Utama)
+### 2. Chat RAG AI Tutor (Utama)
 *   **Method & URL**: `POST /chat`
 *   **Request Body (JSON)**:
     ```json
     {
       "pertemuan_id": 1,
-      "message": "Bagaimana cara melakukan konfigurasi IP Address?"
+      "message": "Apa itu ARPANET?"
     }
     ```
 *   **Response Body (200 OK)**:
     ```json
     {
       "success": true,
-      "answer": "Untuk melakukan konfigurasi IP Address pada interface Cisco router, gunakan command: \n- interface gigabitethernet 0/0\n- ip address 192.168.1.1 255.255.255.0",
-      "sources": ["pertemuan_1.pdf"],
-      "chunks_used": 3
-    }
-    ```
-*   **Response Body - Pertanyaan tidak relevan (200 OK)**:
-    ```json
-    {
-      "success": false,
-      "answer": "Maaf, pertanyaan tersebut tidak ditemukan dalam modul praktikum yang tersedia. Silakan tanyakan materi yang berkaitan dengan praktikum Dasar-Dasar Kejuruan.",
-      "sources": [],
-      "chunks_used": 0
+      "answer": "ARPANET adalah jaringan komputer pertama yang dikembangkan oleh Departemen Pertahanan AS...",
+      "sources": ["Modul-01-Pengenalan-Jaringan.pdf"],
+      "chunks_used": 2
     }
     ```
 
@@ -369,82 +488,75 @@ Endpoint Flask dipanggil secara internal oleh server Laravel, tetapi dapat dipan
         "jumlah_soal_dihasilkan": 5,
         "soal": [
           {
-            "pertanyaan": "Berapakah CIDR untuk subnet mask 255.255.255.0?",
-            "pilihan_a": "/24",
-            "pilihan_b": "/25",
-            "pilihan_c": "/26",
-            "pilihan_d": "/30",
-            "kunci_jawaban": "A",
-            "pembahasan": "Subnet mask 255.255.255.0 memiliki 24 bit bernilai 1, yang direpresentasikan dengan CIDR /24."
+            "pertanyaan": "Berapakah jumlah bit pada IP Address v4?",
+            "pilihan_a": "16 bit",
+            "pilihan_b": "32 bit",
+            "pilihan_c": "64 bit",
+            "pilihan_d": "128 bit",
+            "kunci_jawaban": "B",
+            "pembahasan": "IP Address v4 terdiri atas 32 bit bilangan biner."
           }
         ]
       }
     }
     ```
 
-### 4. Transkripsi Audio
+### 4. Transkrip Pesan Audio (Speech-to-Text)
 *   **Method & URL**: `POST /transcribe`
 *   **Request Body (Multipart Form-Data)**:
-    - `audio`: File file audio binary (misal: format `.wav`)
+    *   `audio` (File Audio): Berkas suara biner.
 *   **Response Body (200 OK)**:
     ```json
     {
       "success": true,
-      "text": "Bagaimana cara melakukan konfigurasi DHCP server"
+      "text": "Bagaimana cara kerja topologi ring"
     }
     ```
 
-### 5. Debug Pencarian Vektor (Sidang Sidang Ready)
+### 5. Debug Similarity Search (Kebutuhan Pengujian Sidang)
 *   **Method & URL**: `GET /debug/search`
 *   **Query Parameters**:
-    - `query`: `IP Address` (String - Wajib)
-    - `pertemuan_id`: `1` (Integer - Opsional)
+    *   `query`: Kata kunci pencarian (misal: `ARPANET`).
+    *   `pertemuan_id` (Opsional): `1`
 *   **Response Body (200 OK)**:
     ```json
     {
       "success": true,
-      "query": "IP Address",
+      "query": "ARPANET",
       "pertemuan_id": 1,
       "relevance_threshold": 0.5,
       "results": [
         {
-          "score": 0.7682,
-          "source_file": "pertemuan_1.pdf",
-          "chunk_index": 3,
-          "text": "IP Address v4 terdiri atas 32 bit bilangan biner yang terbagi...",
+          "score": 0.7812,
+          "source_file": "Modul-01-Pengenalan-Jaringan.pdf",
+          "chunk_index": 1,
+          "text": "Sejarah perkembangan jaringan diawali dari proyek ARPANET...",
           "passed_threshold": true
-        },
-        {
-          "score": 0.4512,
-          "source_file": "pertemuan_1.pdf",
-          "chunk_index": 7,
-          "text": "Kelas C memiliki default subnet mask berupa 255.255.255.0...",
-          "passed_threshold": false
         }
       ]
     }
     ```
 
-### 6. Statistik Vektor Database
+### 6. Statistik Qdrant Vector DB
 *   **Method & URL**: `GET /stats`
 *   **Response Body (200 OK)**:
     ```json
     {
       "success": true,
-      "total_documents": 24,
+      "total_documents": 142,
       "collection_name": "basis_pengetahuan",
       "vector_size": 384,
       "distance_metric": "Cosine"
     }
     ```
 
-### 7. Hapus Seluruh Dokumen Pertemuan
+### 7. Hapus Vektor Dokumen Pertemuan
 *   **Method & URL**: `DELETE /delete-pertemuan/{pertemuan_id}`
 *   **Response Body (200 OK)**:
     ```json
     {
       "success": true,
-      "message": "Berhasil menghapus 12 dokumen untuk pertemuan_id=1.",
-      "deleted_count": 12
+      "message": "Berhasil menghapus 18 dokumen untuk pertemuan_id=1.",
+      "deleted_count": 18
     }
     ```

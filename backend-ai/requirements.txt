@@ -14,8 +14,11 @@ google-generativeai==0.8.5
 # Qdrant — Vector Database (pengganti ChromaDB, sesuai Pertemuan 9)
 qdrant-client>=1.9.0
 
-# Sentence Transformers — Model Penyematan Lokal (paraphrase-multilingual-MiniLM-L12-v2)
+# Sentence Transformers — Model Penyematan Lokal + CrossEncoder Re-ranker
 sentence-transformers>=3.0.0
+
+# BM25 — Sparse/Lexical Retrieval (Algoritma Okapi BM25 untuk Hybrid Search)
+rank-bm25>=0.2.2
 
 # PyMuPDF — Ekstraksi Teks PDF (lebih cepat dari PyPDF2)
 PyMuPDF==1.25.4

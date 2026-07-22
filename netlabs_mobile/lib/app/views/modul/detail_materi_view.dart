@@ -192,32 +192,20 @@ class DetailMateriView extends GetView<DetailMateriController> {
         ),
       ),
       
-      // Floating Action Button with Micro-animation
-      floatingActionButton: TweenAnimationBuilder<double>(
-        tween: Tween<double>(begin: 0.0, end: 1.0),
-        duration: const Duration(milliseconds: 600),
-        curve: Curves.elasticOut,
-        builder: (context, value, child) {
-          return Transform.scale(
-            scale: value,
-            child: child,
-          );
+      // Floating Action Button
+      floatingActionButton: FloatingActionButton.extended(
+        onPressed: () {
+          Get.toNamed(Routes.CHATBOT, arguments: {
+            'pertemuan_id': controller.pertemuanId,
+          });
         },
-        child: FloatingActionButton.extended(
-          onPressed: () {
-            Get.toNamed(Routes.CHATBOT, arguments: {
-              'pertemuan_id': controller.pertemuanId,
-            });
-          },
-          backgroundColor: NetlabsTheme.primary,
-          elevation: 4,
-          highlightElevation: 8,
-          shape: const StadiumBorder(),
-          icon: const Icon(Icons.blur_on_rounded, color: Colors.white, size: 22),
-          label: const Text(
-            "Tanya AI Tutor",
-            style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 14),
-          ),
+        backgroundColor: NetlabsTheme.primary,
+        elevation: 4,
+        shape: const StadiumBorder(),
+        icon: const Icon(Icons.blur_on_rounded, color: Colors.white, size: 22),
+        label: const Text(
+          "Tanya AI Tutor",
+          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 14),
         ),
       ),
     );
