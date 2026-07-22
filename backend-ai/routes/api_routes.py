@@ -79,13 +79,10 @@ def health_check() -> tuple[Response, int]:
     return jsonify({
         "status": "running",
         "service": "NetLabs AI Backend",
-        "version": "3.0.0-hybrid-rag",
-        "retrieval_method": "Hybrid BM25 + Dense Vector + RRF + Cross-Encoder Re-ranker",
+        "version": "3.0.0-rag",
+        "retrieval_method": "Dense Vector Search (Qdrant Cosine Similarity) + Gemini LLM",
         "vector_db": "Qdrant",
         "embedding_model": "paraphrase-multilingual-MiniLM-L12-v2",
-        "reranker_model": "cross-encoder/ms-marco-MiniLM-L-6-v2",
-        "sparse_retrieval": "BM25 Okapi (rank-bm25)",
-        "fusion_algorithm": "Reciprocal Rank Fusion (RRF, k=60)",
         "qdrant_collection": "basis_pengetahuan",
         "total_documents": total,
         "timestamp": datetime.now().isoformat(),
@@ -114,10 +111,6 @@ def index_pdf() -> tuple[Response, int]:
         
         result = rag_service.index_pdf_chunks(pertemuan_id, file_path)
         
-        # Invalidasi cache BM25 karena dokumen berubah
-        bm25_service.invalidate_cache(pertemuan_id)
-        logger.info(f"Cache BM25 untuk pertemuan_id={pertemuan_id} di-invalidasi setelah re-index.")
-        
         return jsonify({
             "success": True,
             "message": "Modul berhasil di-index ke Vektor DB.",
@@ -136,15 +129,7 @@ def index_pdf() -> tuple[Response, int]:
 
 @api_blueprint.route("/chat", methods=["POST"])
 def chat() -> tuple[Response, int]:
-    """Menjawab pertanyaan siswa menggunakan pipeline Advanced Hybrid RAG.
-    
-    Pipeline:
-        1. Dense Retrieval (Qdrant Cosine Similarity) → Top-10
-        2. Sparse Retrieval (BM25 Okapi) → Top-10
-        3. Reciprocal Rank Fusion (RRF, k=60) → Gabungkan & deduplikasi
-        4. Cross-Encoder Re-ranking (ms-marco-MiniLM-L-6-v2) → Top-4
-        5. Gemini LLM → Generate jawaban dari konteks terbaik
-    """
+    """Menjawab pertanyaan siswa menggunakan pipeline Vector RAG (Qdrant + Cosine Similarity + Gemini)."""
     try:
         data = request.get_json(force=True) or {}
         pertemuan_id = data.get("pertemuan_id")
@@ -161,7 +146,7 @@ def chat() -> tuple[Response, int]:
         else:
             pertemuan_id = None
 
-        logger.info(f"CHAT [Hybrid RAG] dimulai | pertemuan_id={pertemuan_id} | Pertanyaan: {message[:100]}")
+        logger.info(f"CHAT [Vector RAG] dimulai | pertemuan_id={pertemuan_id} | Pertanyaan: {message[:100]}")
         
         # 1. Cek apakah ada dokumen modul ter-index untuk pertemuan_id ini
         from qdrant_client.models import Filter, FieldCondition, MatchValue
@@ -189,20 +174,19 @@ def chat() -> tuple[Response, int]:
                 "chunks_used": 0
             }), 200
 
-        # 2. Jalankan pipeline Hybrid Search (Dense + BM25 + RRF + Cross-Encoder)
-        hasil_hybrid = hybrid_search(pertemuan_id, message, top_k=4)
+        # 2. Jalankan Pencarian Vektor (Vector Search) menggunakan Qdrant Cosine Similarity
+        query_vector = buat_embedding(message)
+        hasil_pencarian = rag_service.search_relevant_chunks(pertemuan_id, query_vector, limit=4)
         
-        # 3. Filter berdasarkan threshold relevansi menggunakan skor Cross-Encoder Re-ranker
+        # 3. Filter berdasarkan threshold relevansi (Cosine Similarity)
+        SIMILARITY_THRESHOLD = 0.20
         chunks_relevan = []
         sources = set()
         retrieval_details = []
         
-        for res in hasil_hybrid:
-            reranker_score = res.get("reranker_score", 0)
-            # Cross-Encoder menggunakan skala skor berbeda, threshold disesuaikan
-            # Skor > 0 dari Cross-Encoder sudah menunjukkan relevansi positif
-            if reranker_score > -5.0:  # Cross-Encoder threshold (skala logit)
-                # Tambahkan info sumber dan halaman langsung ke teks chunk agar Gemini membacanya
+        for res in hasil_pencarian:
+            score = res.get("score", 0.0)
+            if score >= SIMILARITY_THRESHOLD:
                 chunk_teks = f"[Sumber: {res['source_file']}, Halaman: {res.get('halaman', '?')}]\n{res['teks_asli']}"
                 chunks_relevan.append(chunk_teks)
                 sources.add(f"{res['source_file']} (Halaman {res.get('halaman', '?')})")
@@ -210,15 +194,12 @@ def chat() -> tuple[Response, int]:
                     "source_file": res["source_file"],
                     "halaman": res.get("halaman", "?"),
                     "chunk_index": res.get("chunk_index", "?"),
-                    "dense_score": round(res.get("dense_score", 0), 4),
-                    "bm25_score": round(res.get("bm25_score", 0), 4),
-                    "rrf_score": round(res.get("rrf_score", 0), 6),
-                    "reranker_score": round(reranker_score, 4),
+                    "similarity_score": round(score, 4),
                 })
 
         # 4. Jika tidak ada chunk yang relevan, tolak secara spesifik
         if not chunks_relevan:
-            logger.warning("Hybrid Search: Semua kandidat di bawah threshold. Menolak menjawab.")
+            logger.warning("Vector Search: Semua kandidat di bawah threshold. Menolak menjawab.")
             return jsonify({
                 "success": False,
                 "answer": PESAN_PERTANYAAN_TIDAK_RELEVAN,
@@ -241,7 +222,7 @@ def chat() -> tuple[Response, int]:
             "answer": jawaban,
             "sources": list(sources),
             "chunks_used": len(chunks_relevan),
-            "retrieval_method": "hybrid_bm25_dense_rrf_reranker",
+            "retrieval_method": "vector_qdrant_cosine_similarity",
             "retrieval_details": retrieval_details,
         }), 200
 
