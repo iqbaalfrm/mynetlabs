@@ -9,8 +9,6 @@ from flask import Blueprint, request, jsonify, Response
 from services.embedding_service import buat_embedding
 from services import gemini_service
 from services import rag_service
-from services import bm25_service
-from services.hybrid_search_service import hybrid_search
 
 logger = logging.getLogger("NetLabsAI.Routes")
 api_blueprint = Blueprint("api", __name__)
