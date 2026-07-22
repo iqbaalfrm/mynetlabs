@@ -197,9 +197,16 @@ def deploy_to_vps():
             run_remote(ssh, "nginx -t", "8d. Validasi konfigurasi Nginx")
             run_remote(ssh, "systemctl restart nginx", "8e. Restart Nginx")
         else:
-            print(">>> [Nginx] Konfigurasi memiliki SSL aktif (port 443). Melewati overwrite.")
-        
-        run_remote(ssh, f"systemctl restart php{php_ver}-fpm", f"8f. Restart PHP {php_ver}-FPM")
+            print(">>> [Nginx] Konfigurasi memiliki SSL aktif (port 443). Mengatur timeout Nginx & PHP-FPM...")
+            run_remote(ssh, "sed -i 's/fastcgi_read_timeout [0-9]*;/fastcgi_read_timeout 300;/g' /etc/nginx/sites-available/netlabs", "8f1. Update fastcgi_read_timeout Nginx")
+            run_remote(ssh, "grep -q 'fastcgi_read_timeout' /etc/nginx/sites-available/netlabs || sed -i '/fastcgi_params;/i \\        fastcgi_read_timeout 300;' /etc/nginx/sites-available/netlabs", "8f2. Sisipkan fastcgi_read_timeout Nginx jika belum ada")
+            run_remote(ssh, "sed -i 's/proxy_read_timeout [0-9]*;/proxy_read_timeout 300;/g' /etc/nginx/sites-available/netlabs", "8f3. Update proxy_read_timeout Nginx")
+            run_remote(ssh, "grep -q 'proxy_read_timeout' /etc/nginx/sites-available/netlabs || sed -i '/proxy_pass http:\\/\\/127.0.0.1:5050\\/;/a \\        proxy_read_timeout 300;' /etc/nginx/sites-available/netlabs", "8f4. Sisipkan proxy_read_timeout Nginx jika belum ada")
+            run_remote(ssh, "nginx -t && systemctl reload nginx", "8f5. Reload Nginx dengan timeout baru")
+
+        # Update PHP max_execution_time = 180 di VPS
+        run_remote(ssh, "sed -i 's/max_execution_time = [0-9]*/max_execution_time = 180/g' /etc/php/*/fpm/php.ini 2>/dev/null || true", "8g. Set PHP max_execution_time = 180")
+        run_remote(ssh, f"systemctl restart php{php_ver}-fpm", f"8h. Restart PHP {php_ver}-FPM")
 
         # 9. Tes endpoint API login (harusnya 401/422, BUKAN 500)
         run_remote(ssh, "curl -s -o /dev/null -w '%{http_code}' http://localhost/api/login -X POST -H 'Content-Type: application/json' -d '{\"username\":\"test\",\"password\":\"test\"}'", "9. Tes endpoint /api/login (401 = sukses)")

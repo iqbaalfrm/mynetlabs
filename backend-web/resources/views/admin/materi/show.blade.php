@@ -443,17 +443,24 @@
           },
           body: JSON.stringify({ jumlah_soal: result.value })
         })
-        .then(res => res.json())
+        .then(async res => {
+          const contentType = res.headers.get('content-type') || '';
+          if (contentType.includes('application/json')) {
+            return res.json();
+          }
+          const text = await res.text();
+          throw new Error('Respon server bukan JSON (status ' + res.status + '). Silakan coba lagi.');
+        })
         .then(data => {
           if (data.success) {
             Swal.fire('Sukses!', data.message || 'Soal berhasil di-generate!', 'success');
             location.reload();
           } else {
-            Swal.fire('Gagal!', data.message || 'Unknown error', 'error');
+            Swal.fire('Gagal!', data.message || 'Gagal generate kuis dari AI.', 'error');
           }
         })
         .catch(err => {
-          Swal.fire('Error!', err.message, 'error');
+          Swal.fire('Gagal!', err.message || 'Terjadi kesalahan jaringan.', 'error');
         });
       }
     });
