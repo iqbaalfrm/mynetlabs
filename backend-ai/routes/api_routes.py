@@ -328,8 +328,8 @@ def generate_quiz() -> tuple[Response, int]:
         hasil_scroll.sort(key=lambda p: p.payload.get("chunk_index", 0))
         konteks_gabungan = "\n\n".join([p.payload["teks_asli"] for p in hasil_scroll])
 
-        # Batasi panjang konteks
-        MAX_KONTEKS = 15000
+        # Batasi panjang konteks agar respon Gemini cepat dan tidak timeout
+        MAX_KONTEKS = 8000
         if len(konteks_gabungan) > MAX_KONTEKS:
             konteks_gabungan = konteks_gabungan[:MAX_KONTEKS]
 

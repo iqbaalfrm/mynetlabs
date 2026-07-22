@@ -66,7 +66,7 @@ class QuizController extends Controller
         $jumlahSoal = $request->json('jumlah_soal', $request->input('jumlah_soal', 5));
 
         try {
-            $response = \Illuminate\Support\Facades\Http::timeout(120)->post('http://127.0.0.1:5050/generate-quiz', [
+            $response = \Illuminate\Support\Facades\Http::timeout(180)->post('http://127.0.0.1:5050/generate-quiz', [
                 'pertemuan_id' => (int) $pertemuan_id,
                 'jumlah_soal' => (int) $jumlahSoal,
             ]);

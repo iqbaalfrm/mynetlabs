@@ -128,14 +128,14 @@ def generate_quiz_json(prompt: str) -> str:
     import time
     import re
     logger.info("Mengirim instruksi pembuatan kuis ke Gemini...")
-    max_retries = 5
+    max_retries = 3
     for attempt in range(1, max_retries + 1):
         try:
             response = _quiz_model.generate_content(
                 contents=[
                     {"role": "user", "parts": [{"text": prompt}]},
                 ],
-                request_options={"timeout": 60.0}
+                request_options={"timeout": 30.0}
             )
             raw_text = response.text.strip() if response and response.text else ""
             
@@ -151,15 +151,15 @@ def generate_quiz_json(prompt: str) -> str:
             if "429" in err_str or "quota" in err_str.lower() or "limit" in err_str.lower():
                 match = re.search(r'retry in (\d+(?:\.\d+)?)s', err_str, re.IGNORECASE)
                 if match:
-                    wait_seconds = int(float(match.group(1))) + 2
+                    wait_seconds = min(int(float(match.group(1))) + 1, 8)
                 else:
-                    wait_seconds = 15 * attempt
+                    wait_seconds = 4 * attempt
                 logger.info(f"Rate limit 429 terdeteksi. Menunggu {wait_seconds}s sebelum retry...")
                 time.sleep(wait_seconds)
             else:
                 if attempt == max_retries:
                     raise e
-                time.sleep(3)
+                time.sleep(2)
     return ""
 
 def transcribe_audio_file(file_path: str, mime_type: str) -> str:
