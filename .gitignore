@@ -1,7 +1,42 @@
-# File debug & log deploy
+# OS & System Junk
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Environment Files & API Keys
+.env
+*.env
+backend-ai/.env
+backend-web/.env
+
+# Temporary & Debug Logs
+*.log
 *.txt
-__pycache__/
+*.tmp
+*.bak
+test_*.py
+test_*.json
+scratch/
 diag*.py
 fix_*.py
+restart_*.py
 backend-web-update.tar.gz
-scratch/
+
+# Python & AI Cache
+__pycache__/
+*.pyc
+*.pyo
+.pytest_cache/
+backend-ai/venv/
+backend-ai/hf_cache/
+backend-ai/qdrant_data/
+qdrant_data/
+storage_modul_pdf/cache_ai/
+
+# Node & Frontend Build
+node_modules/
+npm-debug.log*
+
+# Flutter Build Artifacts
+netlabs_mobile/.dart_tool/
+netlabs_mobile/build/
