@@ -190,6 +190,7 @@ class HomeController extends GetxController {
   Future<void> logout() async {
     try { await _api.logout(); } catch (_) {}
     await _auth.clearSession();
+    Get.deleteAll(force: true);
     Get.offAllNamed(Routes.LOGIN);
   }
 }

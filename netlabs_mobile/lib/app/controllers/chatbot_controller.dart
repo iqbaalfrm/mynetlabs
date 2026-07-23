@@ -296,8 +296,9 @@ class ChatbotController extends GetxController {
     try {
       final r = await _api.getRiwayatChat();
       final list = r.data['data'] as List;
+      messages.clear();
+      _initContextual();
       if (list.isNotEmpty) {
-        messages.clear();
         for (var i = 0; i < list.length; i++) {
           final item = list[i] as Map<String, dynamic>;
           messages.add({

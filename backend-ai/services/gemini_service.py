@@ -89,32 +89,28 @@ def generate_chat_response(prompt: str, user_message: str) -> str:
     import time
     import re
     logger.info("Mengirim pesan RAG ke Gemini...")
-    max_retries = 5
+    max_retries = 2
     for attempt in range(1, max_retries + 1):
         try:
             response = _chat_model.generate_content(
                 contents=[
                     {"role": "user", "parts": [{"text": prompt + "\n\nPertanyaan siswa: " + user_message}]},
                 ],
-                request_options={"timeout": 45.0}
+                request_options={"timeout": 25.0}
             )
             return response.text.strip() if response and response.text else ""
         except Exception as e:
             err_str = str(e)
             logger.warning(f"Percobaan {attempt}/{max_retries} generate_chat_response gagal: {err_str}")
             if "429" in err_str or "quota" in err_str.lower() or "limit" in err_str.lower():
-                match = re.search(r'retry in (\d+(?:\.\d+)?)s', err_str, re.IGNORECASE)
-                if match:
-                    wait_seconds = int(float(match.group(1))) + 2
-                else:
-                    wait_seconds = 12 * attempt
+                wait_seconds = min(4, attempt * 2)
                 logger.info(f"Rate limit 429 terdeteksi. Menunggu {wait_seconds}s sebelum retry...")
                 time.sleep(wait_seconds)
             else:
                 if attempt == max_retries:
-                    raise e
-                time.sleep(3)
-    return ""
+                    break
+                time.sleep(2)
+    return "Maaf, sistem AI sedang menerima lalu lintas pertanyaan yang sangat padat (Rate Limit 429). Silakan tunggu 10-15 detik dan coba kirim ulang pertanyaan Anda."
 
 def generate_quiz_json(prompt: str) -> str:
     """Generate soal kuis dalam format JSON terstruktur menggunakan Gemini.

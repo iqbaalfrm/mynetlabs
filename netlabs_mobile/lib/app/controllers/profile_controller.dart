@@ -60,6 +60,7 @@ class ProfileController extends GetxController {
       await _api.logout();
     } catch (_) {}
     await _auth.clearSession();
+    Get.deleteAll(force: true);
     Get.offAllNamed('/login');
   }
 
