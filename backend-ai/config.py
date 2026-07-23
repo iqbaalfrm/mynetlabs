@@ -13,6 +13,12 @@ class Config:
     FLASK_DEBUG: bool = os.getenv("FLASK_DEBUG", "false").lower() == "true"
 
     @classmethod
+    def get_api_keys(cls) -> list[str]:
+        """Return list of Gemini API keys separated by comma."""
+        keys = [k.strip() for k in cls.GEMINI_API_KEY.split(",") if k.strip()]
+        return keys if keys else [""]
+
+    @classmethod
     def validate(cls) -> None:
         """Validate critical configuration variables."""
         if not cls.GEMINI_API_KEY:
