@@ -176,8 +176,8 @@ def chat() -> tuple[Response, int]:
         query_vector = buat_embedding(message)
         hasil_pencarian = rag_service.search_relevant_chunks(pertemuan_id, query_vector, limit=4)
         
-        # 3. Filter berdasarkan threshold relevansi (Cosine Similarity)
-        SIMILARITY_THRESHOLD = 0.20
+        # 3. Filter berdasarkan threshold relevansi (Cosine Similarity >= 0.30)
+        SIMILARITY_THRESHOLD = 0.30
         chunks_relevan = []
         sources = set()
         retrieval_details = []
