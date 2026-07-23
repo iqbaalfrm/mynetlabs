@@ -76,86 +76,84 @@ _quiz_model = genai.GenerativeModel(
 )
 logger.info("Model Gemini berhasil diinisialisasi.")
 
+FALLBACK_MODELS = [
+    "gemini-2.5-flash",
+    "gemini-2.0-flash",
+    "gemini-1.5-flash",
+    "gemini-1.5-flash-8b"
+]
+
 def generate_chat_response(prompt: str, user_message: str) -> str:
-    """Generate balasan chatbot RAG menggunakan Gemini.
-    
-    Args:
-        prompt (str): System prompt yang digabungkan dengan konteks.
-        user_message (str): Pesan asli dari user/siswa.
-        
-    Returns:
-        str: Balasan teks dari Gemini.
-    """
-    import time
-    import re
+    """Generate balasan chatbot RAG menggunakan Gemini dengan model fallback cascade."""
     logger.info("Mengirim pesan RAG ke Gemini...")
-    max_retries = 2
-    for attempt in range(1, max_retries + 1):
+    for model_name in FALLBACK_MODELS:
         try:
-            response = _chat_model.generate_content(
+            m = genai.GenerativeModel(
+                model_name=model_name,
+                generation_config=genai.GenerationConfig(
+                    temperature=0.3,
+                    top_p=0.85,
+                    max_output_tokens=2048,
+                ),
+            )
+            response = m.generate_content(
                 contents=[
                     {"role": "user", "parts": [{"text": prompt + "\n\nPertanyaan siswa: " + user_message}]},
                 ],
                 request_options={"timeout": 25.0}
             )
-            return response.text.strip() if response and response.text else ""
+            if response and response.text:
+                logger.info(f"Sukses generate_chat_response menggunakan model {model_name}.")
+                return response.text.strip()
         except Exception as e:
             err_str = str(e)
-            logger.warning(f"Percobaan {attempt}/{max_retries} generate_chat_response gagal: {err_str}")
+            logger.warning(f"Model {model_name} gagal: {err_str}")
             if "429" in err_str or "quota" in err_str.lower() or "limit" in err_str.lower():
-                wait_seconds = min(4, attempt * 2)
-                logger.info(f"Rate limit 429 terdeteksi. Menunggu {wait_seconds}s sebelum retry...")
-                time.sleep(wait_seconds)
+                logger.info(f"Model {model_name} terkena Rate Limit 429. Mencoba model fallback berikutnya...")
+                continue
             else:
-                if attempt == max_retries:
-                    break
-                time.sleep(2)
+                continue
+
     return "Maaf, sistem AI sedang menerima lalu lintas pertanyaan yang sangat padat (Rate Limit 429). Silakan tunggu 10-15 detik dan coba kirim ulang pertanyaan Anda."
 
 def generate_quiz_json(prompt: str) -> str:
-    """Generate soal kuis dalam format JSON terstruktur menggunakan Gemini.
-    
-    Args:
-        prompt (str): Prompt kuis yang digabungkan dengan materi.
-        
-    Returns:
-        str: Hasil generate berupa string JSON.
-    """
-    import time
+    """Generate soal kuis dalam format JSON terstruktur menggunakan Gemini dengan model fallback."""
     import re
     logger.info("Mengirim instruksi pembuatan kuis ke Gemini...")
-    max_retries = 3
-    for attempt in range(1, max_retries + 1):
+    for model_name in FALLBACK_MODELS:
         try:
-            response = _quiz_model.generate_content(
+            m = genai.GenerativeModel(
+                model_name=model_name,
+                generation_config=genai.GenerationConfig(
+                    temperature=0.7,
+                    top_p=0.9,
+                    max_output_tokens=4096,
+                    response_mime_type="application/json",
+                    response_schema=QUIZ_RESPONSE_SCHEMA,
+                ),
+            )
+            response = m.generate_content(
                 contents=[
                     {"role": "user", "parts": [{"text": prompt}]},
                 ],
                 request_options={"timeout": 30.0}
             )
             raw_text = response.text.strip() if response and response.text else ""
-            
-            # Hapus pembungkus markdown ```json ... ``` jika ada
-            if raw_text.startswith("```"):
-                raw_text = re.sub(r'^```(?:json)?\s*', '', raw_text, flags=re.IGNORECASE)
-                raw_text = re.sub(r'\s*```$', '', raw_text).strip()
-                
-            return raw_text
+            if raw_text:
+                if raw_text.startswith("```"):
+                    raw_text = re.sub(r'^```(?:json)?\s*', '', raw_text, flags=re.IGNORECASE)
+                    raw_text = re.sub(r'\s*```$', '', raw_text).strip()
+                logger.info(f"Sukses generate_quiz_json menggunakan model {model_name}.")
+                return raw_text
         except Exception as e:
             err_str = str(e)
-            logger.warning(f"Percobaan {attempt}/{max_retries} generate_quiz_json gagal: {err_str}")
+            logger.warning(f"Model {model_name} quiz generation gagal: {err_str}")
             if "429" in err_str or "quota" in err_str.lower() or "limit" in err_str.lower():
-                match = re.search(r'retry in (\d+(?:\.\d+)?)s', err_str, re.IGNORECASE)
-                if match:
-                    wait_seconds = min(int(float(match.group(1))) + 1, 8)
-                else:
-                    wait_seconds = 4 * attempt
-                logger.info(f"Rate limit 429 terdeteksi. Menunggu {wait_seconds}s sebelum retry...")
-                time.sleep(wait_seconds)
+                logger.info(f"Model {model_name} terkena Rate Limit 429. Mencoba model fallback berikutnya...")
+                continue
             else:
-                if attempt == max_retries:
-                    raise e
-                time.sleep(2)
+                continue
+
     return ""
 
 def transcribe_audio_file(file_path: str, mime_type: str) -> str:
